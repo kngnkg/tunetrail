@@ -1,0 +1,15 @@
+version: "3.9"
+
+services:
+  web:
+    container_name: tunetrail-web
+    hostname: tunetrail-web
+    build:
+      context: .
+      target: dev
+      dockerfile: ./web/Dockerfile
+    tty: true
+    volumes:
+      - ./web:/app
+    ports:
+      - 3000:3000
