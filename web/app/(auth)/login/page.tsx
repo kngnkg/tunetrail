@@ -1,8 +1,8 @@
-export default function IndexPage() {
+export default function LoginPage() {
   return (
     <>
       <section>
-        <p>Home Page</p>
+        <p>Login Page</p>
       </section>
     </>
   )
