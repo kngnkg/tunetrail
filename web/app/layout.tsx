@@ -4,9 +4,13 @@ import { ThemeProvider } from "@/components/theme-provider"
 import "@/styles/globals.css"
 
 import type { Metadata } from "next"
-import { Inter } from "next/font/google"
+import { Noto_Sans_JP } from "next/font/google"
 
-const inter = Inter({ subsets: ["latin"] })
+const notojp = Noto_Sans_JP({
+  weight: ["400", "500"],
+  subsets: ["latin"],
+  display: "swap",
+})
 
 export const metadata: Metadata = {
   title: "TuneTrail",
@@ -20,7 +24,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn("bg-background", inter.className)}>
+      <body className={cn("bg-background", notojp.className)}>
         <ThemeProvider attribute="class" defaultTheme="dark">
           {children}
         </ThemeProvider>
