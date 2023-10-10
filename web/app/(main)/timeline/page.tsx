@@ -1,12 +1,13 @@
 import Link from "next/link"
 
 import { Button } from "@/components/ui/button"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
-export default function IndexPage() {
+export default function Timeline() {
   return (
     <>
       <section>
-        <p>Home Page</p>
+        <p>Timeline</p>
       </section>
     </>
   )
