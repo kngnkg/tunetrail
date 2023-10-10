@@ -1,4 +1,4 @@
-import { Icon } from "@/components/icons"
+import { Icon } from "@/components/icon"
 
 interface LayoutProps {
   children: React.ReactNode
