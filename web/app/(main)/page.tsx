@@ -7,7 +7,7 @@ export default function IndexPage() {
     <>
       <section>
         <p>Home Page</p>
-        <Button>Click me</Button>
+        <Button className="bg-primary dark:bg-primary">Click me</Button>
       </section>
     </>
   )

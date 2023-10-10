@@ -4,10 +4,10 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
   return (
-    <div>
-      <header></header>
-      <main>{children}</main>
-      <footer></footer>
+    <div className="flex flex-col min-h-screen">
+      <header className="container">ヘッダー</header>
+      <main className="container flex-1">{children}</main>
+      {/* <footer className="container">フッター</footer> */}
     </div>
   )
 }
