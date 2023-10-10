@@ -2,7 +2,6 @@ import { cn } from "@/lib/utils"
 import { ThemeProvider } from "@/components/theme-provider"
 
 import "@/styles/globals.css"
-
 import type { Metadata } from "next"
 import { Noto_Sans_JP } from "next/font/google"
 

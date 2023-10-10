@@ -1,3 +1,5 @@
+import Link from "next/link"
+
 import { Icon } from "@/components/icon"
 
 interface MainNavProps {
@@ -8,11 +10,18 @@ export const MainNav: React.FC<MainNavProps> = ({ className }) => {
   return (
     <div className="flex justify-between pt-4 pb-4">
       <p className="text-lg">TuneTrail</p>
+      {/* TODO: ログイン状態によって表示を変える */}
       <div className="flex gap-1">
-        <Icon type="search" />
+        <Link href="/search">
+          <Icon type="search" />
+        </Link>
         <Icon type="notify" />
-        <Icon type="user" />
-        <Icon type="new-post" />
+        <Link href="/userpage">
+          <Icon type="user" />
+        </Link>
+        <Link href="/editor">
+          <Icon type="new-post" />
+        </Link>
       </div>
     </div>
   )
