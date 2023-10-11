@@ -1,13 +1,18 @@
-import Link from "next/link"
+import { env } from "@/env.mjs"
+import { getReviews } from "@/lib/get-reviews"
+import { ReviewList } from "@/components/review-list"
 
-import { Button } from "@/components/ui/button"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+export default async function Timeline() {
+  const reviews = await getReviews(`${env.API_ROOT}/timeline`)
 
-export default function Timeline() {
+  if (!reviews) {
+    return <p>Something went wrong.</p>
+  }
+
   return (
     <>
       <section>
-        <p>Timeline</p>
+        <ReviewList reviews={reviews} />
       </section>
     </>
   )
