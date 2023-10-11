@@ -9,7 +9,7 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
   const tabsTriggerClassName =
-    "data-[state=active]:border-b-4 border-primary dark:border-primary"
+    "data-[state=active]:border-b-4 border-primary dark:border-primary rounded-none focus-visible:ring-none"
 
   return (
     <div className="flex flex-col min-h-screen">
