@@ -9,7 +9,9 @@ interface MainNavProps {
 export const MainNav: React.FC<MainNavProps> = ({ className }) => {
   return (
     <div className="flex justify-between pt-4 pb-4">
-      <p className="text-lg">TuneTrail</p>
+      <Link href="/">
+        <p className="text-lg">TuneTrail</p>
+      </Link>
       {/* TODO: ログイン状態によって表示を変える */}
       <div className="flex gap-1">
         <Link href="/search">

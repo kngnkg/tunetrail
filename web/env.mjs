@@ -7,9 +7,11 @@ export const env = createEnv({
   },
   client: {
     NEXT_PUBLIC_API_ROOT: z.string().url(),
+    NEXT_PUBLIC_SPOTIFY_CDN_HOST: z.string(),
   },
   runtimeEnv: {
     API_ROOT: process.env.API_ROOT,
     NEXT_PUBLIC_API_ROOT: process.env.NEXT_PUBLIC_API_ROOT,
+    NEXT_PUBLIC_SPOTIFY_CDN_HOST: process.env.NEXT_PUBLIC_SPOTIFY_CDN_HOST,
   },
 })
