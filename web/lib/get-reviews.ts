@@ -1,8 +1,14 @@
 import { Review } from "@/types"
 
-const transformReview = (apiReview: any): Review => {
+export function transformReview(apiReview: any): Review {
   return {
     reviewId: apiReview.review_id,
+    title: apiReview.title,
+    body: apiReview.body ?? "", // デフォルト値
+    likesCount: apiReview.likes_count,
+    liked: apiReview.liked,
+    createdAt: new Date(apiReview.created_at),
+    updatedAt: new Date(apiReview.updated_at),
     author: {
       userId: apiReview.author.user_id,
       displayId: apiReview.author.display_id,
@@ -38,12 +44,6 @@ const transformReview = (apiReview: any): Review => {
       releaseDate: new Date(apiReview.album.release_date),
       genres: apiReview.album.genres,
     },
-    title: apiReview.title,
-    body: "", // デフォルト値
-    likesCount: apiReview.likesCount,
-    liked: apiReview.liked,
-    createdAt: new Date(apiReview.created_at),
-    updatedAt: new Date(apiReview.updated_at),
   }
 }
 
