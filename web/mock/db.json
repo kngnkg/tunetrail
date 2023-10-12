@@ -1,4 +1,15 @@
 {
+  "user_sample": {
+    "user_id": "e5822d84-9119-4caa-ad96-a4c6ebdaa8a7",
+    "display_id": "@tarotanaka",
+    "name": "タナカ タロウ",
+    "avatar_url": "https://source.unsplash.com/random",
+    "bio": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+    "followers_count": 100,
+    "following_count": 100,
+    "followed": false,
+    "following": false
+  },
   "review_sample": {
     "review_id": "22244f61-48fe-491f-9a04-52d3d5ef99d1",
     "title": "タイトル1",
