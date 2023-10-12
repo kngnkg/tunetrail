@@ -1,0 +1,6 @@
+{
+  "/users/:user_id": "/user_sample",
+  "/reviews/:review_id": "/review_sample",
+  "/trends": "/feeds",
+  "/timeline": "/feeds"
+}
