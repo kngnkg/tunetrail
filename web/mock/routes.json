@@ -1,0 +1,5 @@
+{
+  "/reviews/:review_id": "/review_sample",
+  "/trends": "/feeds",
+  "/timeline": "/feeds"
+}
