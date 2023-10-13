@@ -17,7 +17,7 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
   className,
 }) => {
   const pathToUser = `/${review.author.displayId}`
-  const pathToReview = `${pathToUser}/reviews/${review.reviewId}`
+  const pathToReview = `/reviews/${review.reviewId}`
 
   return (
     <Card>
