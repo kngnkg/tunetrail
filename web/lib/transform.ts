@@ -11,6 +11,7 @@ export function transformUser(apiUser: any): User {
     followingCount: apiUser.following_count,
     followed: apiUser.followed,
     following: apiUser.following,
+    followingGenres: apiUser.following_genres ?? [],
     createdAt: apiUser.created_at ? new Date(apiUser.created_at) : new Date(),
     updatedAt: apiUser.updated_at ? new Date(apiUser.updated_at) : new Date(),
   }

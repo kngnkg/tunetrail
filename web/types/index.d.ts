@@ -8,6 +8,7 @@ export type User = {
   bio?: string
   followersCount: number
   followingCount: number
+  followingGenres: string[]
   followed: boolean
   following: boolean
   createdAt: Date

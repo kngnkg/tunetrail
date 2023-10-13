@@ -1,5 +1,6 @@
 {
-  "/users/:user_id": "/user_sample",
+  "/users?display_id=:display_id": "/user_sample",
+  "/users/:user_id/reviews": "/feeds",
   "/reviews/:review_id": "/review_sample",
   "/trends": "/feeds",
   "/timeline": "/feeds"
