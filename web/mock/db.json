@@ -50,6 +50,120 @@
       "genres": ["rock", "pop"]
     }
   },
+  "users": {
+    "users": [
+      {
+        "user_id": "e5822d84-9119-4caa-ad96-a4c6ebdaa8a7",
+        "display_id": "@tarotanaka",
+        "name": "タナカ タロウ",
+        "avatar_url": "https://source.unsplash.com/random",
+        "followers_count": 100,
+        "following_count": 100,
+        "followed": false,
+        "following": false,
+        "url": "ユーザー情報を取得するapiのurl"
+      },
+      {
+        "user_id": "e5822d84-9119-4caa-ad96-a4c6ebdaa8a7",
+        "display_id": "@tarotanaka",
+        "name": "タナカ タロウ",
+        "avatar_url": "https://source.unsplash.com/random",
+        "followers_count": 100,
+        "following_count": 100,
+        "followed": false,
+        "following": false,
+        "url": "ユーザー情報を取得するapiのurl"
+      },
+      {
+        "user_id": "e5822d84-9119-4caa-ad96-a4c6ebdaa8a7",
+        "display_id": "@tarotanaka",
+        "name": "タナカ タロウ",
+        "avatar_url": "https://source.unsplash.com/random",
+        "followers_count": 100,
+        "following_count": 100,
+        "followed": false,
+        "following": false,
+        "url": "ユーザー情報を取得するapiのurl"
+      },
+      {
+        "user_id": "e5822d84-9119-4caa-ad96-a4c6ebdaa8a7",
+        "display_id": "@tarotanaka",
+        "name": "タナカ タロウ",
+        "avatar_url": "https://source.unsplash.com/random",
+        "followers_count": 100,
+        "following_count": 100,
+        "followed": false,
+        "following": false,
+        "url": "ユーザー情報を取得するapiのurl"
+      },
+      {
+        "user_id": "e5822d84-9119-4caa-ad96-a4c6ebdaa8a7",
+        "display_id": "@tarotanaka",
+        "name": "タナカ タロウ",
+        "avatar_url": "https://source.unsplash.com/random",
+        "followers_count": 100,
+        "following_count": 100,
+        "followed": false,
+        "following": false,
+        "url": "ユーザー情報を取得するapiのurl"
+      },
+      {
+        "user_id": "e5822d84-9119-4caa-ad96-a4c6ebdaa8a7",
+        "display_id": "@tarotanaka",
+        "name": "タナカ タロウ",
+        "avatar_url": "https://source.unsplash.com/random",
+        "followers_count": 100,
+        "following_count": 100,
+        "followed": false,
+        "following": false,
+        "url": "ユーザー情報を取得するapiのurl"
+      },
+      {
+        "user_id": "e5822d84-9119-4caa-ad96-a4c6ebdaa8a7",
+        "display_id": "@tarotanaka",
+        "name": "タナカ タロウ",
+        "avatar_url": "https://source.unsplash.com/random",
+        "followers_count": 100,
+        "following_count": 100,
+        "followed": false,
+        "following": false,
+        "url": "ユーザー情報を取得するapiのurl"
+      },
+      {
+        "user_id": "e5822d84-9119-4caa-ad96-a4c6ebdaa8a7",
+        "display_id": "@tarotanaka",
+        "name": "タナカ タロウ",
+        "avatar_url": "https://source.unsplash.com/random",
+        "followers_count": 100,
+        "following_count": 100,
+        "followed": false,
+        "following": false,
+        "url": "ユーザー情報を取得するapiのurl"
+      },
+      {
+        "user_id": "e5822d84-9119-4caa-ad96-a4c6ebdaa8a7",
+        "display_id": "@tarotanaka",
+        "name": "タナカ タロウ",
+        "avatar_url": "https://source.unsplash.com/random",
+        "followers_count": 100,
+        "following_count": 100,
+        "followed": false,
+        "following": false,
+        "url": "ユーザー情報を取得するapiのurl"
+      },
+      {
+        "user_id": "e5822d84-9119-4caa-ad96-a4c6ebdaa8a7",
+        "display_id": "@tarotanaka",
+        "name": "タナカ タロウ",
+        "avatar_url": "https://source.unsplash.com/random",
+        "followers_count": 100,
+        "following_count": 100,
+        "followed": false,
+        "following": false,
+        "url": "ユーザー情報を取得するapiのurl"
+      }
+    ]
+  },
   "feeds": {
     "reviews": [
       {

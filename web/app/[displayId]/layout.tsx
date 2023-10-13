@@ -1,4 +1,3 @@
-import Link from "next/link"
 import { notFound } from "next/navigation"
 
 import { env } from "@/env.mjs"
@@ -8,6 +7,7 @@ import { GenreList } from "@/components/genre-list"
 import { MainNav } from "@/components/main-nav"
 import { MenuTab, MenuTabs } from "@/components/menu-tabs"
 import { UserAvatar } from "@/components/user-avatar"
+import { UserListDialog } from "@/components/user-list-dialog"
 
 interface UserLayoutProps {
   params: { displayId: string }
@@ -62,18 +62,8 @@ export default async function UserLayout({
               </div>
               {/* フォロー関連 */}
               <div className="flex gap-4 items-center">
-                <Link
-                  href={`/${user.displayId}/followers`}
-                  className="text-zinc-500 dark:text-zinc-400"
-                >
-                  {user.followersCount} フォロワー
-                </Link>
-                <Link
-                  href={`/${user.displayId}/following`}
-                  className="text-zinc-500 dark:text-zinc-400"
-                >
-                  {user.followersCount} フォロー中
-                </Link>
+                <UserListDialog type="followers" user={user} />
+                <UserListDialog type="following" user={user} />
               </div>
               <div>
                 <p className="text-zinc-500 dark:text-zinc-400">{user.bio}</p>
