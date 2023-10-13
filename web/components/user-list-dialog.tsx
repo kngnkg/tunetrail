@@ -2,14 +2,17 @@
 
 import { User } from "@/types"
 
+import { env } from "@/env.mjs"
+import { useUsers } from "@/lib/use-users"
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { UserList } from "@/components/user-list"
 
 interface UserListDialogProps {
   type: "followers" | "following"
@@ -20,23 +23,47 @@ export const UserListDialog: React.FC<UserListDialogProps> = ({
   type,
   user,
 }) => {
+  const { users, isError, isLoading } = useUsers({
+    endpoint: `${env.NEXT_PUBLIC_API_ROOT}/users/${user.userId}/${type}`,
+  })
+
   return (
     <Dialog>
       <DialogTrigger className="text-zinc-500 dark:text-zinc-400">
         {type === "followers" ? (
-          <p>{user.followersCount} フォロワー</p>
+          <>{user.followersCount} フォロワー</>
         ) : (
-          <p>{user.followersCount} フォロー中</p>
+          <>{user.followingCount} フォロー中</>
         )}
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="h-4/6 flex flex-col gap-8">
         <DialogHeader>
-          <DialogTitle>Are you sure absolutely sure?</DialogTitle>
-          <DialogDescription>
-            This action cannot be undone. This will permanently delete your
-            account and remove your data from our servers.
-          </DialogDescription>
+          <DialogTitle className="flex justify-center">
+            {type === "followers" ? <>フォロワー</> : <>フォロー中</>}
+          </DialogTitle>
         </DialogHeader>
+        {/* ユーザー一覧 */}
+        <div className="">
+          {users.length === 0 ? (
+            <>
+              {type === "followers" ? (
+                <p>フォロワーはいません。</p>
+              ) : (
+                <p>フォロー中のユーザーはいません。</p>
+              )}
+            </>
+          ) : (
+            <>
+              <ScrollArea className="w-full h-4/6 p-6 pt-16 border-t border-zinc-700 dark:border-zinc-700">
+                <UserList
+                  users={users}
+                  isLoading={isLoading}
+                  isError={isError}
+                />
+              </ScrollArea>
+            </>
+          )}
+        </div>
       </DialogContent>
     </Dialog>
   )
