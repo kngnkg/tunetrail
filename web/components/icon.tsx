@@ -25,7 +25,7 @@ interface IconProps {
 }
 
 export const Icon: React.FC<IconProps> = ({ type, className, ...props }) => {
-  const baseClassName = "w-8 h-8 text-zinc-500 dark:text-zinc-500"
+  const baseClassName = "w-6 h-6 text-zinc-500 dark:text-zinc-500"
 
   switch (type) {
     case "user":
