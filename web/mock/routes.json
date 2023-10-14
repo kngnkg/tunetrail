@@ -1,6 +1,13 @@
 {
-  "/users/:user_id": "/user_sample",
+  "/reviews?title=:title&genre=:genre": "/feeds",
   "/reviews/:review_id": "/review_sample",
+  "/users?display_id=:display_id": "/user_sample",
+  "/users?name=:name&display_id=:display_id": "/users",
+  "/users/:user_id/reviews": "/feeds",
+  "/users/:user_id/likes": "/feeds",
+  "/users/:user_id/followers": "/users",
+  "/users/:user_id/following": "/users",
+  "/genres?q=:q": "/genres",
   "/trends": "/feeds",
   "/timeline": "/feeds"
 }
