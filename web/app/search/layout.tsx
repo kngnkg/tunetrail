@@ -1,4 +1,5 @@
 import { MainNav } from "@/components/main-nav"
+import { Search } from "@/components/search"
 
 interface SearchLayoutProps {
   children: React.ReactNode
@@ -12,7 +13,10 @@ export default function SearchLayout({ children }: SearchLayoutProps) {
       </header>
       <main className="container flex-1">
         <div className="border-solid border-b border-zinc-700 dark:border-zinc-700" />
-        <div className="sm:w-4/6 mx-auto">{children}</div>
+        <div className="sm:w-4/6 mx-auto mt-12">
+          <Search />
+          {children}
+        </div>
       </main>
     </div>
   )
