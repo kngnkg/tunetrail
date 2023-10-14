@@ -6,14 +6,14 @@ import { UserAvatar } from "@/components/user-avatar"
 
 interface UserListProps {
   users: User[]
-  isLoading: boolean
-  isError: boolean
+  isLoading?: boolean
+  isError?: boolean
 }
 
 export const UserList: React.FC<UserListProps> = ({
   users,
-  isLoading,
-  isError,
+  isLoading = false,
+  isError = false,
 }) => {
   // TODO: suspense
   return (

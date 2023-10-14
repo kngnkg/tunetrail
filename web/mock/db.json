@@ -50,6 +50,9 @@
       "genres": ["rock", "pop"]
     }
   },
+  "genres": {
+    "genres": ["rock", "pop", "classic", "jazz"]
+  },
   "users": {
     "users": [
       {
