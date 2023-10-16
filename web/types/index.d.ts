@@ -22,7 +22,7 @@ export type Review = {
   author: User
   album: Album
   title: string
-  body: string
+  content: string
   likesCount: number
   liked: boolean
   createdAt: Date

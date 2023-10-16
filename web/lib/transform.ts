@@ -21,7 +21,7 @@ export function transformReview(apiReview: any): Review {
   return {
     reviewId: apiReview.review_id,
     title: apiReview.title,
-    body: apiReview.body ?? "", // デフォルト値
+    content: apiReview.content ?? "", // デフォルト値
     likesCount: apiReview.likes_count,
     liked: apiReview.liked,
     createdAt: new Date(apiReview.created_at),
