@@ -1,9 +1,8 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { Review } from "@/types"
 
 import { env } from "@/env.mjs"
-import { transformReview } from "@/lib/transform"
+import { getReview } from "@/lib/get-review"
 import { FollowButton } from "@/components/follow-button"
 import { ReviewContent } from "@/components/review-content"
 import { TimeStamp } from "@/components/timestamp"
@@ -11,28 +10,6 @@ import { UserAvatar } from "@/components/user-avatar"
 
 interface ReviewPageProps {
   params: { reviewId: string }
-}
-
-async function getReview(
-  resource: RequestInfo,
-  init?: RequestInit
-): Promise<Review | null> {
-  try {
-    const res = await fetch(resource, init)
-
-    if (!res.ok) {
-      throw new Error(res.statusText)
-    }
-
-    const data = await res.json()
-
-    const review = transformReview(data)
-
-    return review
-  } catch (error) {
-    console.error(error)
-    return null
-  }
 }
 
 export default async function ReviewPage({ params }: ReviewPageProps) {

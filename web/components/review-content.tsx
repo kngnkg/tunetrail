@@ -56,7 +56,7 @@ export const ReviewContent: React.FC<ReviewContentProps> = ({ review }) => {
       </section>
       {/* 本文 */}
       <section>
-        <p>{review.body}</p>
+        <p>{review.content}</p>
       </section>
     </article>
   )
