@@ -19,6 +19,7 @@ export type LoginUser = Omit<User, "followed" | "following">
 
 export type Review = {
   reviewId: string
+  published: boolean
   author: User
   album: Album
   title: string

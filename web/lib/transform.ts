@@ -20,6 +20,7 @@ export function transformUser(apiUser: any): User {
 export function transformReview(apiReview: any): Review {
   return {
     reviewId: apiReview.review_id,
+    published: apiReview.published,
     title: apiReview.title,
     content: apiReview.content ?? "", // デフォルト値
     likesCount: apiReview.likes_count,
