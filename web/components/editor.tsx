@@ -31,6 +31,7 @@ export const Editor: React.FC<EditorProps> = ({ review }: EditorProps) => {
   })
   const ref = React.useRef<EditorJS>()
   const [saving, setSaving] = React.useState<boolean>(false)
+  const [publish, setPublish] = React.useState<boolean>(false)
 
   const body = postSchema.parse(review)
 
@@ -55,6 +56,7 @@ export const Editor: React.FC<EditorProps> = ({ review }: EditorProps) => {
     // TODO: ここでAPIを叩く
     alert(
       JSON.stringify({
+        publish: publish,
         title: data.title,
         content: blocks,
       })
@@ -68,8 +70,12 @@ export const Editor: React.FC<EditorProps> = ({ review }: EditorProps) => {
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-8">
         <div className="flex items-center gap-8">
           <Link href="/">キャンセル</Link>
-          <Button type="submit">下書きに保存</Button>
-          <Button type="submit">Submit</Button>
+          <Button type="submit" onClick={() => setPublish(false)}>
+            下書きに保存
+          </Button>
+          <Button type="submit" onClick={() => setPublish(true)}>
+            投稿する
+          </Button>
         </div>
         <div className="flex flex-col gap-8">
           <div>
