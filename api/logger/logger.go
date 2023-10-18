@@ -16,7 +16,7 @@ type LoggerOptions struct {
 	Level slog.Level
 }
 
-func New(opts LoggerOptions) *Logger {
+func New(opts *LoggerOptions) *Logger {
 	options := &slog.HandlerOptions{
 		Level: opts.Level,
 	}

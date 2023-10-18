@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	l := logger.New(logger.LoggerOptions{
+	l := logger.New(&logger.LoggerOptions{
 		Level: slog.LevelDebug,
 	})
 
