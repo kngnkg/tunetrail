@@ -4,6 +4,7 @@ import { z } from "zod"
 export const env = createEnv({
   server: {
     API_ROOT: z.string().url(),
+    GRPC_API_ROOT: z.string().url(),
   },
   client: {
     NEXT_PUBLIC_API_ROOT: z.string().url(),
@@ -11,6 +12,7 @@ export const env = createEnv({
   },
   runtimeEnv: {
     API_ROOT: process.env.API_ROOT,
+    GRPC_API_ROOT: process.env.GRPC_API_ROOT,
     NEXT_PUBLIC_API_ROOT: process.env.NEXT_PUBLIC_API_ROOT,
     NEXT_PUBLIC_SPOTIFY_CDN_HOST: process.env.NEXT_PUBLIC_SPOTIFY_CDN_HOST,
   },
