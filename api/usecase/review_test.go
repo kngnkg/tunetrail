@@ -39,11 +39,9 @@ func TestReviewUseCase_Store(t *testing.T) {
 				assert.Equal(t, tt.args.review, review)
 				return nil
 			}
-			moqAlbumRepo := &AlbumRepositoryMock{}
 
 			uc := &ReviewUseCase{
 				reviewRepo: moqReviewRepo,
-				albumRepo:  moqAlbumRepo,
 			}
 			if err := uc.Store(tt.args.ctx, tt.args.review); (err != nil) != tt.wantErr {
 				t.Errorf("ReviewUseCase.Store() error = %v, wantErr %v", err, tt.wantErr)
@@ -82,11 +80,17 @@ func TestReviewUseCase_GetById(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			moqReviewRepo := &ReviewRepositoryMock{}
+			moqUserRepo := &UserRepositoryMock{}
 			moqAlbumRepo := &AlbumRepositoryMock{}
 			moqReviewRepo.GetByIdFunc = func(pctx context.Context, reviewId string) (*entity.Review, error) {
 				assert.Equal(t, tt.args.ctx, pctx)
 				assert.Equal(t, tt.args.reviewId, reviewId)
 				return tt.want, nil
+			}
+			moqUserRepo.GetByIdFunc = func(pctx context.Context, userId entity.UserId) (*entity.User, error) {
+				assert.Equal(t, tt.args.ctx, pctx)
+				assert.Equal(t, tt.want.Author.UserId, userId)
+				return tt.want.Author, nil
 			}
 			moqAlbumRepo.GetByIdFunc = func(pctx context.Context, albumId string) (*entity.Album, error) {
 				assert.Equal(t, tt.args.ctx, pctx)
@@ -97,6 +101,7 @@ func TestReviewUseCase_GetById(t *testing.T) {
 			uc := &ReviewUseCase{
 				reviewRepo: moqReviewRepo,
 				albumRepo:  moqAlbumRepo,
+				userRepo:   moqUserRepo,
 			}
 			got, err := uc.GetById(tt.args.ctx, tt.args.reviewId)
 			if (err != nil) != tt.wantErr {
