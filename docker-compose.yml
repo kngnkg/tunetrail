@@ -7,9 +7,21 @@ services:
     build:
       context: .
       target: dev
-      dockerfile: ./web/Dockerfile
+      dockerfile: ./docker/web/Dockerfile
     tty: true
     volumes:
       - ./web:/app
     ports:
       - 3000:3000
+  grpc:
+    container_name: tunetrail-grpc
+    hostname: tunetrail-grpc
+    build:
+      context: .
+      target: dev
+      dockerfile: ./docker/grpc/Dockerfile
+    tty: true
+    volumes:
+      - ./api:/app
+    ports:
+      - 50051:50051
