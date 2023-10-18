@@ -19,6 +19,9 @@ var _ ReviewRepository = &ReviewRepositoryMock{}
 //
 //		// make and configure a mocked ReviewRepository
 //		mockedReviewRepository := &ReviewRepositoryMock{
+//			GetByAuthorIdFunc: func(ctx context.Context, authorId entity.UserId, nextCursor string, limit int) ([]*entity.Review, string, error) {
+//				panic("mock out the GetByAuthorId method")
+//			},
 //			GetByIdFunc: func(ctx context.Context, reviewId string) (*entity.Review, error) {
 //				panic("mock out the GetById method")
 //			},
@@ -32,6 +35,9 @@ var _ ReviewRepository = &ReviewRepositoryMock{}
 //
 //	}
 type ReviewRepositoryMock struct {
+	// GetByAuthorIdFunc mocks the GetByAuthorId method.
+	GetByAuthorIdFunc func(ctx context.Context, authorId entity.UserId, nextCursor string, limit int) ([]*entity.Review, string, error)
+
 	// GetByIdFunc mocks the GetById method.
 	GetByIdFunc func(ctx context.Context, reviewId string) (*entity.Review, error)
 
@@ -40,6 +46,17 @@ type ReviewRepositoryMock struct {
 
 	// calls tracks calls to the methods.
 	calls struct {
+		// GetByAuthorId holds details about calls to the GetByAuthorId method.
+		GetByAuthorId []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// AuthorId is the authorId argument value.
+			AuthorId entity.UserId
+			// NextCursor is the nextCursor argument value.
+			NextCursor string
+			// Limit is the limit argument value.
+			Limit int
+		}
 		// GetById holds details about calls to the GetById method.
 		GetById []struct {
 			// Ctx is the ctx argument value.
@@ -55,8 +72,53 @@ type ReviewRepositoryMock struct {
 			Review *entity.Review
 		}
 	}
-	lockGetById sync.RWMutex
-	lockStore   sync.RWMutex
+	lockGetByAuthorId sync.RWMutex
+	lockGetById       sync.RWMutex
+	lockStore         sync.RWMutex
+}
+
+// GetByAuthorId calls GetByAuthorIdFunc.
+func (mock *ReviewRepositoryMock) GetByAuthorId(ctx context.Context, authorId entity.UserId, nextCursor string, limit int) ([]*entity.Review, string, error) {
+	if mock.GetByAuthorIdFunc == nil {
+		panic("ReviewRepositoryMock.GetByAuthorIdFunc: method is nil but ReviewRepository.GetByAuthorId was just called")
+	}
+	callInfo := struct {
+		Ctx        context.Context
+		AuthorId   entity.UserId
+		NextCursor string
+		Limit      int
+	}{
+		Ctx:        ctx,
+		AuthorId:   authorId,
+		NextCursor: nextCursor,
+		Limit:      limit,
+	}
+	mock.lockGetByAuthorId.Lock()
+	mock.calls.GetByAuthorId = append(mock.calls.GetByAuthorId, callInfo)
+	mock.lockGetByAuthorId.Unlock()
+	return mock.GetByAuthorIdFunc(ctx, authorId, nextCursor, limit)
+}
+
+// GetByAuthorIdCalls gets all the calls that were made to GetByAuthorId.
+// Check the length with:
+//
+//	len(mockedReviewRepository.GetByAuthorIdCalls())
+func (mock *ReviewRepositoryMock) GetByAuthorIdCalls() []struct {
+	Ctx        context.Context
+	AuthorId   entity.UserId
+	NextCursor string
+	Limit      int
+} {
+	var calls []struct {
+		Ctx        context.Context
+		AuthorId   entity.UserId
+		NextCursor string
+		Limit      int
+	}
+	mock.lockGetByAuthorId.RLock()
+	calls = mock.calls.GetByAuthorId
+	mock.lockGetByAuthorId.RUnlock()
+	return calls
 }
 
 // GetById calls GetByIdFunc.
@@ -144,6 +206,9 @@ var _ AlbumRepository = &AlbumRepositoryMock{}
 //			GetByIdFunc: func(ctx context.Context, albumId string) (*entity.Album, error) {
 //				panic("mock out the GetById method")
 //			},
+//			GetByIdsFunc: func(ctx context.Context, albumIds []string) ([]*entity.Album, error) {
+//				panic("mock out the GetByIds method")
+//			},
 //		}
 //
 //		// use mockedAlbumRepository in code that requires AlbumRepository
@@ -154,6 +219,9 @@ type AlbumRepositoryMock struct {
 	// GetByIdFunc mocks the GetById method.
 	GetByIdFunc func(ctx context.Context, albumId string) (*entity.Album, error)
 
+	// GetByIdsFunc mocks the GetByIds method.
+	GetByIdsFunc func(ctx context.Context, albumIds []string) ([]*entity.Album, error)
+
 	// calls tracks calls to the methods.
 	calls struct {
 		// GetById holds details about calls to the GetById method.
@@ -163,8 +231,16 @@ type AlbumRepositoryMock struct {
 			// AlbumId is the albumId argument value.
 			AlbumId string
 		}
+		// GetByIds holds details about calls to the GetByIds method.
+		GetByIds []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// AlbumIds is the albumIds argument value.
+			AlbumIds []string
+		}
 	}
-	lockGetById sync.RWMutex
+	lockGetById  sync.RWMutex
+	lockGetByIds sync.RWMutex
 }
 
 // GetById calls GetByIdFunc.
@@ -200,6 +276,42 @@ func (mock *AlbumRepositoryMock) GetByIdCalls() []struct {
 	mock.lockGetById.RLock()
 	calls = mock.calls.GetById
 	mock.lockGetById.RUnlock()
+	return calls
+}
+
+// GetByIds calls GetByIdsFunc.
+func (mock *AlbumRepositoryMock) GetByIds(ctx context.Context, albumIds []string) ([]*entity.Album, error) {
+	if mock.GetByIdsFunc == nil {
+		panic("AlbumRepositoryMock.GetByIdsFunc: method is nil but AlbumRepository.GetByIds was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		AlbumIds []string
+	}{
+		Ctx:      ctx,
+		AlbumIds: albumIds,
+	}
+	mock.lockGetByIds.Lock()
+	mock.calls.GetByIds = append(mock.calls.GetByIds, callInfo)
+	mock.lockGetByIds.Unlock()
+	return mock.GetByIdsFunc(ctx, albumIds)
+}
+
+// GetByIdsCalls gets all the calls that were made to GetByIds.
+// Check the length with:
+//
+//	len(mockedAlbumRepository.GetByIdsCalls())
+func (mock *AlbumRepositoryMock) GetByIdsCalls() []struct {
+	Ctx      context.Context
+	AlbumIds []string
+} {
+	var calls []struct {
+		Ctx      context.Context
+		AlbumIds []string
+	}
+	mock.lockGetByIds.RLock()
+	calls = mock.calls.GetByIds
+	mock.lockGetByIds.RUnlock()
 	return calls
 }
 
