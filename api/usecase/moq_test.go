@@ -202,3 +202,75 @@ func (mock *AlbumRepositoryMock) GetByIdCalls() []struct {
 	mock.lockGetById.RUnlock()
 	return calls
 }
+
+// Ensure, that UserRepositoryMock does implement UserRepository.
+// If this is not the case, regenerate this file with moq.
+var _ UserRepository = &UserRepositoryMock{}
+
+// UserRepositoryMock is a mock implementation of UserRepository.
+//
+//	func TestSomethingThatUsesUserRepository(t *testing.T) {
+//
+//		// make and configure a mocked UserRepository
+//		mockedUserRepository := &UserRepositoryMock{
+//			GetByIdFunc: func(ctx context.Context, userId entity.UserId) (*entity.User, error) {
+//				panic("mock out the GetById method")
+//			},
+//		}
+//
+//		// use mockedUserRepository in code that requires UserRepository
+//		// and then make assertions.
+//
+//	}
+type UserRepositoryMock struct {
+	// GetByIdFunc mocks the GetById method.
+	GetByIdFunc func(ctx context.Context, userId entity.UserId) (*entity.User, error)
+
+	// calls tracks calls to the methods.
+	calls struct {
+		// GetById holds details about calls to the GetById method.
+		GetById []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// UserId is the userId argument value.
+			UserId entity.UserId
+		}
+	}
+	lockGetById sync.RWMutex
+}
+
+// GetById calls GetByIdFunc.
+func (mock *UserRepositoryMock) GetById(ctx context.Context, userId entity.UserId) (*entity.User, error) {
+	if mock.GetByIdFunc == nil {
+		panic("UserRepositoryMock.GetByIdFunc: method is nil but UserRepository.GetById was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		UserId entity.UserId
+	}{
+		Ctx:    ctx,
+		UserId: userId,
+	}
+	mock.lockGetById.Lock()
+	mock.calls.GetById = append(mock.calls.GetById, callInfo)
+	mock.lockGetById.Unlock()
+	return mock.GetByIdFunc(ctx, userId)
+}
+
+// GetByIdCalls gets all the calls that were made to GetById.
+// Check the length with:
+//
+//	len(mockedUserRepository.GetByIdCalls())
+func (mock *UserRepositoryMock) GetByIdCalls() []struct {
+	Ctx    context.Context
+	UserId entity.UserId
+} {
+	var calls []struct {
+		Ctx    context.Context
+		UserId entity.UserId
+	}
+	mock.lockGetById.RLock()
+	calls = mock.calls.GetById
+	mock.lockGetById.RUnlock()
+	return calls
+}
