@@ -13,6 +13,9 @@ import (
 func TestReviewUseCase_Store(t *testing.T) {
 	t.Parallel()
 
+	in := fixture.Review(nil)
+	in.ReviewId = "" // 入力時はReviewIdが設定されていない
+
 	type args struct {
 		ctx    context.Context
 		review *entity.Review
@@ -20,34 +23,53 @@ func TestReviewUseCase_Store(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
+		want    *entity.Review
 		wantErr bool
 	}{
 		{
 			name: "正常系",
 			args: args{
 				ctx:    context.Background(),
-				review: fixture.Review(nil),
+				review: in,
 			},
+			want:    fixture.Review(in),
 			wantErr: false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			moqReviewRepo := &ReviewRepositoryMock{}
-			moqReviewRepo.StoreFunc = func(pctx context.Context, review *entity.Review) error {
+			moqUserRepo := &UserRepositoryMock{}
+			moqAlbumRepo := &AlbumRepositoryMock{}
+			moqReviewRepo.StoreFunc = func(pctx context.Context, review *entity.Review) (*entity.Review, error) {
 				assert.Equal(t, tt.args.ctx, pctx)
 				assert.Equal(t, tt.args.review, review)
-				return nil
+				return tt.want, nil
+			}
+			moqUserRepo.GetByIdFunc = func(pctx context.Context, userId entity.UserId) (*entity.User, error) {
+				assert.Equal(t, tt.args.ctx, pctx)
+				assert.Equal(t, tt.want.Author.UserId, userId)
+				return tt.want.Author, nil
+			}
+			moqAlbumRepo.GetByIdFunc = func(pctx context.Context, albumId string) (*entity.Album, error) {
+				assert.Equal(t, tt.args.ctx, pctx)
+				assert.Equal(t, tt.want.Album.AlbumId, albumId)
+				return tt.want.Album, nil
 			}
 
 			uc := &ReviewUseCase{
 				reviewRepo: moqReviewRepo,
+				albumRepo:  moqAlbumRepo,
+				userRepo:   moqUserRepo,
 			}
-			if err := uc.Store(tt.args.ctx, tt.args.review); (err != nil) != tt.wantErr {
+			got, err := uc.Store(tt.args.ctx, tt.args.review)
+			if (err != nil) != tt.wantErr {
 				t.Errorf("ReviewUseCase.Store() error = %v, wantErr %v", err, tt.wantErr)
+				return
 			}
-			assert.Equal(t, 1, len(moqReviewRepo.calls.Store))
-			assert.Equal(t, tt.args.review, moqReviewRepo.calls.Store[0].Review)
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("ReviewUseCase.Store() = %v, want %v", got, tt.want)
+			}
 		})
 	}
 }

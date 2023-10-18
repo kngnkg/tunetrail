@@ -22,7 +22,7 @@ var _ ReviewRepository = &ReviewRepositoryMock{}
 //			GetByIdFunc: func(ctx context.Context, reviewId string) (*entity.Review, error) {
 //				panic("mock out the GetById method")
 //			},
-//			StoreFunc: func(ctx context.Context, review *entity.Review) error {
+//			StoreFunc: func(ctx context.Context, review *entity.Review) (*entity.Review, error) {
 //				panic("mock out the Store method")
 //			},
 //		}
@@ -36,7 +36,7 @@ type ReviewRepositoryMock struct {
 	GetByIdFunc func(ctx context.Context, reviewId string) (*entity.Review, error)
 
 	// StoreFunc mocks the Store method.
-	StoreFunc func(ctx context.Context, review *entity.Review) error
+	StoreFunc func(ctx context.Context, review *entity.Review) (*entity.Review, error)
 
 	// calls tracks calls to the methods.
 	calls struct {
@@ -96,7 +96,7 @@ func (mock *ReviewRepositoryMock) GetByIdCalls() []struct {
 }
 
 // Store calls StoreFunc.
-func (mock *ReviewRepositoryMock) Store(ctx context.Context, review *entity.Review) error {
+func (mock *ReviewRepositoryMock) Store(ctx context.Context, review *entity.Review) (*entity.Review, error) {
 	if mock.StoreFunc == nil {
 		panic("ReviewRepositoryMock.StoreFunc: method is nil but ReviewRepository.Store was just called")
 	}
