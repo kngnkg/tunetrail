@@ -10,16 +10,15 @@ import (
 
 func User(u *entity.User) *entity.User {
 	result := &entity.User{
-		UserId:          entity.UserId(testutil.GenRandomUUID()),
-		DisplayId:       "display_id" + testutil.GenRamdomString(5),
-		Name:            "name",
-		AvatarUrl:       "https://example.com/avatar.png",
-		Bio:             "bio",
-		FollowersCount:  rand.Int(),
-		FollowingCount:  rand.Int(),
-		FollowingGenres: []string{"genre1", "genre2"},
-		CreatedAt:       time.Now(),
-		UpdatedAt:       time.Now(),
+		UserId:         entity.UserId(testutil.GenRandomUUID()),
+		DisplayId:      "display_id" + testutil.GenRamdomString(5),
+		Name:           "name",
+		AvatarUrl:      "https://example.com/avatar.png",
+		Bio:            "bio",
+		FollowersCount: rand.Int(),
+		FollowingCount: rand.Int(),
+		CreatedAt:      time.Now(),
+		UpdatedAt:      time.Now(),
 	}
 	if u == nil {
 		return result
@@ -44,9 +43,6 @@ func User(u *entity.User) *entity.User {
 	}
 	if u.FollowingCount != 0 {
 		result.FollowingCount = u.FollowingCount
-	}
-	if u.FollowingGenres != nil {
-		result.FollowingGenres = u.FollowingGenres
 	}
 	if !u.CreatedAt.IsZero() {
 		result.CreatedAt = u.CreatedAt
