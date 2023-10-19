@@ -19,6 +19,9 @@ var _ ReviewRepository = &ReviewRepositoryMock{}
 //
 //		// make and configure a mocked ReviewRepository
 //		mockedReviewRepository := &ReviewRepositoryMock{
+//			DeleteByIdFunc: func(ctx context.Context, reviewId string) error {
+//				panic("mock out the DeleteById method")
+//			},
 //			GetByAuthorIdFunc: func(ctx context.Context, authorId entity.UserId, nextCursor string, limit int) ([]*entity.Review, string, error) {
 //				panic("mock out the GetByAuthorId method")
 //			},
@@ -28,6 +31,9 @@ var _ ReviewRepository = &ReviewRepositoryMock{}
 //			StoreFunc: func(ctx context.Context, review *entity.Review) (*entity.Review, error) {
 //				panic("mock out the Store method")
 //			},
+//			UpdateFunc: func(ctx context.Context, review *entity.Review) (*entity.Review, error) {
+//				panic("mock out the Update method")
+//			},
 //		}
 //
 //		// use mockedReviewRepository in code that requires ReviewRepository
@@ -35,6 +41,9 @@ var _ ReviewRepository = &ReviewRepositoryMock{}
 //
 //	}
 type ReviewRepositoryMock struct {
+	// DeleteByIdFunc mocks the DeleteById method.
+	DeleteByIdFunc func(ctx context.Context, reviewId string) error
+
 	// GetByAuthorIdFunc mocks the GetByAuthorId method.
 	GetByAuthorIdFunc func(ctx context.Context, authorId entity.UserId, nextCursor string, limit int) ([]*entity.Review, string, error)
 
@@ -44,8 +53,18 @@ type ReviewRepositoryMock struct {
 	// StoreFunc mocks the Store method.
 	StoreFunc func(ctx context.Context, review *entity.Review) (*entity.Review, error)
 
+	// UpdateFunc mocks the Update method.
+	UpdateFunc func(ctx context.Context, review *entity.Review) (*entity.Review, error)
+
 	// calls tracks calls to the methods.
 	calls struct {
+		// DeleteById holds details about calls to the DeleteById method.
+		DeleteById []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ReviewId is the reviewId argument value.
+			ReviewId string
+		}
 		// GetByAuthorId holds details about calls to the GetByAuthorId method.
 		GetByAuthorId []struct {
 			// Ctx is the ctx argument value.
@@ -71,10 +90,55 @@ type ReviewRepositoryMock struct {
 			// Review is the review argument value.
 			Review *entity.Review
 		}
+		// Update holds details about calls to the Update method.
+		Update []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Review is the review argument value.
+			Review *entity.Review
+		}
 	}
+	lockDeleteById    sync.RWMutex
 	lockGetByAuthorId sync.RWMutex
 	lockGetById       sync.RWMutex
 	lockStore         sync.RWMutex
+	lockUpdate        sync.RWMutex
+}
+
+// DeleteById calls DeleteByIdFunc.
+func (mock *ReviewRepositoryMock) DeleteById(ctx context.Context, reviewId string) error {
+	if mock.DeleteByIdFunc == nil {
+		panic("ReviewRepositoryMock.DeleteByIdFunc: method is nil but ReviewRepository.DeleteById was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		ReviewId string
+	}{
+		Ctx:      ctx,
+		ReviewId: reviewId,
+	}
+	mock.lockDeleteById.Lock()
+	mock.calls.DeleteById = append(mock.calls.DeleteById, callInfo)
+	mock.lockDeleteById.Unlock()
+	return mock.DeleteByIdFunc(ctx, reviewId)
+}
+
+// DeleteByIdCalls gets all the calls that were made to DeleteById.
+// Check the length with:
+//
+//	len(mockedReviewRepository.DeleteByIdCalls())
+func (mock *ReviewRepositoryMock) DeleteByIdCalls() []struct {
+	Ctx      context.Context
+	ReviewId string
+} {
+	var calls []struct {
+		Ctx      context.Context
+		ReviewId string
+	}
+	mock.lockDeleteById.RLock()
+	calls = mock.calls.DeleteById
+	mock.lockDeleteById.RUnlock()
+	return calls
 }
 
 // GetByAuthorId calls GetByAuthorIdFunc.
@@ -190,6 +254,42 @@ func (mock *ReviewRepositoryMock) StoreCalls() []struct {
 	mock.lockStore.RLock()
 	calls = mock.calls.Store
 	mock.lockStore.RUnlock()
+	return calls
+}
+
+// Update calls UpdateFunc.
+func (mock *ReviewRepositoryMock) Update(ctx context.Context, review *entity.Review) (*entity.Review, error) {
+	if mock.UpdateFunc == nil {
+		panic("ReviewRepositoryMock.UpdateFunc: method is nil but ReviewRepository.Update was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		Review *entity.Review
+	}{
+		Ctx:    ctx,
+		Review: review,
+	}
+	mock.lockUpdate.Lock()
+	mock.calls.Update = append(mock.calls.Update, callInfo)
+	mock.lockUpdate.Unlock()
+	return mock.UpdateFunc(ctx, review)
+}
+
+// UpdateCalls gets all the calls that were made to Update.
+// Check the length with:
+//
+//	len(mockedReviewRepository.UpdateCalls())
+func (mock *ReviewRepositoryMock) UpdateCalls() []struct {
+	Ctx    context.Context
+	Review *entity.Review
+} {
+	var calls []struct {
+		Ctx    context.Context
+		Review *entity.Review
+	}
+	mock.lockUpdate.RLock()
+	calls = mock.calls.Update
+	mock.lockUpdate.RUnlock()
 	return calls
 }
 

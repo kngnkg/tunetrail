@@ -2,10 +2,12 @@ package usecase
 
 import (
 	"context"
+	"log/slog"
 	"reflect"
 	"testing"
 
 	"github.com/kngnkg/tunetrail/api/entity"
+	"github.com/kngnkg/tunetrail/api/logger"
 	"github.com/kngnkg/tunetrail/api/testutil"
 	"github.com/kngnkg/tunetrail/api/testutil/fixture"
 	"github.com/stretchr/testify/assert"
@@ -207,7 +209,13 @@ func TestReviewUseCase_GetByAuthorId(t *testing.T) {
 				albumRepo:  moqAlbumRepo,
 				userRepo:   moqUserRepo,
 			}
-			got, gotCursor, err := uc.GetByAuthorId(tt.args.ctx, tt.args.authorId, tt.args.nextCursor, tt.args.limit)
+
+			l := logger.New(&logger.LoggerOptions{
+				Level: slog.LevelDebug,
+			})
+			ctx := logger.WithContent(tt.args.ctx, l)
+
+			got, gotCursor, err := uc.GetByAuthorId(ctx, tt.args.authorId, tt.args.nextCursor, tt.args.limit)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ReviewUseCase.GetByAuthorId() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -217,6 +225,101 @@ func TestReviewUseCase_GetByAuthorId(t *testing.T) {
 			}
 			if gotCursor != tt.wantCursor {
 				t.Errorf("ReviewUseCase.GetByAuthorId() gotCursor = %v, want %v", gotCursor, tt.wantCursor)
+			}
+		})
+	}
+}
+
+func TestReviewUseCase_Update(t *testing.T) {
+	t.Parallel()
+
+	in := fixture.Review(nil)
+
+	type args struct {
+		ctx    context.Context
+		review *entity.Review
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    *entity.Review
+		wantErr bool
+	}{
+		{
+			name: "正常系",
+			args: args{
+				ctx:    context.Background(),
+				review: in,
+			},
+			want:    in,
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			moqReviewRepo := &ReviewRepositoryMock{}
+			moqUserRepo := &UserRepositoryMock{}
+			moqAlbumRepo := &AlbumRepositoryMock{}
+			moqReviewRepo.UpdateFunc = func(pctx context.Context, review *entity.Review) (*entity.Review, error) {
+				return tt.want, nil
+			}
+			moqUserRepo.GetByIdFunc = func(pctx context.Context, userId entity.UserId) (*entity.User, error) {
+				return tt.want.Author, nil
+			}
+			moqAlbumRepo.GetByIdFunc = func(pctx context.Context, albumId string) (*entity.Album, error) {
+				return tt.want.Album, nil
+			}
+
+			uc := &ReviewUseCase{
+				reviewRepo: moqReviewRepo,
+				albumRepo:  moqAlbumRepo,
+				userRepo:   moqUserRepo,
+			}
+			got, err := uc.Update(tt.args.ctx, tt.args.review)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("ReviewUseCase.Update() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("ReviewUseCase.Update() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestReviewUseCase_DeleteById(t *testing.T) {
+	t.Parallel()
+
+	type args struct {
+		ctx      context.Context
+		reviewId string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantErr bool
+	}{
+		{
+			name: "正常系",
+			args: args{
+				ctx:      context.Background(),
+				reviewId: "reviewId",
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			moqReviewRepo := &ReviewRepositoryMock{}
+			moqReviewRepo.DeleteByIdFunc = func(pctx context.Context, reviewId string) error {
+				return nil
+			}
+
+			uc := &ReviewUseCase{
+				reviewRepo: moqReviewRepo,
+			}
+			if err := uc.DeleteById(tt.args.ctx, tt.args.reviewId); (err != nil) != tt.wantErr {
+				t.Errorf("ReviewUseCase.DeleteById() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}
