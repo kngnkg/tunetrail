@@ -37,7 +37,7 @@ func TestReviewUseCase_Store(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    *entity.Review
+		want    *ReviewResponse
 		wantErr bool
 	}{
 		{
@@ -46,7 +46,7 @@ func TestReviewUseCase_Store(t *testing.T) {
 				ctx:    context.Background(),
 				review: in,
 			},
-			want:    fixture.Review(in),
+			want:    &ReviewResponse{Review: fixture.Review(in)},
 			wantErr: false,
 		},
 	}
@@ -58,17 +58,17 @@ func TestReviewUseCase_Store(t *testing.T) {
 			moqReviewRepo.StoreFunc = func(pctx context.Context, review *entity.Review) (*entity.Review, error) {
 				assert.Equal(t, tt.args.ctx, pctx)
 				assert.Equal(t, tt.args.review, review)
-				return tt.want, nil
+				return tt.want.Review, nil
 			}
 			moqUserRepo.GetByIdFunc = func(pctx context.Context, userId entity.UserId) (*entity.User, error) {
 				assert.Equal(t, tt.args.ctx, pctx)
-				assert.Equal(t, tt.want.Author.UserId, userId)
-				return tt.want.Author, nil
+				assert.Equal(t, tt.want.Review.Author.UserId, userId)
+				return tt.want.Review.Author, nil
 			}
 			moqAlbumRepo.GetByIdFunc = func(pctx context.Context, albumId string) (*entity.Album, error) {
 				assert.Equal(t, tt.args.ctx, pctx)
-				assert.Equal(t, tt.want.Album.AlbumId, albumId)
-				return tt.want.Album, nil
+				assert.Equal(t, tt.want.Review.Album.AlbumId, albumId)
+				return tt.want.Review.Album, nil
 			}
 
 			uc := &ReviewUseCase{
@@ -100,7 +100,7 @@ func TestReviewUseCase_GetById(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    *entity.Review
+		want    *ReviewResponse
 		wantErr bool
 	}{
 		{
@@ -109,7 +109,9 @@ func TestReviewUseCase_GetById(t *testing.T) {
 				ctx:      context.Background(),
 				reviewId: wantReviewId,
 			},
-			want:    fixture.Review(&entity.Review{ReviewId: wantReviewId}),
+			want: &ReviewResponse{
+				Review: fixture.Review(&entity.Review{ReviewId: wantReviewId}),
+			},
 			wantErr: false,
 		},
 	}
@@ -121,17 +123,17 @@ func TestReviewUseCase_GetById(t *testing.T) {
 			moqReviewRepo.GetByIdFunc = func(pctx context.Context, reviewId string) (*entity.Review, error) {
 				assert.Equal(t, tt.args.ctx, pctx)
 				assert.Equal(t, tt.args.reviewId, reviewId)
-				return tt.want, nil
+				return tt.want.Review, nil
 			}
 			moqUserRepo.GetByIdFunc = func(pctx context.Context, userId entity.UserId) (*entity.User, error) {
 				assert.Equal(t, tt.args.ctx, pctx)
-				assert.Equal(t, tt.want.Author.UserId, userId)
-				return tt.want.Author, nil
+				assert.Equal(t, tt.want.Review.Author.UserId, userId)
+				return tt.want.Review.Author, nil
 			}
 			moqAlbumRepo.GetByIdFunc = func(pctx context.Context, albumId string) (*entity.Album, error) {
 				assert.Equal(t, tt.args.ctx, pctx)
-				assert.Equal(t, tt.want.Album.AlbumId, albumId)
-				return tt.want.Album, nil
+				assert.Equal(t, tt.want.Review.Album.AlbumId, albumId)
+				return tt.want.Review.Album, nil
 			}
 
 			uc := &ReviewUseCase{
@@ -163,7 +165,7 @@ func TestReviewUseCase_GetByAuthorId(t *testing.T) {
 	tests := []struct {
 		name       string
 		args       args
-		want       []*entity.Review
+		want       *ReviewListResponse
 		wantCursor string
 		wantErr    bool
 	}{
@@ -175,7 +177,9 @@ func TestReviewUseCase_GetByAuthorId(t *testing.T) {
 				nextCursor: "",
 				limit:      10,
 			},
-			want:       prepareReviews(t),
+			want: &ReviewListResponse{
+				Reviews: prepareReviews(t), NextCursor: "",
+			},
 			wantCursor: testutil.GenRandomUUID(),
 			wantErr:    false,
 		},
@@ -186,17 +190,17 @@ func TestReviewUseCase_GetByAuthorId(t *testing.T) {
 			moqAlbumRepo := &AlbumRepositoryMock{}
 			moqUserRepo := &UserRepositoryMock{}
 			moqReviewRepo.GetByAuthorIdFunc = func(pctx context.Context, authorId entity.UserId, nextCursor string, limit int) ([]*entity.Review, string, error) {
-				return tt.want, tt.wantCursor, nil
+				return tt.want.Reviews, tt.wantCursor, nil
 			}
 			moqAlbumRepo.GetByIdsFunc = func(pctx context.Context, albumIds []string) ([]*entity.Album, error) {
 				var as []*entity.Album
-				for _, r := range tt.want {
+				for _, r := range tt.want.Reviews {
 					as = append(as, r.Album)
 				}
 				return as, nil
 			}
 			moqUserRepo.GetByIdFunc = func(pctx context.Context, userId entity.UserId) (*entity.User, error) {
-				for _, r := range tt.want {
+				for _, r := range tt.want.Reviews {
 					if r.Author.UserId == userId {
 						return r.Author, nil
 					}
@@ -215,17 +219,12 @@ func TestReviewUseCase_GetByAuthorId(t *testing.T) {
 			})
 			ctx := logger.WithContent(tt.args.ctx, l)
 
-			got, gotCursor, err := uc.GetByAuthorId(ctx, tt.args.authorId, tt.args.nextCursor, tt.args.limit)
+			got, err := uc.GetByAuthorId(ctx, tt.args.authorId, tt.args.nextCursor, tt.args.limit)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ReviewUseCase.GetByAuthorId() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("ReviewUseCase.GetByAuthorId() got = %v, want %v", got, tt.want)
-			}
-			if gotCursor != tt.wantCursor {
-				t.Errorf("ReviewUseCase.GetByAuthorId() gotCursor = %v, want %v", gotCursor, tt.wantCursor)
-			}
+			assert.Equal(t, tt.want.Reviews, got.Reviews)
 		})
 	}
 }
@@ -242,7 +241,7 @@ func TestReviewUseCase_Update(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    *entity.Review
+		want    *ReviewResponse
 		wantErr bool
 	}{
 		{
@@ -251,7 +250,7 @@ func TestReviewUseCase_Update(t *testing.T) {
 				ctx:    context.Background(),
 				review: in,
 			},
-			want:    in,
+			want:    &ReviewResponse{Review: in},
 			wantErr: false,
 		},
 	}
@@ -261,13 +260,13 @@ func TestReviewUseCase_Update(t *testing.T) {
 			moqUserRepo := &UserRepositoryMock{}
 			moqAlbumRepo := &AlbumRepositoryMock{}
 			moqReviewRepo.UpdateFunc = func(pctx context.Context, review *entity.Review) (*entity.Review, error) {
-				return tt.want, nil
+				return tt.want.Review, nil
 			}
 			moqUserRepo.GetByIdFunc = func(pctx context.Context, userId entity.UserId) (*entity.User, error) {
-				return tt.want.Author, nil
+				return tt.want.Review.Author, nil
 			}
 			moqAlbumRepo.GetByIdFunc = func(pctx context.Context, albumId string) (*entity.Album, error) {
-				return tt.want.Album, nil
+				return tt.want.Review.Album, nil
 			}
 
 			uc := &ReviewUseCase{
