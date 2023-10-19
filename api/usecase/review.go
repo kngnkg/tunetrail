@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/kngnkg/tunetrail/api/entity"
-	"github.com/kngnkg/tunetrail/api/logger"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -15,7 +14,16 @@ type ReviewUseCase struct {
 	userRepo   UserRepository
 }
 
-func (uc *ReviewUseCase) Store(ctx context.Context, review *entity.Review) (*entity.Review, error) {
+type ReviewResponse struct {
+	Review *entity.Review
+}
+
+type ReviewListResponse struct {
+	Reviews    []*entity.Review
+	NextCursor string
+}
+
+func (uc *ReviewUseCase) Store(ctx context.Context, review *entity.Review) (*ReviewResponse, error) {
 	r, err := uc.reviewRepo.Store(ctx, review)
 	if err != nil {
 		return nil, err
@@ -26,18 +34,28 @@ func (uc *ReviewUseCase) Store(ctx context.Context, review *entity.Review) (*ent
 		return nil, err
 	}
 
-	r.Author = author
-
 	album, err := uc.albumRepo.GetById(ctx, r.Album.AlbumId)
 	if err != nil {
 		return nil, err
 	}
 
-	r.Album = album
-	return r, nil
+	resp := &ReviewResponse{
+		Review: &entity.Review{
+			ReviewId:        r.ReviewId,
+			PublishedStatus: r.PublishedStatus,
+			Author:          author,
+			Album:           album,
+			Title:           r.Title,
+			Content:         r.Content,
+			LikesCount:      r.LikesCount,
+			CreatedAt:       r.CreatedAt,
+			UpdatedAt:       r.UpdatedAt,
+		},
+	}
+	return resp, nil
 }
 
-func (uc *ReviewUseCase) GetById(ctx context.Context, reviewId string) (*entity.Review, error) {
+func (uc *ReviewUseCase) GetById(ctx context.Context, reviewId string) (*ReviewResponse, error) {
 	r, err := uc.reviewRepo.GetById(ctx, reviewId)
 	if err != nil {
 		return nil, err
@@ -48,21 +66,31 @@ func (uc *ReviewUseCase) GetById(ctx context.Context, reviewId string) (*entity.
 		return nil, err
 	}
 
-	r.Author = author
-
 	album, err := uc.albumRepo.GetById(ctx, r.Album.AlbumId)
 	if err != nil {
 		return nil, err
 	}
 
-	r.Album = album
-	return r, nil
+	resp := &ReviewResponse{
+		Review: &entity.Review{
+			ReviewId:        r.ReviewId,
+			PublishedStatus: r.PublishedStatus,
+			Author:          author,
+			Album:           album,
+			Title:           r.Title,
+			Content:         r.Content,
+			LikesCount:      r.LikesCount,
+			CreatedAt:       r.CreatedAt,
+			UpdatedAt:       r.UpdatedAt,
+		},
+	}
+	return resp, nil
 }
 
-func (uc *ReviewUseCase) GetByAuthorId(ctx context.Context, authorId entity.UserId, nextCursor string, limit int) ([]*entity.Review, string, error) {
+func (uc *ReviewUseCase) GetByAuthorId(ctx context.Context, authorId entity.UserId, nextCursor string, limit int) (*ReviewListResponse, error) {
 	rs, nc, err := uc.reviewRepo.GetByAuthorId(ctx, authorId, nextCursor, limit)
 	if err != nil {
-		return nil, "", err
+		return nil, err
 	}
 
 	// アルバムIDのスライスを作成する
@@ -90,27 +118,40 @@ func (uc *ReviewUseCase) GetByAuthorId(ctx context.Context, authorId entity.User
 		return nil
 	})
 
+	var author *entity.User
 	// ユーザー情報を取得する
-	rs, err = uc.fillUserInfo(ctx, rs)
-	if err != nil {
-		return nil, "", err
-	}
+	eg.Go(func() error {
+		a, err := uc.userRepo.GetById(ctx, authorId)
+		if err != nil {
+			return err
+		}
+
+		author = a
+		return nil
+	})
 
 	if err := eg.Wait(); err != nil {
-		return nil, "", err
+		return nil, err
 	}
 
-	// アルバム情報を埋め込む
 	for _, r := range rs {
+		// アルバム情報を埋め込む
 		if album, ok := albumMap[r.Album.AlbumId]; ok {
 			r.Album = album
 		}
+
+		// ユーザー情報を埋め込む
+		r.Author = author
 	}
 
-	return rs, nc, nil
+	resp := &ReviewListResponse{
+		Reviews:    rs,
+		NextCursor: nc,
+	}
+	return resp, nil
 }
 
-func (uc *ReviewUseCase) Update(ctx context.Context, review *entity.Review) (*entity.Review, error) {
+func (uc *ReviewUseCase) Update(ctx context.Context, review *entity.Review) (*ReviewResponse, error) {
 	r, err := uc.reviewRepo.Update(ctx, review)
 	if err != nil {
 		return nil, err
@@ -121,61 +162,27 @@ func (uc *ReviewUseCase) Update(ctx context.Context, review *entity.Review) (*en
 		return nil, err
 	}
 
-	r.Author = author
-
 	album, err := uc.albumRepo.GetById(ctx, r.Album.AlbumId)
 	if err != nil {
 		return nil, err
 	}
 
-	r.Album = album
-	return r, nil
+	resp := &ReviewResponse{
+		Review: &entity.Review{
+			ReviewId:        r.ReviewId,
+			PublishedStatus: r.PublishedStatus,
+			Author:          author,
+			Album:           album,
+			Title:           r.Title,
+			Content:         r.Content,
+			LikesCount:      r.LikesCount,
+			CreatedAt:       r.CreatedAt,
+			UpdatedAt:       r.UpdatedAt,
+		},
+	}
+	return resp, nil
 }
 
 func (uc *ReviewUseCase) DeleteById(ctx context.Context, reviewId string) error {
 	return uc.reviewRepo.DeleteById(ctx, reviewId)
-}
-
-func (uc *ReviewUseCase) fillUserInfo(ctx context.Context, reviews []*entity.Review) ([]*entity.Review, error) {
-	eg, ctx := errgroup.WithContext(ctx)
-
-	// 取得済みのユーザー情報を格納するマップ
-	authorMap := make(map[entity.UserId]*entity.User)
-
-	authorCh := make(chan *entity.User, len(reviews))
-	for _, r := range reviews {
-		review := r
-		eg.Go(func() error {
-			author, err := uc.userRepo.GetById(ctx, review.Author.UserId)
-			if err != nil {
-				return err
-			}
-
-			authorCh <- author
-			return nil
-		})
-	}
-
-	// デッドロックを防ぐために、別のゴルーチンでチャネルを閉じる
-	go func(ctx context.Context) {
-		if err := eg.Wait(); err != nil {
-			logger.FromContent(ctx).Error("failed to wait for user retrieval goroutines", err)
-			return
-		}
-
-		close(authorCh)
-	}(ctx)
-
-	// チャネルから取り出す
-	for user := range authorCh {
-		authorMap[user.UserId] = user
-	}
-
-	// ユーザー情報を埋め込む
-	for _, r := range reviews {
-		if user, ok := authorMap[r.Author.UserId]; ok {
-			r.Author = user
-		}
-	}
-	return reviews, nil
 }
