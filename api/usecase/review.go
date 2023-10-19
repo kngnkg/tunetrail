@@ -8,24 +8,6 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-//go:generate go run github.com/matryer/moq -out moq_test.go . ReviewRepository AlbumRepository UserRepository
-type ReviewRepository interface {
-	Store(ctx context.Context, review *entity.Review) (*entity.Review, error)
-	GetById(ctx context.Context, reviewId string) (*entity.Review, error)
-	GetByAuthorId(ctx context.Context, authorId entity.UserId, nextCursor string, limit int) ([]*entity.Review, string, error)
-	Update(ctx context.Context, review *entity.Review) (*entity.Review, error)
-	DeleteById(ctx context.Context, reviewId string) error
-}
-
-type AlbumRepository interface {
-	GetById(ctx context.Context, albumId string) (*entity.Album, error)
-	GetByIds(ctx context.Context, albumIds []string) ([]*entity.Album, error)
-}
-
-type UserRepository interface {
-	GetById(ctx context.Context, userId entity.UserId) (*entity.User, error)
-}
-
 //go:generate go run github.com/cweill/gotests/... -exported -w review_test.go review.go
 type ReviewUseCase struct {
 	reviewRepo ReviewRepository
