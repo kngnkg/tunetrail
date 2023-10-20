@@ -1,7 +1,8 @@
 repository: kngnkg/tunetrail/api
 
 coverage:
-  if: true
+  paths:
+    - api/coverage.out
 codeToTestRatio:
   code:
     - "**/*.go"

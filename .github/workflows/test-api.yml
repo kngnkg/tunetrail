@@ -30,5 +30,6 @@ jobs:
 
       - name: Run tests with coverage report output
         run: go test ./... -coverprofile=coverage.out
+
       - name: create report
         uses: k1LoW/octocov-action@v0
