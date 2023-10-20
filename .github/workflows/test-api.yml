@@ -12,13 +12,12 @@ on:
       - "**/*.go"
       - .github/workflows/test-go.yml
 
-defaults:
-  run:
-    working-directory: ./api
-
 jobs:
   test:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./api
     env:
       GITHUB_TOKEN: ${{ github.token }}
     steps:
@@ -28,7 +27,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version-file: ./api/go.mod
+          go-version-file: ./go.mod
 
       - name: Run tests with coverage report output
         run: go test ./... -coverprofile=coverage.out
