@@ -1,4 +1,4 @@
-name: Test for api
+name: Test for JavaScript and TypeScript
 
 on:
   push:
@@ -33,7 +33,7 @@ jobs:
       - name: setup Node
         uses: actions/setup-node@v3
         with:
-          node-version-file: ./web/package.json
+          node-version: 18
 
       - name: install dependencies
         run: npm ci
