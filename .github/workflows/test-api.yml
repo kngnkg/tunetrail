@@ -1,0 +1,34 @@
+name: Test for api
+
+on:
+  push:
+    # branches:
+    #   - "main"
+    paths:
+      - "**/*.go"
+      - .github/workflows/test-go.yml
+  pull_request:
+    paths:
+      - "**/*.go"
+      - .github/workflows/test-go.yml
+
+defaults:
+  run:
+    working-directory: ./api
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version-file: ./api/go.mod
+
+      - name: Run tests with coverage report output
+        run: go test ./... -coverprofile=coverage.out
+      - name: create report
+        uses: k1LoW/octocov-action@v0
