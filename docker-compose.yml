@@ -22,6 +22,6 @@ services:
       dockerfile: ./docker/grpc/Dockerfile
     tty: true
     volumes:
-      - ./api:/app
+      - ./backend:/app
     ports:
       - 50051:50051

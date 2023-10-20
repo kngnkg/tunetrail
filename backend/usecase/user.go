@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/kngnkg/tunetrail/api/entity"
+	"github.com/kngnkg/tunetrail/backend/entity"
 )
 
 type UserUseCase struct {

@@ -1,4 +1,4 @@
-module github.com/kngnkg/tunetrail/api
+module github.com/kngnkg/tunetrail/backend
 
 go 1.21.1
 

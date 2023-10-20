@@ -6,10 +6,10 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/kngnkg/tunetrail/api/entity"
-	"github.com/kngnkg/tunetrail/api/logger"
-	"github.com/kngnkg/tunetrail/api/testutil"
-	"github.com/kngnkg/tunetrail/api/testutil/fixture"
+	"github.com/kngnkg/tunetrail/backend/entity"
+	"github.com/kngnkg/tunetrail/backend/logger"
+	"github.com/kngnkg/tunetrail/backend/testutil"
+	"github.com/kngnkg/tunetrail/backend/testutil/fixture"
 	"github.com/stretchr/testify/assert"
 )
 

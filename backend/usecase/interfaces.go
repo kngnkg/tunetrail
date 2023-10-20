@@ -3,7 +3,7 @@ package usecase
 import (
 	"context"
 
-	"github.com/kngnkg/tunetrail/api/entity"
+	"github.com/kngnkg/tunetrail/backend/entity"
 )
 
 //go:generate go run github.com/matryer/moq -out moq_test.go . ReviewRepository AlbumRepository UserRepository UserFollowRepository

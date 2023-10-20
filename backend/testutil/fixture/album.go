@@ -3,8 +3,8 @@ package fixture
 import (
 	"time"
 
-	"github.com/kngnkg/tunetrail/api/entity"
-	"github.com/kngnkg/tunetrail/api/testutil"
+	"github.com/kngnkg/tunetrail/backend/entity"
+	"github.com/kngnkg/tunetrail/backend/testutil"
 )
 
 const spotifyIdLength = 22
