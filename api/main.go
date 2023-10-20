@@ -4,15 +4,15 @@ import (
 	"log/slog"
 	"net"
 
-	helloworld "github.com/kngnkg/tunetrail/api/gen/go/hello_world"
 	"github.com/kngnkg/tunetrail/api/infra/server"
 	"github.com/kngnkg/tunetrail/api/logger"
 
+	helloworld "github.com/kngnkg/tunetrail/api/gen/helloworld"
 	"google.golang.org/grpc"
 )
 
 func main() {
-	l := logger.New(logger.LoggerOptions{
+	l := logger.New(&logger.LoggerOptions{
 		Level: slog.LevelDebug,
 	})
 

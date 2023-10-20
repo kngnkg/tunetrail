@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"context"
 	"fmt"
 	"log/slog"
 	"os"
@@ -16,7 +17,7 @@ type LoggerOptions struct {
 	Level slog.Level
 }
 
-func New(opts LoggerOptions) *Logger {
+func New(opts *LoggerOptions) *Logger {
 	options := &slog.HandlerOptions{
 		Level: opts.Level,
 	}
@@ -26,6 +27,24 @@ func New(opts LoggerOptions) *Logger {
 	return &Logger{
 		logger: slog.New(handler),
 	}
+}
+
+type contextKeyLogger string
+
+const contextKey contextKeyLogger = "logger"
+
+// loggerをcontextに埋め込む
+func WithContent(content context.Context, logger *Logger) context.Context {
+	return context.WithValue(content, contextKey, logger)
+}
+
+// contextからloggerを取り出す
+func FromContent(content context.Context) *Logger {
+	logger, ok := content.Value(contextKey).(*Logger)
+	if !ok {
+		panic("logger not found in context")
+	}
+	return logger
 }
 
 func (l *Logger) Debug(msg string, arg ...any) {
