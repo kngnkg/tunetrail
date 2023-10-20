@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./web
+        working-directory: ./frontend
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -23,6 +23,6 @@ jobs:
         with:
           github_token: ${{ github.token }}
           eslint_flags: "./"
-          workdir: web/
+          workdir: frontend/
           fail_on_error: true
           reporter: github-pr-review
