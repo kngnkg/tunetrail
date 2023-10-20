@@ -5,7 +5,7 @@ package usecase
 
 import (
 	"context"
-	"github.com/kngnkg/tunetrail/api/entity"
+	"github.com/kngnkg/tunetrail/backend/entity"
 	"sync"
 )
 

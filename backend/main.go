@@ -4,10 +4,10 @@ import (
 	"log/slog"
 	"net"
 
-	"github.com/kngnkg/tunetrail/api/infra/server"
-	"github.com/kngnkg/tunetrail/api/logger"
+	"github.com/kngnkg/tunetrail/backend/infra/server"
+	"github.com/kngnkg/tunetrail/backend/logger"
 
-	helloworld "github.com/kngnkg/tunetrail/api/gen/helloworld"
+	helloworld "github.com/kngnkg/tunetrail/backend/gen/helloworld"
 	"google.golang.org/grpc"
 )
 

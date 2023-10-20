@@ -6,7 +6,7 @@ BASE_OUT_DIR="./gen"
 # proto ファイルのパス
 PROTO_PATH="../proto"
 
-MODULE_BASE="github.com/kngnkg/tunetrail/api/gen"
+MODULE_BASE="github.com/kngnkg/tunetrail/backend/gen"
 
 # proto のコンパイル
 for PROTO_FILE in ${PROTO_PATH}/*.proto; do

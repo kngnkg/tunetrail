@@ -3,7 +3,7 @@ package server
 import (
 	"context"
 
-	helloworld "github.com/kngnkg/tunetrail/api/gen/helloworld"
+	helloworld "github.com/kngnkg/tunetrail/backend/gen/helloworld"
 )
 
 // helloworldServerはhelloworld.GreeterServerインターフェースを満たす必要がある
