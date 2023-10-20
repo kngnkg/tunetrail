@@ -1,16 +1,16 @@
 version: "3.9"
 
 services:
-  web:
-    container_name: tunetrail-web
-    hostname: tunetrail-web
+  frontend:
+    container_name: tunetrail-frontend
+    hostname: tunetrail-frontend
     build:
       context: .
       target: dev
-      dockerfile: ./docker/web/Dockerfile
+      dockerfile: ./docker/frontend/Dockerfile
     tty: true
     volumes:
-      - ./web:/app
+      - ./frontend:/app
     ports:
       - 3000:3000
   grpc:
@@ -22,6 +22,6 @@ services:
       dockerfile: ./docker/grpc/Dockerfile
     tty: true
     volumes:
-      - ./api:/app
+      - ./backend:/app
     ports:
       - 50051:50051
