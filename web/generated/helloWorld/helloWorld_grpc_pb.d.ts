@@ -1,6 +1,6 @@
 // GENERATED CODE -- DO NOT EDIT!
 
-// package: helloWorld
+// package: helloworld
 // file: helloWorld.proto
 
 import * as helloWorld_pb from "./helloWorld_pb";

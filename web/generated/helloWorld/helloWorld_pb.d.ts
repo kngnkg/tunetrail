@@ -1,4 +1,4 @@
-// package: helloWorld
+// package: helloworld
 // file: helloWorld.proto
 
 import * as jspb from "google-protobuf";

@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package helloWorld;
+package helloworld;
 
-option go_package = "github.com/kngnkg/tunetrail/api/gen/go/hello_world";
+option go_package = "github.com/kngnkg/tunetrail/api/gen/helloworld";
 
 service Greeter {
   rpc SayHello (HelloRequest) returns (HelloReply) {}
