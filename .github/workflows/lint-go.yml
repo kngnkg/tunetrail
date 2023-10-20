@@ -1,10 +1,6 @@
-name: Lint for api
+name: Lint for Go
 
 on:
-  push:
-    paths:
-      - "**/*.go"
-      - .github/workflows/lint-go.yml
   pull_request:
     paths:
       - "**/*.go"
