@@ -1,6 +1,6 @@
 .PHONY: test
 test:
-	go test -race -shuffle=on ./...
+	go test -race -shuffle=on -cover ./...
 
 .PHONY: gen
 gen: ## Generate mocks and test boilerplate
