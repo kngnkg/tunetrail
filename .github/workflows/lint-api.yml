@@ -14,9 +14,6 @@ jobs:
   lint:
     name: Lint
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./api
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -25,6 +22,7 @@ jobs:
         uses: reviewdog/action-golangci-lint@v2
         with:
           github_token: ${{ github.token }}
-          golangci_lint_flags: "--config=./api/.golangci.yml ./api/**"
+          golangci_lint_flags: "--config=.github/.golangci.yml ./"
+          workdir: api/
           fail_on_error: true
           reporter: github-pr-review
