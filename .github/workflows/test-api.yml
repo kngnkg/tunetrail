@@ -19,7 +19,7 @@ jobs:
       run:
         working-directory: ./api
     env:
-      GITHUB_TOKEN: ${{ github.token }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -27,7 +27,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version-file: ./go.mod
+          go-version-file: ./api/go.mod
 
       - name: Run tests with coverage report output
         run: go test ./... -coverprofile=coverage.out
