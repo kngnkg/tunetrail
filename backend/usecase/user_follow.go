@@ -4,9 +4,11 @@ import (
 	"context"
 
 	"github.com/kngnkg/tunetrail/backend/entity"
+	"github.com/kngnkg/tunetrail/backend/infra/repository"
 )
 
 type UserFollowUseCase struct {
+	DB             repository.DBAccesser
 	userFollowRepo UserFollowRepository
 	userRepo       UserRepository
 }
@@ -17,7 +19,7 @@ type UserFollowResponse struct {
 }
 
 func (uc *UserFollowUseCase) LookupRelationships(ctx context.Context, sourceId entity.UserId, targetIds []entity.UserId) ([]*UserFollowResponse, error) {
-	users, err := uc.userRepo.GetByIds(ctx, targetIds)
+	users, err := uc.userRepo.GetUserByIds(ctx, uc.DB, targetIds)
 	if err != nil {
 		return nil, err
 	}
@@ -28,7 +30,7 @@ func (uc *UserFollowUseCase) LookupRelationships(ctx context.Context, sourceId e
 		var rs entity.Relationships
 
 		// フォローしているか確認する
-		follwing, err := uc.userFollowRepo.IsFollowing(ctx, sourceId, user.UserId)
+		follwing, err := uc.userFollowRepo.IsFollowing(ctx, uc.DB, sourceId, user.UserId)
 		if err != nil {
 			return nil, err
 		}
@@ -38,7 +40,7 @@ func (uc *UserFollowUseCase) LookupRelationships(ctx context.Context, sourceId e
 		}
 
 		// フォローされているか確認する
-		followed, err := uc.userFollowRepo.IsFollowed(ctx, sourceId, user.UserId)
+		followed, err := uc.userFollowRepo.IsFollowed(ctx, uc.DB, sourceId, user.UserId)
 		if err != nil {
 			return nil, err
 		}
@@ -62,19 +64,19 @@ func (uc *UserFollowUseCase) LookupRelationships(ctx context.Context, sourceId e
 }
 
 func (uc *UserFollowUseCase) Follow(ctx context.Context, userFollow *entity.UserFollow) (*UserFollowResponse, error) {
-	_, err := uc.userFollowRepo.Store(ctx, userFollow)
+	_, err := uc.userFollowRepo.StoreUserFollow(ctx, uc.DB, userFollow)
 	if err != nil {
 		return nil, err
 	}
 
-	user, err := uc.userRepo.GetById(ctx, userFollow.FolloweeId)
+	user, err := uc.userRepo.GetUserById(ctx, uc.DB, userFollow.FolloweeId)
 	if err != nil {
 		return nil, err
 	}
 
 	relationships := []entity.RelationType{entity.RelationTypeFollowing}
 
-	followed, err := uc.userFollowRepo.IsFollowed(ctx, userFollow.FolloweeId, userFollow.FolloweeId)
+	followed, err := uc.userFollowRepo.IsFollowed(ctx, uc.DB, userFollow.FolloweeId, userFollow.FolloweeId)
 	if err != nil {
 		return nil, err
 	}
@@ -91,7 +93,7 @@ func (uc *UserFollowUseCase) Follow(ctx context.Context, userFollow *entity.User
 }
 
 func (uc *UserFollowUseCase) Unfollow(ctx context.Context, userFollow *entity.UserFollow) error {
-	err := uc.userFollowRepo.Delete(ctx, userFollow)
+	err := uc.userFollowRepo.DeleteUserFollow(ctx, uc.DB, userFollow)
 	if err != nil {
 		return err
 	}

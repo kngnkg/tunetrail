@@ -5,9 +5,11 @@ import (
 	"time"
 
 	"github.com/kngnkg/tunetrail/backend/entity"
+	"github.com/kngnkg/tunetrail/backend/infra/repository"
 )
 
 type UserUseCase struct {
+	DB             repository.DBAccesser
 	userRepo       UserRepository
 	userFollowRepo UserFollowRepository
 }
@@ -39,7 +41,7 @@ func NewUserResponse(user *entity.User) *UserResponse {
 }
 
 func (uc *UserUseCase) GetById(ctx context.Context, userId entity.UserId) (*UserResponse, error) {
-	user, err := uc.userRepo.GetById(ctx, userId)
+	user, err := uc.userRepo.GetUserById(ctx, uc.DB, userId)
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +51,7 @@ func (uc *UserUseCase) GetById(ctx context.Context, userId entity.UserId) (*User
 }
 
 func (uc *UserUseCase) GetFollowersById(ctx context.Context, sourceId, targetId entity.UserId, nextCursor string, limit int) ([]*UserResponse, error) {
-	ufs, err := uc.userFollowRepo.GetByUserIds(ctx, sourceId, targetId)
+	ufs, err := uc.userFollowRepo.GetUserFollowByUserIds(ctx, uc.DB, sourceId, targetId)
 	if err != nil {
 		return nil, err
 	}
@@ -59,7 +61,7 @@ func (uc *UserUseCase) GetFollowersById(ctx context.Context, sourceId, targetId 
 		followerIds = append(followerIds, uf.UserId)
 	}
 
-	users, err := uc.userRepo.GetByIds(ctx, followerIds)
+	users, err := uc.userRepo.GetUserByIds(ctx, uc.DB, followerIds)
 	if err != nil {
 		return nil, err
 	}

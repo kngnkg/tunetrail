@@ -6,6 +6,7 @@ package usecase
 import (
 	"context"
 	"github.com/kngnkg/tunetrail/backend/entity"
+	"github.com/kngnkg/tunetrail/backend/infra/repository"
 	"sync"
 )
 
@@ -19,20 +20,20 @@ var _ ReviewRepository = &ReviewRepositoryMock{}
 //
 //		// make and configure a mocked ReviewRepository
 //		mockedReviewRepository := &ReviewRepositoryMock{
-//			DeleteByIdFunc: func(ctx context.Context, reviewId string) error {
-//				panic("mock out the DeleteById method")
+//			DeleteReviewByIdFunc: func(ctx context.Context, db repository.Executor, reviewId string) error {
+//				panic("mock out the DeleteReviewById method")
 //			},
-//			GetByAuthorIdFunc: func(ctx context.Context, authorId entity.UserId, nextCursor string, limit int) ([]*entity.Review, string, error) {
-//				panic("mock out the GetByAuthorId method")
+//			GetReviewByAuthorIdFunc: func(ctx context.Context, db repository.Executor, authorId entity.UserId, nextCursor string, limit int) ([]*entity.Review, string, error) {
+//				panic("mock out the GetReviewByAuthorId method")
 //			},
-//			GetByIdFunc: func(ctx context.Context, reviewId string) (*entity.Review, error) {
-//				panic("mock out the GetById method")
+//			GetReviewByIdFunc: func(ctx context.Context, db repository.Executor, reviewId string) (*entity.Review, error) {
+//				panic("mock out the GetReviewById method")
 //			},
-//			StoreFunc: func(ctx context.Context, review *entity.Review) (*entity.Review, error) {
-//				panic("mock out the Store method")
+//			StoreReviewFunc: func(ctx context.Context, db repository.Executor, review *entity.Review) (*entity.Review, error) {
+//				panic("mock out the StoreReview method")
 //			},
-//			UpdateFunc: func(ctx context.Context, review *entity.Review) (*entity.Review, error) {
-//				panic("mock out the Update method")
+//			UpdateReviewFunc: func(ctx context.Context, db repository.Executor, review *entity.Review) (*entity.Review, error) {
+//				panic("mock out the UpdateReview method")
 //			},
 //		}
 //
@@ -41,34 +42,38 @@ var _ ReviewRepository = &ReviewRepositoryMock{}
 //
 //	}
 type ReviewRepositoryMock struct {
-	// DeleteByIdFunc mocks the DeleteById method.
-	DeleteByIdFunc func(ctx context.Context, reviewId string) error
+	// DeleteReviewByIdFunc mocks the DeleteReviewById method.
+	DeleteReviewByIdFunc func(ctx context.Context, db repository.Executor, reviewId string) error
 
-	// GetByAuthorIdFunc mocks the GetByAuthorId method.
-	GetByAuthorIdFunc func(ctx context.Context, authorId entity.UserId, nextCursor string, limit int) ([]*entity.Review, string, error)
+	// GetReviewByAuthorIdFunc mocks the GetReviewByAuthorId method.
+	GetReviewByAuthorIdFunc func(ctx context.Context, db repository.Executor, authorId entity.UserId, nextCursor string, limit int) ([]*entity.Review, string, error)
 
-	// GetByIdFunc mocks the GetById method.
-	GetByIdFunc func(ctx context.Context, reviewId string) (*entity.Review, error)
+	// GetReviewByIdFunc mocks the GetReviewById method.
+	GetReviewByIdFunc func(ctx context.Context, db repository.Executor, reviewId string) (*entity.Review, error)
 
-	// StoreFunc mocks the Store method.
-	StoreFunc func(ctx context.Context, review *entity.Review) (*entity.Review, error)
+	// StoreReviewFunc mocks the StoreReview method.
+	StoreReviewFunc func(ctx context.Context, db repository.Executor, review *entity.Review) (*entity.Review, error)
 
-	// UpdateFunc mocks the Update method.
-	UpdateFunc func(ctx context.Context, review *entity.Review) (*entity.Review, error)
+	// UpdateReviewFunc mocks the UpdateReview method.
+	UpdateReviewFunc func(ctx context.Context, db repository.Executor, review *entity.Review) (*entity.Review, error)
 
 	// calls tracks calls to the methods.
 	calls struct {
-		// DeleteById holds details about calls to the DeleteById method.
-		DeleteById []struct {
+		// DeleteReviewById holds details about calls to the DeleteReviewById method.
+		DeleteReviewById []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
+			// Db is the db argument value.
+			Db repository.Executor
 			// ReviewId is the reviewId argument value.
 			ReviewId string
 		}
-		// GetByAuthorId holds details about calls to the GetByAuthorId method.
-		GetByAuthorId []struct {
+		// GetReviewByAuthorId holds details about calls to the GetReviewByAuthorId method.
+		GetReviewByAuthorId []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
+			// Db is the db argument value.
+			Db repository.Executor
 			// AuthorId is the authorId argument value.
 			AuthorId entity.UserId
 			// NextCursor is the nextCursor argument value.
@@ -76,220 +81,246 @@ type ReviewRepositoryMock struct {
 			// Limit is the limit argument value.
 			Limit int
 		}
-		// GetById holds details about calls to the GetById method.
-		GetById []struct {
+		// GetReviewById holds details about calls to the GetReviewById method.
+		GetReviewById []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
+			// Db is the db argument value.
+			Db repository.Executor
 			// ReviewId is the reviewId argument value.
 			ReviewId string
 		}
-		// Store holds details about calls to the Store method.
-		Store []struct {
+		// StoreReview holds details about calls to the StoreReview method.
+		StoreReview []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
+			// Db is the db argument value.
+			Db repository.Executor
 			// Review is the review argument value.
 			Review *entity.Review
 		}
-		// Update holds details about calls to the Update method.
-		Update []struct {
+		// UpdateReview holds details about calls to the UpdateReview method.
+		UpdateReview []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
+			// Db is the db argument value.
+			Db repository.Executor
 			// Review is the review argument value.
 			Review *entity.Review
 		}
 	}
-	lockDeleteById    sync.RWMutex
-	lockGetByAuthorId sync.RWMutex
-	lockGetById       sync.RWMutex
-	lockStore         sync.RWMutex
-	lockUpdate        sync.RWMutex
+	lockDeleteReviewById    sync.RWMutex
+	lockGetReviewByAuthorId sync.RWMutex
+	lockGetReviewById       sync.RWMutex
+	lockStoreReview         sync.RWMutex
+	lockUpdateReview        sync.RWMutex
 }
 
-// DeleteById calls DeleteByIdFunc.
-func (mock *ReviewRepositoryMock) DeleteById(ctx context.Context, reviewId string) error {
-	if mock.DeleteByIdFunc == nil {
-		panic("ReviewRepositoryMock.DeleteByIdFunc: method is nil but ReviewRepository.DeleteById was just called")
+// DeleteReviewById calls DeleteReviewByIdFunc.
+func (mock *ReviewRepositoryMock) DeleteReviewById(ctx context.Context, db repository.Executor, reviewId string) error {
+	if mock.DeleteReviewByIdFunc == nil {
+		panic("ReviewRepositoryMock.DeleteReviewByIdFunc: method is nil but ReviewRepository.DeleteReviewById was just called")
 	}
 	callInfo := struct {
 		Ctx      context.Context
+		Db       repository.Executor
 		ReviewId string
 	}{
 		Ctx:      ctx,
+		Db:       db,
 		ReviewId: reviewId,
 	}
-	mock.lockDeleteById.Lock()
-	mock.calls.DeleteById = append(mock.calls.DeleteById, callInfo)
-	mock.lockDeleteById.Unlock()
-	return mock.DeleteByIdFunc(ctx, reviewId)
+	mock.lockDeleteReviewById.Lock()
+	mock.calls.DeleteReviewById = append(mock.calls.DeleteReviewById, callInfo)
+	mock.lockDeleteReviewById.Unlock()
+	return mock.DeleteReviewByIdFunc(ctx, db, reviewId)
 }
 
-// DeleteByIdCalls gets all the calls that were made to DeleteById.
+// DeleteReviewByIdCalls gets all the calls that were made to DeleteReviewById.
 // Check the length with:
 //
-//	len(mockedReviewRepository.DeleteByIdCalls())
-func (mock *ReviewRepositoryMock) DeleteByIdCalls() []struct {
+//	len(mockedReviewRepository.DeleteReviewByIdCalls())
+func (mock *ReviewRepositoryMock) DeleteReviewByIdCalls() []struct {
 	Ctx      context.Context
+	Db       repository.Executor
 	ReviewId string
 } {
 	var calls []struct {
 		Ctx      context.Context
+		Db       repository.Executor
 		ReviewId string
 	}
-	mock.lockDeleteById.RLock()
-	calls = mock.calls.DeleteById
-	mock.lockDeleteById.RUnlock()
+	mock.lockDeleteReviewById.RLock()
+	calls = mock.calls.DeleteReviewById
+	mock.lockDeleteReviewById.RUnlock()
 	return calls
 }
 
-// GetByAuthorId calls GetByAuthorIdFunc.
-func (mock *ReviewRepositoryMock) GetByAuthorId(ctx context.Context, authorId entity.UserId, nextCursor string, limit int) ([]*entity.Review, string, error) {
-	if mock.GetByAuthorIdFunc == nil {
-		panic("ReviewRepositoryMock.GetByAuthorIdFunc: method is nil but ReviewRepository.GetByAuthorId was just called")
+// GetReviewByAuthorId calls GetReviewByAuthorIdFunc.
+func (mock *ReviewRepositoryMock) GetReviewByAuthorId(ctx context.Context, db repository.Executor, authorId entity.UserId, nextCursor string, limit int) ([]*entity.Review, string, error) {
+	if mock.GetReviewByAuthorIdFunc == nil {
+		panic("ReviewRepositoryMock.GetReviewByAuthorIdFunc: method is nil but ReviewRepository.GetReviewByAuthorId was just called")
 	}
 	callInfo := struct {
 		Ctx        context.Context
+		Db         repository.Executor
 		AuthorId   entity.UserId
 		NextCursor string
 		Limit      int
 	}{
 		Ctx:        ctx,
+		Db:         db,
 		AuthorId:   authorId,
 		NextCursor: nextCursor,
 		Limit:      limit,
 	}
-	mock.lockGetByAuthorId.Lock()
-	mock.calls.GetByAuthorId = append(mock.calls.GetByAuthorId, callInfo)
-	mock.lockGetByAuthorId.Unlock()
-	return mock.GetByAuthorIdFunc(ctx, authorId, nextCursor, limit)
+	mock.lockGetReviewByAuthorId.Lock()
+	mock.calls.GetReviewByAuthorId = append(mock.calls.GetReviewByAuthorId, callInfo)
+	mock.lockGetReviewByAuthorId.Unlock()
+	return mock.GetReviewByAuthorIdFunc(ctx, db, authorId, nextCursor, limit)
 }
 
-// GetByAuthorIdCalls gets all the calls that were made to GetByAuthorId.
+// GetReviewByAuthorIdCalls gets all the calls that were made to GetReviewByAuthorId.
 // Check the length with:
 //
-//	len(mockedReviewRepository.GetByAuthorIdCalls())
-func (mock *ReviewRepositoryMock) GetByAuthorIdCalls() []struct {
+//	len(mockedReviewRepository.GetReviewByAuthorIdCalls())
+func (mock *ReviewRepositoryMock) GetReviewByAuthorIdCalls() []struct {
 	Ctx        context.Context
+	Db         repository.Executor
 	AuthorId   entity.UserId
 	NextCursor string
 	Limit      int
 } {
 	var calls []struct {
 		Ctx        context.Context
+		Db         repository.Executor
 		AuthorId   entity.UserId
 		NextCursor string
 		Limit      int
 	}
-	mock.lockGetByAuthorId.RLock()
-	calls = mock.calls.GetByAuthorId
-	mock.lockGetByAuthorId.RUnlock()
+	mock.lockGetReviewByAuthorId.RLock()
+	calls = mock.calls.GetReviewByAuthorId
+	mock.lockGetReviewByAuthorId.RUnlock()
 	return calls
 }
 
-// GetById calls GetByIdFunc.
-func (mock *ReviewRepositoryMock) GetById(ctx context.Context, reviewId string) (*entity.Review, error) {
-	if mock.GetByIdFunc == nil {
-		panic("ReviewRepositoryMock.GetByIdFunc: method is nil but ReviewRepository.GetById was just called")
+// GetReviewById calls GetReviewByIdFunc.
+func (mock *ReviewRepositoryMock) GetReviewById(ctx context.Context, db repository.Executor, reviewId string) (*entity.Review, error) {
+	if mock.GetReviewByIdFunc == nil {
+		panic("ReviewRepositoryMock.GetReviewByIdFunc: method is nil but ReviewRepository.GetReviewById was just called")
 	}
 	callInfo := struct {
 		Ctx      context.Context
+		Db       repository.Executor
 		ReviewId string
 	}{
 		Ctx:      ctx,
+		Db:       db,
 		ReviewId: reviewId,
 	}
-	mock.lockGetById.Lock()
-	mock.calls.GetById = append(mock.calls.GetById, callInfo)
-	mock.lockGetById.Unlock()
-	return mock.GetByIdFunc(ctx, reviewId)
+	mock.lockGetReviewById.Lock()
+	mock.calls.GetReviewById = append(mock.calls.GetReviewById, callInfo)
+	mock.lockGetReviewById.Unlock()
+	return mock.GetReviewByIdFunc(ctx, db, reviewId)
 }
 
-// GetByIdCalls gets all the calls that were made to GetById.
+// GetReviewByIdCalls gets all the calls that were made to GetReviewById.
 // Check the length with:
 //
-//	len(mockedReviewRepository.GetByIdCalls())
-func (mock *ReviewRepositoryMock) GetByIdCalls() []struct {
+//	len(mockedReviewRepository.GetReviewByIdCalls())
+func (mock *ReviewRepositoryMock) GetReviewByIdCalls() []struct {
 	Ctx      context.Context
+	Db       repository.Executor
 	ReviewId string
 } {
 	var calls []struct {
 		Ctx      context.Context
+		Db       repository.Executor
 		ReviewId string
 	}
-	mock.lockGetById.RLock()
-	calls = mock.calls.GetById
-	mock.lockGetById.RUnlock()
+	mock.lockGetReviewById.RLock()
+	calls = mock.calls.GetReviewById
+	mock.lockGetReviewById.RUnlock()
 	return calls
 }
 
-// Store calls StoreFunc.
-func (mock *ReviewRepositoryMock) Store(ctx context.Context, review *entity.Review) (*entity.Review, error) {
-	if mock.StoreFunc == nil {
-		panic("ReviewRepositoryMock.StoreFunc: method is nil but ReviewRepository.Store was just called")
+// StoreReview calls StoreReviewFunc.
+func (mock *ReviewRepositoryMock) StoreReview(ctx context.Context, db repository.Executor, review *entity.Review) (*entity.Review, error) {
+	if mock.StoreReviewFunc == nil {
+		panic("ReviewRepositoryMock.StoreReviewFunc: method is nil but ReviewRepository.StoreReview was just called")
 	}
 	callInfo := struct {
 		Ctx    context.Context
+		Db     repository.Executor
 		Review *entity.Review
 	}{
 		Ctx:    ctx,
+		Db:     db,
 		Review: review,
 	}
-	mock.lockStore.Lock()
-	mock.calls.Store = append(mock.calls.Store, callInfo)
-	mock.lockStore.Unlock()
-	return mock.StoreFunc(ctx, review)
+	mock.lockStoreReview.Lock()
+	mock.calls.StoreReview = append(mock.calls.StoreReview, callInfo)
+	mock.lockStoreReview.Unlock()
+	return mock.StoreReviewFunc(ctx, db, review)
 }
 
-// StoreCalls gets all the calls that were made to Store.
+// StoreReviewCalls gets all the calls that were made to StoreReview.
 // Check the length with:
 //
-//	len(mockedReviewRepository.StoreCalls())
-func (mock *ReviewRepositoryMock) StoreCalls() []struct {
+//	len(mockedReviewRepository.StoreReviewCalls())
+func (mock *ReviewRepositoryMock) StoreReviewCalls() []struct {
 	Ctx    context.Context
+	Db     repository.Executor
 	Review *entity.Review
 } {
 	var calls []struct {
 		Ctx    context.Context
+		Db     repository.Executor
 		Review *entity.Review
 	}
-	mock.lockStore.RLock()
-	calls = mock.calls.Store
-	mock.lockStore.RUnlock()
+	mock.lockStoreReview.RLock()
+	calls = mock.calls.StoreReview
+	mock.lockStoreReview.RUnlock()
 	return calls
 }
 
-// Update calls UpdateFunc.
-func (mock *ReviewRepositoryMock) Update(ctx context.Context, review *entity.Review) (*entity.Review, error) {
-	if mock.UpdateFunc == nil {
-		panic("ReviewRepositoryMock.UpdateFunc: method is nil but ReviewRepository.Update was just called")
+// UpdateReview calls UpdateReviewFunc.
+func (mock *ReviewRepositoryMock) UpdateReview(ctx context.Context, db repository.Executor, review *entity.Review) (*entity.Review, error) {
+	if mock.UpdateReviewFunc == nil {
+		panic("ReviewRepositoryMock.UpdateReviewFunc: method is nil but ReviewRepository.UpdateReview was just called")
 	}
 	callInfo := struct {
 		Ctx    context.Context
+		Db     repository.Executor
 		Review *entity.Review
 	}{
 		Ctx:    ctx,
+		Db:     db,
 		Review: review,
 	}
-	mock.lockUpdate.Lock()
-	mock.calls.Update = append(mock.calls.Update, callInfo)
-	mock.lockUpdate.Unlock()
-	return mock.UpdateFunc(ctx, review)
+	mock.lockUpdateReview.Lock()
+	mock.calls.UpdateReview = append(mock.calls.UpdateReview, callInfo)
+	mock.lockUpdateReview.Unlock()
+	return mock.UpdateReviewFunc(ctx, db, review)
 }
 
-// UpdateCalls gets all the calls that were made to Update.
+// UpdateReviewCalls gets all the calls that were made to UpdateReview.
 // Check the length with:
 //
-//	len(mockedReviewRepository.UpdateCalls())
-func (mock *ReviewRepositoryMock) UpdateCalls() []struct {
+//	len(mockedReviewRepository.UpdateReviewCalls())
+func (mock *ReviewRepositoryMock) UpdateReviewCalls() []struct {
 	Ctx    context.Context
+	Db     repository.Executor
 	Review *entity.Review
 } {
 	var calls []struct {
 		Ctx    context.Context
+		Db     repository.Executor
 		Review *entity.Review
 	}
-	mock.lockUpdate.RLock()
-	calls = mock.calls.Update
-	mock.lockUpdate.RUnlock()
+	mock.lockUpdateReview.RLock()
+	calls = mock.calls.UpdateReview
+	mock.lockUpdateReview.RUnlock()
 	return calls
 }
 
@@ -303,11 +334,11 @@ var _ AlbumRepository = &AlbumRepositoryMock{}
 //
 //		// make and configure a mocked AlbumRepository
 //		mockedAlbumRepository := &AlbumRepositoryMock{
-//			GetByIdFunc: func(ctx context.Context, albumId string) (*entity.Album, error) {
-//				panic("mock out the GetById method")
+//			GetAlbumByIdFunc: func(ctx context.Context, albumId string) (*entity.Album, error) {
+//				panic("mock out the GetAlbumById method")
 //			},
-//			GetByIdsFunc: func(ctx context.Context, albumIds []string) ([]*entity.Album, error) {
-//				panic("mock out the GetByIds method")
+//			GetAlbumByIdsFunc: func(ctx context.Context, albumIds []string) ([]*entity.Album, error) {
+//				panic("mock out the GetAlbumByIds method")
 //			},
 //		}
 //
@@ -316,37 +347,37 @@ var _ AlbumRepository = &AlbumRepositoryMock{}
 //
 //	}
 type AlbumRepositoryMock struct {
-	// GetByIdFunc mocks the GetById method.
-	GetByIdFunc func(ctx context.Context, albumId string) (*entity.Album, error)
+	// GetAlbumByIdFunc mocks the GetAlbumById method.
+	GetAlbumByIdFunc func(ctx context.Context, albumId string) (*entity.Album, error)
 
-	// GetByIdsFunc mocks the GetByIds method.
-	GetByIdsFunc func(ctx context.Context, albumIds []string) ([]*entity.Album, error)
+	// GetAlbumByIdsFunc mocks the GetAlbumByIds method.
+	GetAlbumByIdsFunc func(ctx context.Context, albumIds []string) ([]*entity.Album, error)
 
 	// calls tracks calls to the methods.
 	calls struct {
-		// GetById holds details about calls to the GetById method.
-		GetById []struct {
+		// GetAlbumById holds details about calls to the GetAlbumById method.
+		GetAlbumById []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
 			// AlbumId is the albumId argument value.
 			AlbumId string
 		}
-		// GetByIds holds details about calls to the GetByIds method.
-		GetByIds []struct {
+		// GetAlbumByIds holds details about calls to the GetAlbumByIds method.
+		GetAlbumByIds []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
 			// AlbumIds is the albumIds argument value.
 			AlbumIds []string
 		}
 	}
-	lockGetById  sync.RWMutex
-	lockGetByIds sync.RWMutex
+	lockGetAlbumById  sync.RWMutex
+	lockGetAlbumByIds sync.RWMutex
 }
 
-// GetById calls GetByIdFunc.
-func (mock *AlbumRepositoryMock) GetById(ctx context.Context, albumId string) (*entity.Album, error) {
-	if mock.GetByIdFunc == nil {
-		panic("AlbumRepositoryMock.GetByIdFunc: method is nil but AlbumRepository.GetById was just called")
+// GetAlbumById calls GetAlbumByIdFunc.
+func (mock *AlbumRepositoryMock) GetAlbumById(ctx context.Context, albumId string) (*entity.Album, error) {
+	if mock.GetAlbumByIdFunc == nil {
+		panic("AlbumRepositoryMock.GetAlbumByIdFunc: method is nil but AlbumRepository.GetAlbumById was just called")
 	}
 	callInfo := struct {
 		Ctx     context.Context
@@ -355,17 +386,17 @@ func (mock *AlbumRepositoryMock) GetById(ctx context.Context, albumId string) (*
 		Ctx:     ctx,
 		AlbumId: albumId,
 	}
-	mock.lockGetById.Lock()
-	mock.calls.GetById = append(mock.calls.GetById, callInfo)
-	mock.lockGetById.Unlock()
-	return mock.GetByIdFunc(ctx, albumId)
+	mock.lockGetAlbumById.Lock()
+	mock.calls.GetAlbumById = append(mock.calls.GetAlbumById, callInfo)
+	mock.lockGetAlbumById.Unlock()
+	return mock.GetAlbumByIdFunc(ctx, albumId)
 }
 
-// GetByIdCalls gets all the calls that were made to GetById.
+// GetAlbumByIdCalls gets all the calls that were made to GetAlbumById.
 // Check the length with:
 //
-//	len(mockedAlbumRepository.GetByIdCalls())
-func (mock *AlbumRepositoryMock) GetByIdCalls() []struct {
+//	len(mockedAlbumRepository.GetAlbumByIdCalls())
+func (mock *AlbumRepositoryMock) GetAlbumByIdCalls() []struct {
 	Ctx     context.Context
 	AlbumId string
 } {
@@ -373,16 +404,16 @@ func (mock *AlbumRepositoryMock) GetByIdCalls() []struct {
 		Ctx     context.Context
 		AlbumId string
 	}
-	mock.lockGetById.RLock()
-	calls = mock.calls.GetById
-	mock.lockGetById.RUnlock()
+	mock.lockGetAlbumById.RLock()
+	calls = mock.calls.GetAlbumById
+	mock.lockGetAlbumById.RUnlock()
 	return calls
 }
 
-// GetByIds calls GetByIdsFunc.
-func (mock *AlbumRepositoryMock) GetByIds(ctx context.Context, albumIds []string) ([]*entity.Album, error) {
-	if mock.GetByIdsFunc == nil {
-		panic("AlbumRepositoryMock.GetByIdsFunc: method is nil but AlbumRepository.GetByIds was just called")
+// GetAlbumByIds calls GetAlbumByIdsFunc.
+func (mock *AlbumRepositoryMock) GetAlbumByIds(ctx context.Context, albumIds []string) ([]*entity.Album, error) {
+	if mock.GetAlbumByIdsFunc == nil {
+		panic("AlbumRepositoryMock.GetAlbumByIdsFunc: method is nil but AlbumRepository.GetAlbumByIds was just called")
 	}
 	callInfo := struct {
 		Ctx      context.Context
@@ -391,17 +422,17 @@ func (mock *AlbumRepositoryMock) GetByIds(ctx context.Context, albumIds []string
 		Ctx:      ctx,
 		AlbumIds: albumIds,
 	}
-	mock.lockGetByIds.Lock()
-	mock.calls.GetByIds = append(mock.calls.GetByIds, callInfo)
-	mock.lockGetByIds.Unlock()
-	return mock.GetByIdsFunc(ctx, albumIds)
+	mock.lockGetAlbumByIds.Lock()
+	mock.calls.GetAlbumByIds = append(mock.calls.GetAlbumByIds, callInfo)
+	mock.lockGetAlbumByIds.Unlock()
+	return mock.GetAlbumByIdsFunc(ctx, albumIds)
 }
 
-// GetByIdsCalls gets all the calls that were made to GetByIds.
+// GetAlbumByIdsCalls gets all the calls that were made to GetAlbumByIds.
 // Check the length with:
 //
-//	len(mockedAlbumRepository.GetByIdsCalls())
-func (mock *AlbumRepositoryMock) GetByIdsCalls() []struct {
+//	len(mockedAlbumRepository.GetAlbumByIdsCalls())
+func (mock *AlbumRepositoryMock) GetAlbumByIdsCalls() []struct {
 	Ctx      context.Context
 	AlbumIds []string
 } {
@@ -409,9 +440,9 @@ func (mock *AlbumRepositoryMock) GetByIdsCalls() []struct {
 		Ctx      context.Context
 		AlbumIds []string
 	}
-	mock.lockGetByIds.RLock()
-	calls = mock.calls.GetByIds
-	mock.lockGetByIds.RUnlock()
+	mock.lockGetAlbumByIds.RLock()
+	calls = mock.calls.GetAlbumByIds
+	mock.lockGetAlbumByIds.RUnlock()
 	return calls
 }
 
@@ -425,11 +456,11 @@ var _ UserRepository = &UserRepositoryMock{}
 //
 //		// make and configure a mocked UserRepository
 //		mockedUserRepository := &UserRepositoryMock{
-//			GetByIdFunc: func(ctx context.Context, userId entity.UserId) (*entity.User, error) {
-//				panic("mock out the GetById method")
+//			GetUserByIdFunc: func(ctx context.Context, db repository.Executor, userId entity.UserId) (*entity.User, error) {
+//				panic("mock out the GetUserById method")
 //			},
-//			GetByIdsFunc: func(ctx context.Context, userIds []entity.UserId) ([]*entity.User, error) {
-//				panic("mock out the GetByIds method")
+//			GetUserByIdsFunc: func(ctx context.Context, db repository.Executor, userIds []entity.UserId) ([]*entity.User, error) {
+//				panic("mock out the GetUserByIds method")
 //			},
 //		}
 //
@@ -438,102 +469,114 @@ var _ UserRepository = &UserRepositoryMock{}
 //
 //	}
 type UserRepositoryMock struct {
-	// GetByIdFunc mocks the GetById method.
-	GetByIdFunc func(ctx context.Context, userId entity.UserId) (*entity.User, error)
+	// GetUserByIdFunc mocks the GetUserById method.
+	GetUserByIdFunc func(ctx context.Context, db repository.Executor, userId entity.UserId) (*entity.User, error)
 
-	// GetByIdsFunc mocks the GetByIds method.
-	GetByIdsFunc func(ctx context.Context, userIds []entity.UserId) ([]*entity.User, error)
+	// GetUserByIdsFunc mocks the GetUserByIds method.
+	GetUserByIdsFunc func(ctx context.Context, db repository.Executor, userIds []entity.UserId) ([]*entity.User, error)
 
 	// calls tracks calls to the methods.
 	calls struct {
-		// GetById holds details about calls to the GetById method.
-		GetById []struct {
+		// GetUserById holds details about calls to the GetUserById method.
+		GetUserById []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
+			// Db is the db argument value.
+			Db repository.Executor
 			// UserId is the userId argument value.
 			UserId entity.UserId
 		}
-		// GetByIds holds details about calls to the GetByIds method.
-		GetByIds []struct {
+		// GetUserByIds holds details about calls to the GetUserByIds method.
+		GetUserByIds []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
+			// Db is the db argument value.
+			Db repository.Executor
 			// UserIds is the userIds argument value.
 			UserIds []entity.UserId
 		}
 	}
-	lockGetById  sync.RWMutex
-	lockGetByIds sync.RWMutex
+	lockGetUserById  sync.RWMutex
+	lockGetUserByIds sync.RWMutex
 }
 
-// GetById calls GetByIdFunc.
-func (mock *UserRepositoryMock) GetById(ctx context.Context, userId entity.UserId) (*entity.User, error) {
-	if mock.GetByIdFunc == nil {
-		panic("UserRepositoryMock.GetByIdFunc: method is nil but UserRepository.GetById was just called")
+// GetUserById calls GetUserByIdFunc.
+func (mock *UserRepositoryMock) GetUserById(ctx context.Context, db repository.Executor, userId entity.UserId) (*entity.User, error) {
+	if mock.GetUserByIdFunc == nil {
+		panic("UserRepositoryMock.GetUserByIdFunc: method is nil but UserRepository.GetUserById was just called")
 	}
 	callInfo := struct {
 		Ctx    context.Context
+		Db     repository.Executor
 		UserId entity.UserId
 	}{
 		Ctx:    ctx,
+		Db:     db,
 		UserId: userId,
 	}
-	mock.lockGetById.Lock()
-	mock.calls.GetById = append(mock.calls.GetById, callInfo)
-	mock.lockGetById.Unlock()
-	return mock.GetByIdFunc(ctx, userId)
+	mock.lockGetUserById.Lock()
+	mock.calls.GetUserById = append(mock.calls.GetUserById, callInfo)
+	mock.lockGetUserById.Unlock()
+	return mock.GetUserByIdFunc(ctx, db, userId)
 }
 
-// GetByIdCalls gets all the calls that were made to GetById.
+// GetUserByIdCalls gets all the calls that were made to GetUserById.
 // Check the length with:
 //
-//	len(mockedUserRepository.GetByIdCalls())
-func (mock *UserRepositoryMock) GetByIdCalls() []struct {
+//	len(mockedUserRepository.GetUserByIdCalls())
+func (mock *UserRepositoryMock) GetUserByIdCalls() []struct {
 	Ctx    context.Context
+	Db     repository.Executor
 	UserId entity.UserId
 } {
 	var calls []struct {
 		Ctx    context.Context
+		Db     repository.Executor
 		UserId entity.UserId
 	}
-	mock.lockGetById.RLock()
-	calls = mock.calls.GetById
-	mock.lockGetById.RUnlock()
+	mock.lockGetUserById.RLock()
+	calls = mock.calls.GetUserById
+	mock.lockGetUserById.RUnlock()
 	return calls
 }
 
-// GetByIds calls GetByIdsFunc.
-func (mock *UserRepositoryMock) GetByIds(ctx context.Context, userIds []entity.UserId) ([]*entity.User, error) {
-	if mock.GetByIdsFunc == nil {
-		panic("UserRepositoryMock.GetByIdsFunc: method is nil but UserRepository.GetByIds was just called")
+// GetUserByIds calls GetUserByIdsFunc.
+func (mock *UserRepositoryMock) GetUserByIds(ctx context.Context, db repository.Executor, userIds []entity.UserId) ([]*entity.User, error) {
+	if mock.GetUserByIdsFunc == nil {
+		panic("UserRepositoryMock.GetUserByIdsFunc: method is nil but UserRepository.GetUserByIds was just called")
 	}
 	callInfo := struct {
 		Ctx     context.Context
+		Db      repository.Executor
 		UserIds []entity.UserId
 	}{
 		Ctx:     ctx,
+		Db:      db,
 		UserIds: userIds,
 	}
-	mock.lockGetByIds.Lock()
-	mock.calls.GetByIds = append(mock.calls.GetByIds, callInfo)
-	mock.lockGetByIds.Unlock()
-	return mock.GetByIdsFunc(ctx, userIds)
+	mock.lockGetUserByIds.Lock()
+	mock.calls.GetUserByIds = append(mock.calls.GetUserByIds, callInfo)
+	mock.lockGetUserByIds.Unlock()
+	return mock.GetUserByIdsFunc(ctx, db, userIds)
 }
 
-// GetByIdsCalls gets all the calls that were made to GetByIds.
+// GetUserByIdsCalls gets all the calls that were made to GetUserByIds.
 // Check the length with:
 //
-//	len(mockedUserRepository.GetByIdsCalls())
-func (mock *UserRepositoryMock) GetByIdsCalls() []struct {
+//	len(mockedUserRepository.GetUserByIdsCalls())
+func (mock *UserRepositoryMock) GetUserByIdsCalls() []struct {
 	Ctx     context.Context
+	Db      repository.Executor
 	UserIds []entity.UserId
 } {
 	var calls []struct {
 		Ctx     context.Context
+		Db      repository.Executor
 		UserIds []entity.UserId
 	}
-	mock.lockGetByIds.RLock()
-	calls = mock.calls.GetByIds
-	mock.lockGetByIds.RUnlock()
+	mock.lockGetUserByIds.RLock()
+	calls = mock.calls.GetUserByIds
+	mock.lockGetUserByIds.RUnlock()
 	return calls
 }
 
@@ -547,20 +590,20 @@ var _ UserFollowRepository = &UserFollowRepositoryMock{}
 //
 //		// make and configure a mocked UserFollowRepository
 //		mockedUserFollowRepository := &UserFollowRepositoryMock{
-//			DeleteFunc: func(ctx context.Context, userFollow *entity.UserFollow) error {
-//				panic("mock out the Delete method")
+//			DeleteUserFollowFunc: func(ctx context.Context, db repository.Executor, userFollow *entity.UserFollow) error {
+//				panic("mock out the DeleteUserFollow method")
 //			},
-//			GetByUserIdsFunc: func(ctx context.Context, sourceId entity.UserId, targetId entity.UserId) ([]*entity.UserFollow, error) {
-//				panic("mock out the GetByUserIds method")
+//			GetUserFollowByUserIdsFunc: func(ctx context.Context, db repository.Executor, sourceId entity.UserId, targetId entity.UserId) ([]*entity.UserFollow, error) {
+//				panic("mock out the GetUserFollowByUserIds method")
 //			},
-//			IsFollowedFunc: func(ctx context.Context, sourceId entity.UserId, targetId entity.UserId) (bool, error) {
+//			IsFollowedFunc: func(ctx context.Context, db repository.Executor, sourceId entity.UserId, targetId entity.UserId) (bool, error) {
 //				panic("mock out the IsFollowed method")
 //			},
-//			IsFollowingFunc: func(ctx context.Context, sourceId entity.UserId, targetId entity.UserId) (bool, error) {
+//			IsFollowingFunc: func(ctx context.Context, db repository.Executor, sourceId entity.UserId, targetId entity.UserId) (bool, error) {
 //				panic("mock out the IsFollowing method")
 //			},
-//			StoreFunc: func(ctx context.Context, userFollow *entity.UserFollow) (*entity.UserFollow, error) {
-//				panic("mock out the Store method")
+//			StoreUserFollowFunc: func(ctx context.Context, db repository.Executor, userFollow *entity.UserFollow) (*entity.UserFollow, error) {
+//				panic("mock out the StoreUserFollow method")
 //			},
 //		}
 //
@@ -569,34 +612,38 @@ var _ UserFollowRepository = &UserFollowRepositoryMock{}
 //
 //	}
 type UserFollowRepositoryMock struct {
-	// DeleteFunc mocks the Delete method.
-	DeleteFunc func(ctx context.Context, userFollow *entity.UserFollow) error
+	// DeleteUserFollowFunc mocks the DeleteUserFollow method.
+	DeleteUserFollowFunc func(ctx context.Context, db repository.Executor, userFollow *entity.UserFollow) error
 
-	// GetByUserIdsFunc mocks the GetByUserIds method.
-	GetByUserIdsFunc func(ctx context.Context, sourceId entity.UserId, targetId entity.UserId) ([]*entity.UserFollow, error)
+	// GetUserFollowByUserIdsFunc mocks the GetUserFollowByUserIds method.
+	GetUserFollowByUserIdsFunc func(ctx context.Context, db repository.Executor, sourceId entity.UserId, targetId entity.UserId) ([]*entity.UserFollow, error)
 
 	// IsFollowedFunc mocks the IsFollowed method.
-	IsFollowedFunc func(ctx context.Context, sourceId entity.UserId, targetId entity.UserId) (bool, error)
+	IsFollowedFunc func(ctx context.Context, db repository.Executor, sourceId entity.UserId, targetId entity.UserId) (bool, error)
 
 	// IsFollowingFunc mocks the IsFollowing method.
-	IsFollowingFunc func(ctx context.Context, sourceId entity.UserId, targetId entity.UserId) (bool, error)
+	IsFollowingFunc func(ctx context.Context, db repository.Executor, sourceId entity.UserId, targetId entity.UserId) (bool, error)
 
-	// StoreFunc mocks the Store method.
-	StoreFunc func(ctx context.Context, userFollow *entity.UserFollow) (*entity.UserFollow, error)
+	// StoreUserFollowFunc mocks the StoreUserFollow method.
+	StoreUserFollowFunc func(ctx context.Context, db repository.Executor, userFollow *entity.UserFollow) (*entity.UserFollow, error)
 
 	// calls tracks calls to the methods.
 	calls struct {
-		// Delete holds details about calls to the Delete method.
-		Delete []struct {
+		// DeleteUserFollow holds details about calls to the DeleteUserFollow method.
+		DeleteUserFollow []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
+			// Db is the db argument value.
+			Db repository.Executor
 			// UserFollow is the userFollow argument value.
 			UserFollow *entity.UserFollow
 		}
-		// GetByUserIds holds details about calls to the GetByUserIds method.
-		GetByUserIds []struct {
+		// GetUserFollowByUserIds holds details about calls to the GetUserFollowByUserIds method.
+		GetUserFollowByUserIds []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
+			// Db is the db argument value.
+			Db repository.Executor
 			// SourceId is the sourceId argument value.
 			SourceId entity.UserId
 			// TargetId is the targetId argument value.
@@ -606,6 +653,8 @@ type UserFollowRepositoryMock struct {
 		IsFollowed []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
+			// Db is the db argument value.
+			Db repository.Executor
 			// SourceId is the sourceId argument value.
 			SourceId entity.UserId
 			// TargetId is the targetId argument value.
@@ -615,120 +664,134 @@ type UserFollowRepositoryMock struct {
 		IsFollowing []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
+			// Db is the db argument value.
+			Db repository.Executor
 			// SourceId is the sourceId argument value.
 			SourceId entity.UserId
 			// TargetId is the targetId argument value.
 			TargetId entity.UserId
 		}
-		// Store holds details about calls to the Store method.
-		Store []struct {
+		// StoreUserFollow holds details about calls to the StoreUserFollow method.
+		StoreUserFollow []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
+			// Db is the db argument value.
+			Db repository.Executor
 			// UserFollow is the userFollow argument value.
 			UserFollow *entity.UserFollow
 		}
 	}
-	lockDelete       sync.RWMutex
-	lockGetByUserIds sync.RWMutex
-	lockIsFollowed   sync.RWMutex
-	lockIsFollowing  sync.RWMutex
-	lockStore        sync.RWMutex
+	lockDeleteUserFollow       sync.RWMutex
+	lockGetUserFollowByUserIds sync.RWMutex
+	lockIsFollowed             sync.RWMutex
+	lockIsFollowing            sync.RWMutex
+	lockStoreUserFollow        sync.RWMutex
 }
 
-// Delete calls DeleteFunc.
-func (mock *UserFollowRepositoryMock) Delete(ctx context.Context, userFollow *entity.UserFollow) error {
-	if mock.DeleteFunc == nil {
-		panic("UserFollowRepositoryMock.DeleteFunc: method is nil but UserFollowRepository.Delete was just called")
+// DeleteUserFollow calls DeleteUserFollowFunc.
+func (mock *UserFollowRepositoryMock) DeleteUserFollow(ctx context.Context, db repository.Executor, userFollow *entity.UserFollow) error {
+	if mock.DeleteUserFollowFunc == nil {
+		panic("UserFollowRepositoryMock.DeleteUserFollowFunc: method is nil but UserFollowRepository.DeleteUserFollow was just called")
 	}
 	callInfo := struct {
 		Ctx        context.Context
+		Db         repository.Executor
 		UserFollow *entity.UserFollow
 	}{
 		Ctx:        ctx,
+		Db:         db,
 		UserFollow: userFollow,
 	}
-	mock.lockDelete.Lock()
-	mock.calls.Delete = append(mock.calls.Delete, callInfo)
-	mock.lockDelete.Unlock()
-	return mock.DeleteFunc(ctx, userFollow)
+	mock.lockDeleteUserFollow.Lock()
+	mock.calls.DeleteUserFollow = append(mock.calls.DeleteUserFollow, callInfo)
+	mock.lockDeleteUserFollow.Unlock()
+	return mock.DeleteUserFollowFunc(ctx, db, userFollow)
 }
 
-// DeleteCalls gets all the calls that were made to Delete.
+// DeleteUserFollowCalls gets all the calls that were made to DeleteUserFollow.
 // Check the length with:
 //
-//	len(mockedUserFollowRepository.DeleteCalls())
-func (mock *UserFollowRepositoryMock) DeleteCalls() []struct {
+//	len(mockedUserFollowRepository.DeleteUserFollowCalls())
+func (mock *UserFollowRepositoryMock) DeleteUserFollowCalls() []struct {
 	Ctx        context.Context
+	Db         repository.Executor
 	UserFollow *entity.UserFollow
 } {
 	var calls []struct {
 		Ctx        context.Context
+		Db         repository.Executor
 		UserFollow *entity.UserFollow
 	}
-	mock.lockDelete.RLock()
-	calls = mock.calls.Delete
-	mock.lockDelete.RUnlock()
+	mock.lockDeleteUserFollow.RLock()
+	calls = mock.calls.DeleteUserFollow
+	mock.lockDeleteUserFollow.RUnlock()
 	return calls
 }
 
-// GetByUserIds calls GetByUserIdsFunc.
-func (mock *UserFollowRepositoryMock) GetByUserIds(ctx context.Context, sourceId entity.UserId, targetId entity.UserId) ([]*entity.UserFollow, error) {
-	if mock.GetByUserIdsFunc == nil {
-		panic("UserFollowRepositoryMock.GetByUserIdsFunc: method is nil but UserFollowRepository.GetByUserIds was just called")
+// GetUserFollowByUserIds calls GetUserFollowByUserIdsFunc.
+func (mock *UserFollowRepositoryMock) GetUserFollowByUserIds(ctx context.Context, db repository.Executor, sourceId entity.UserId, targetId entity.UserId) ([]*entity.UserFollow, error) {
+	if mock.GetUserFollowByUserIdsFunc == nil {
+		panic("UserFollowRepositoryMock.GetUserFollowByUserIdsFunc: method is nil but UserFollowRepository.GetUserFollowByUserIds was just called")
 	}
 	callInfo := struct {
 		Ctx      context.Context
+		Db       repository.Executor
 		SourceId entity.UserId
 		TargetId entity.UserId
 	}{
 		Ctx:      ctx,
+		Db:       db,
 		SourceId: sourceId,
 		TargetId: targetId,
 	}
-	mock.lockGetByUserIds.Lock()
-	mock.calls.GetByUserIds = append(mock.calls.GetByUserIds, callInfo)
-	mock.lockGetByUserIds.Unlock()
-	return mock.GetByUserIdsFunc(ctx, sourceId, targetId)
+	mock.lockGetUserFollowByUserIds.Lock()
+	mock.calls.GetUserFollowByUserIds = append(mock.calls.GetUserFollowByUserIds, callInfo)
+	mock.lockGetUserFollowByUserIds.Unlock()
+	return mock.GetUserFollowByUserIdsFunc(ctx, db, sourceId, targetId)
 }
 
-// GetByUserIdsCalls gets all the calls that were made to GetByUserIds.
+// GetUserFollowByUserIdsCalls gets all the calls that were made to GetUserFollowByUserIds.
 // Check the length with:
 //
-//	len(mockedUserFollowRepository.GetByUserIdsCalls())
-func (mock *UserFollowRepositoryMock) GetByUserIdsCalls() []struct {
+//	len(mockedUserFollowRepository.GetUserFollowByUserIdsCalls())
+func (mock *UserFollowRepositoryMock) GetUserFollowByUserIdsCalls() []struct {
 	Ctx      context.Context
+	Db       repository.Executor
 	SourceId entity.UserId
 	TargetId entity.UserId
 } {
 	var calls []struct {
 		Ctx      context.Context
+		Db       repository.Executor
 		SourceId entity.UserId
 		TargetId entity.UserId
 	}
-	mock.lockGetByUserIds.RLock()
-	calls = mock.calls.GetByUserIds
-	mock.lockGetByUserIds.RUnlock()
+	mock.lockGetUserFollowByUserIds.RLock()
+	calls = mock.calls.GetUserFollowByUserIds
+	mock.lockGetUserFollowByUserIds.RUnlock()
 	return calls
 }
 
 // IsFollowed calls IsFollowedFunc.
-func (mock *UserFollowRepositoryMock) IsFollowed(ctx context.Context, sourceId entity.UserId, targetId entity.UserId) (bool, error) {
+func (mock *UserFollowRepositoryMock) IsFollowed(ctx context.Context, db repository.Executor, sourceId entity.UserId, targetId entity.UserId) (bool, error) {
 	if mock.IsFollowedFunc == nil {
 		panic("UserFollowRepositoryMock.IsFollowedFunc: method is nil but UserFollowRepository.IsFollowed was just called")
 	}
 	callInfo := struct {
 		Ctx      context.Context
+		Db       repository.Executor
 		SourceId entity.UserId
 		TargetId entity.UserId
 	}{
 		Ctx:      ctx,
+		Db:       db,
 		SourceId: sourceId,
 		TargetId: targetId,
 	}
 	mock.lockIsFollowed.Lock()
 	mock.calls.IsFollowed = append(mock.calls.IsFollowed, callInfo)
 	mock.lockIsFollowed.Unlock()
-	return mock.IsFollowedFunc(ctx, sourceId, targetId)
+	return mock.IsFollowedFunc(ctx, db, sourceId, targetId)
 }
 
 // IsFollowedCalls gets all the calls that were made to IsFollowed.
@@ -737,11 +800,13 @@ func (mock *UserFollowRepositoryMock) IsFollowed(ctx context.Context, sourceId e
 //	len(mockedUserFollowRepository.IsFollowedCalls())
 func (mock *UserFollowRepositoryMock) IsFollowedCalls() []struct {
 	Ctx      context.Context
+	Db       repository.Executor
 	SourceId entity.UserId
 	TargetId entity.UserId
 } {
 	var calls []struct {
 		Ctx      context.Context
+		Db       repository.Executor
 		SourceId entity.UserId
 		TargetId entity.UserId
 	}
@@ -752,23 +817,25 @@ func (mock *UserFollowRepositoryMock) IsFollowedCalls() []struct {
 }
 
 // IsFollowing calls IsFollowingFunc.
-func (mock *UserFollowRepositoryMock) IsFollowing(ctx context.Context, sourceId entity.UserId, targetId entity.UserId) (bool, error) {
+func (mock *UserFollowRepositoryMock) IsFollowing(ctx context.Context, db repository.Executor, sourceId entity.UserId, targetId entity.UserId) (bool, error) {
 	if mock.IsFollowingFunc == nil {
 		panic("UserFollowRepositoryMock.IsFollowingFunc: method is nil but UserFollowRepository.IsFollowing was just called")
 	}
 	callInfo := struct {
 		Ctx      context.Context
+		Db       repository.Executor
 		SourceId entity.UserId
 		TargetId entity.UserId
 	}{
 		Ctx:      ctx,
+		Db:       db,
 		SourceId: sourceId,
 		TargetId: targetId,
 	}
 	mock.lockIsFollowing.Lock()
 	mock.calls.IsFollowing = append(mock.calls.IsFollowing, callInfo)
 	mock.lockIsFollowing.Unlock()
-	return mock.IsFollowingFunc(ctx, sourceId, targetId)
+	return mock.IsFollowingFunc(ctx, db, sourceId, targetId)
 }
 
 // IsFollowingCalls gets all the calls that were made to IsFollowing.
@@ -777,11 +844,13 @@ func (mock *UserFollowRepositoryMock) IsFollowing(ctx context.Context, sourceId 
 //	len(mockedUserFollowRepository.IsFollowingCalls())
 func (mock *UserFollowRepositoryMock) IsFollowingCalls() []struct {
 	Ctx      context.Context
+	Db       repository.Executor
 	SourceId entity.UserId
 	TargetId entity.UserId
 } {
 	var calls []struct {
 		Ctx      context.Context
+		Db       repository.Executor
 		SourceId entity.UserId
 		TargetId entity.UserId
 	}
@@ -791,38 +860,42 @@ func (mock *UserFollowRepositoryMock) IsFollowingCalls() []struct {
 	return calls
 }
 
-// Store calls StoreFunc.
-func (mock *UserFollowRepositoryMock) Store(ctx context.Context, userFollow *entity.UserFollow) (*entity.UserFollow, error) {
-	if mock.StoreFunc == nil {
-		panic("UserFollowRepositoryMock.StoreFunc: method is nil but UserFollowRepository.Store was just called")
+// StoreUserFollow calls StoreUserFollowFunc.
+func (mock *UserFollowRepositoryMock) StoreUserFollow(ctx context.Context, db repository.Executor, userFollow *entity.UserFollow) (*entity.UserFollow, error) {
+	if mock.StoreUserFollowFunc == nil {
+		panic("UserFollowRepositoryMock.StoreUserFollowFunc: method is nil but UserFollowRepository.StoreUserFollow was just called")
 	}
 	callInfo := struct {
 		Ctx        context.Context
+		Db         repository.Executor
 		UserFollow *entity.UserFollow
 	}{
 		Ctx:        ctx,
+		Db:         db,
 		UserFollow: userFollow,
 	}
-	mock.lockStore.Lock()
-	mock.calls.Store = append(mock.calls.Store, callInfo)
-	mock.lockStore.Unlock()
-	return mock.StoreFunc(ctx, userFollow)
+	mock.lockStoreUserFollow.Lock()
+	mock.calls.StoreUserFollow = append(mock.calls.StoreUserFollow, callInfo)
+	mock.lockStoreUserFollow.Unlock()
+	return mock.StoreUserFollowFunc(ctx, db, userFollow)
 }
 
-// StoreCalls gets all the calls that were made to Store.
+// StoreUserFollowCalls gets all the calls that were made to StoreUserFollow.
 // Check the length with:
 //
-//	len(mockedUserFollowRepository.StoreCalls())
-func (mock *UserFollowRepositoryMock) StoreCalls() []struct {
+//	len(mockedUserFollowRepository.StoreUserFollowCalls())
+func (mock *UserFollowRepositoryMock) StoreUserFollowCalls() []struct {
 	Ctx        context.Context
+	Db         repository.Executor
 	UserFollow *entity.UserFollow
 } {
 	var calls []struct {
 		Ctx        context.Context
+		Db         repository.Executor
 		UserFollow *entity.UserFollow
 	}
-	mock.lockStore.RLock()
-	calls = mock.calls.Store
-	mock.lockStore.RUnlock()
+	mock.lockStoreUserFollow.RLock()
+	calls = mock.calls.StoreUserFollow
+	mock.lockStoreUserFollow.RUnlock()
 	return calls
 }
