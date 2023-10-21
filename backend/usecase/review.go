@@ -4,11 +4,12 @@ import (
 	"context"
 
 	"github.com/kngnkg/tunetrail/backend/entity"
+	"github.com/kngnkg/tunetrail/backend/infra/repository"
 	"golang.org/x/sync/errgroup"
 )
 
-//go:generate go run github.com/cweill/gotests/... -exported -w review_test.go review.go
 type ReviewUseCase struct {
+	DB         repository.DBAccesser
 	reviewRepo ReviewRepository
 	albumRepo  AlbumRepository
 	userRepo   UserRepository
@@ -24,17 +25,17 @@ type ReviewListResponse struct {
 }
 
 func (uc *ReviewUseCase) Store(ctx context.Context, review *entity.Review) (*ReviewResponse, error) {
-	r, err := uc.reviewRepo.Store(ctx, review)
+	r, err := uc.reviewRepo.StoreReview(ctx, uc.DB, review)
 	if err != nil {
 		return nil, err
 	}
 
-	author, err := uc.userRepo.GetById(ctx, r.Author.UserId)
+	author, err := uc.userRepo.GetUserById(ctx, uc.DB, r.Author.UserId)
 	if err != nil {
 		return nil, err
 	}
 
-	album, err := uc.albumRepo.GetById(ctx, r.Album.AlbumId)
+	album, err := uc.albumRepo.GetAlbumById(ctx, r.Album.AlbumId)
 	if err != nil {
 		return nil, err
 	}
@@ -56,17 +57,17 @@ func (uc *ReviewUseCase) Store(ctx context.Context, review *entity.Review) (*Rev
 }
 
 func (uc *ReviewUseCase) GetById(ctx context.Context, reviewId string) (*ReviewResponse, error) {
-	r, err := uc.reviewRepo.GetById(ctx, reviewId)
+	r, err := uc.reviewRepo.GetReviewById(ctx, uc.DB, reviewId)
 	if err != nil {
 		return nil, err
 	}
 
-	author, err := uc.userRepo.GetById(ctx, r.Author.UserId)
+	author, err := uc.userRepo.GetUserById(ctx, uc.DB, r.Author.UserId)
 	if err != nil {
 		return nil, err
 	}
 
-	album, err := uc.albumRepo.GetById(ctx, r.Album.AlbumId)
+	album, err := uc.albumRepo.GetAlbumById(ctx, r.Album.AlbumId)
 	if err != nil {
 		return nil, err
 	}
@@ -88,7 +89,7 @@ func (uc *ReviewUseCase) GetById(ctx context.Context, reviewId string) (*ReviewR
 }
 
 func (uc *ReviewUseCase) GetByAuthorId(ctx context.Context, authorId entity.UserId, nextCursor string, limit int) (*ReviewListResponse, error) {
-	rs, nc, err := uc.reviewRepo.GetByAuthorId(ctx, authorId, nextCursor, limit)
+	rs, nc, err := uc.reviewRepo.GetReviewByAuthorId(ctx, uc.DB, authorId, nextCursor, limit)
 	if err != nil {
 		return nil, err
 	}
@@ -105,7 +106,7 @@ func (uc *ReviewUseCase) GetByAuthorId(ctx context.Context, authorId entity.User
 	eg, ctx := errgroup.WithContext(ctx)
 	eg.Go(func() error {
 		// アルバム情報を取得する
-		as, err := uc.albumRepo.GetByIds(ctx, aIds)
+		as, err := uc.albumRepo.GetAlbumByIds(ctx, aIds)
 		if err != nil {
 			return err
 		}
@@ -121,7 +122,7 @@ func (uc *ReviewUseCase) GetByAuthorId(ctx context.Context, authorId entity.User
 	var author *entity.User
 	// ユーザー情報を取得する
 	eg.Go(func() error {
-		a, err := uc.userRepo.GetById(ctx, authorId)
+		a, err := uc.userRepo.GetUserById(ctx, uc.DB, authorId)
 		if err != nil {
 			return err
 		}
@@ -152,17 +153,17 @@ func (uc *ReviewUseCase) GetByAuthorId(ctx context.Context, authorId entity.User
 }
 
 func (uc *ReviewUseCase) Update(ctx context.Context, review *entity.Review) (*ReviewResponse, error) {
-	r, err := uc.reviewRepo.Update(ctx, review)
+	r, err := uc.reviewRepo.UpdateReview(ctx, uc.DB, review)
 	if err != nil {
 		return nil, err
 	}
 
-	author, err := uc.userRepo.GetById(ctx, r.Author.UserId)
+	author, err := uc.userRepo.GetUserById(ctx, uc.DB, r.Author.UserId)
 	if err != nil {
 		return nil, err
 	}
 
-	album, err := uc.albumRepo.GetById(ctx, r.Album.AlbumId)
+	album, err := uc.albumRepo.GetAlbumById(ctx, r.Album.AlbumId)
 	if err != nil {
 		return nil, err
 	}
@@ -184,5 +185,5 @@ func (uc *ReviewUseCase) Update(ctx context.Context, review *entity.Review) (*Re
 }
 
 func (uc *ReviewUseCase) DeleteById(ctx context.Context, reviewId string) error {
-	return uc.reviewRepo.DeleteById(ctx, reviewId)
+	return uc.reviewRepo.DeleteReviewById(ctx, uc.DB, reviewId)
 }
