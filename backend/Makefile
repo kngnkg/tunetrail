@@ -9,3 +9,11 @@ gen: ## Generate mocks and test boilerplate
 .PHONY: gen-pb
 gen-pb: ## Generate pb files
 	./scripts/gen.sh
+
+.PHONY: dry-migrate
+dry-migrate: ## Try migration
+	./scripts/migrate.sh dry
+
+.PHONY: migrate
+migrate:  ## Execute migration
+	./scripts/migrate.sh
