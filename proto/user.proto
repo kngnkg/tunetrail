@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package user;
+
+option go_package = "github.com/kngnkg/tunetrail/backend/gen/user";
+
+service UserService {
+  rpc GetById(GetByIdRequest) returns (GetByIdReply) {}
+}
+
+message GetByIdRequest { string userId = 1; }
+
+message GetByIdReply { User user = 1; }
+
+message User {
+  string userId = 1;
+  string displayId = 2;
+  string name = 3;
+  string avatarUrl = 4;
+  string bio = 5;
+  int32 followersCount = 6;
+  int32 followingCount = 7;
+  string createdAt = 8;
+  string updatedAt = 9;
+}

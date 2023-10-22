@@ -8,6 +8,7 @@ import (
 	"github.com/kngnkg/tunetrail/backend/logger"
 
 	helloworld "github.com/kngnkg/tunetrail/backend/gen/helloworld"
+	user "github.com/kngnkg/tunetrail/backend/gen/user"
 	"google.golang.org/grpc"
 )
 
@@ -20,6 +21,9 @@ func main() {
 
 	helloworldServer := server.NewHelloworldServer()
 	helloworld.RegisterGreeterServer(s, helloworldServer)
+
+	userServer := server.NewUserServer()
+	user.RegisterUserServiceServer(s, userServer)
 
 	lis, err := net.Listen("tcp", ":50051")
 	if err != nil {
