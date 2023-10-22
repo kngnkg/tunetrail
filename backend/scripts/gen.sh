@@ -1,5 +1,7 @@
 #! /bin/bash
 
+set -e
+
 # 生成ファイルを格納するフォルダのベースパス
 BASE_OUT_DIR="./gen"
 
@@ -27,5 +29,5 @@ for PROTO_FILE in ${PROTO_PATH}/*.proto; do
         --go_opt=module="${MODULE_NAME}" \
         --go-grpc_out="${OUT_DIR}" \
     	--go-grpc_opt=module="${MODULE_NAME}" \
-        ${PROTO_PATH}/*.proto
+        ${PROTO_FILE}
 done

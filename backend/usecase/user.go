@@ -5,11 +5,22 @@ import (
 	"time"
 
 	"github.com/kngnkg/tunetrail/backend/entity"
+	"github.com/kngnkg/tunetrail/backend/infra/repository"
+	"github.com/kngnkg/tunetrail/backend/logger"
 )
 
 type UserUseCase struct {
-	userRepo       UserRepository
-	userFollowRepo UserFollowRepository
+	DB       repository.DBAccesser
+	userRepo UserRepository
+	// userFollowRepo UserFollowRepository
+}
+
+func NewUserUseCase(db repository.DBAccesser, userRepo UserRepository) *UserUseCase {
+	return &UserUseCase{
+		DB:       db,
+		userRepo: userRepo,
+		// userFollowRepo: userFollowRepo,
+	}
 }
 
 type UserResponse struct {
@@ -38,9 +49,21 @@ func NewUserResponse(user *entity.User) *UserResponse {
 	}
 }
 
-func (uc *UserUseCase) GetById(ctx context.Context, userId entity.UserId) (*UserResponse, error) {
-	user, err := uc.userRepo.GetById(ctx, userId)
+func (uc *UserUseCase) Store(ctx context.Context, user *entity.User) (*UserResponse, error) {
+	tx, err := uc.DB.BeginTxx(ctx, nil)
 	if err != nil {
+		return nil, err
+	}
+
+	user, err = uc.userRepo.StoreUser(ctx, tx, user)
+	if err != nil {
+		if err = tx.Rollback(); err != nil {
+			logger.FromContent(ctx).Error("failed to rollback transaction: %v", err)
+		}
+		return nil, err
+	}
+
+	if err = tx.Commit(); err != nil {
 		return nil, err
 	}
 
@@ -48,26 +71,37 @@ func (uc *UserUseCase) GetById(ctx context.Context, userId entity.UserId) (*User
 	return resp, nil
 }
 
-func (uc *UserUseCase) GetFollowersById(ctx context.Context, sourceId, targetId entity.UserId, nextCursor string, limit int) ([]*UserResponse, error) {
-	ufs, err := uc.userFollowRepo.GetByUserIds(ctx, sourceId, targetId)
+func (uc *UserUseCase) GetById(ctx context.Context, userId entity.UserId) (*UserResponse, error) {
+	user, err := uc.userRepo.GetUserById(ctx, uc.DB, userId)
 	if err != nil {
 		return nil, err
 	}
 
-	var followerIds []entity.UserId
-	for _, uf := range ufs {
-		followerIds = append(followerIds, uf.UserId)
-	}
-
-	users, err := uc.userRepo.GetByIds(ctx, followerIds)
-	if err != nil {
-		return nil, err
-	}
-
-	var resps []*UserResponse
-	for _, user := range users {
-		resps = append(resps, NewUserResponse(user))
-	}
-
-	return resps, nil
+	// TODO: フォロー数等の情報を取得する
+	resp := NewUserResponse(user)
+	return resp, nil
 }
+
+// func (uc *UserUseCase) GetFollowersById(ctx context.Context, sourceId, targetId entity.UserId, nextCursor string, limit int) ([]*UserResponse, error) {
+// 	ufs, err := uc.userFollowRepo.GetUserFollowByUserIds(ctx, uc.DB, sourceId, targetId)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	var followerIds []entity.UserId
+// 	for _, uf := range ufs {
+// 		followerIds = append(followerIds, uf.UserId)
+// 	}
+
+// 	users, err := uc.userRepo.GetUserByIds(ctx, uc.DB, followerIds)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	var resps []*UserResponse
+// 	for _, user := range users {
+// 		resps = append(resps, NewUserResponse(user))
+// 	}
+
+// 	return resps, nil
+// }
