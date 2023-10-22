@@ -3,9 +3,11 @@ module github.com/kngnkg/tunetrail/backend
 go 1.21.1
 
 require (
+	github.com/caarlos0/env/v6 v6.10.1
 	github.com/cockroachdb/errors v1.11.1
 	github.com/cweill/gotests v1.6.0
 	github.com/google/uuid v1.3.1
+	github.com/jmoiron/sqlx v1.3.5
 	github.com/matryer/moq v0.3.3
 	github.com/stretchr/testify v1.8.4
 	golang.org/x/sync v0.3.0
