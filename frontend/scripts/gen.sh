@@ -24,5 +24,5 @@ for PROTO_FILE in ${PROTO_PATH}/*.proto; do
         --js_out="import_style=commonjs,binary:${OUT_DIR}" \
         --ts_out="service=grpc-node,mode=grpc-js:${OUT_DIR}" \
         --grpc_out="grpc_js:${OUT_DIR}" \
-        ${PROTO_PATH}/*.proto
+        ${PROTO_FILE}
 done
