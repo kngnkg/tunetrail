@@ -7,8 +7,10 @@ import (
 	"strconv"
 
 	"github.com/kngnkg/tunetrail/backend/config"
+	"github.com/kngnkg/tunetrail/backend/infra/repository/postgres"
 	"github.com/kngnkg/tunetrail/backend/infra/server"
 	"github.com/kngnkg/tunetrail/backend/logger"
+	"github.com/kngnkg/tunetrail/backend/usecase"
 
 	helloworld "github.com/kngnkg/tunetrail/backend/gen/helloworld"
 	user "github.com/kngnkg/tunetrail/backend/gen/user"
@@ -25,14 +27,22 @@ func main() {
 		l.Fatal("failed to load config.", err)
 	}
 
-	// TODO: usecaseなどのインスタンスを生成する
+	db, close, err := postgres.NewDb(cfg)
+	if err != nil {
+		l.Fatal("failed to connect to db.", err)
+	}
+	defer close()
+
+	ur := &postgres.UserRepository{}
+
+	userUc := usecase.NewUserUseCase(db, ur)
 
 	s := grpc.NewServer()
 
 	helloworldServer := server.NewHelloworldServer()
 	helloworld.RegisterGreeterServer(s, helloworldServer)
 
-	userServer := server.NewUserServer()
+	userServer := server.NewUserServer(userUc, l)
 	user.RegisterUserServiceServer(s, userServer)
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%v", cfg.Port))
