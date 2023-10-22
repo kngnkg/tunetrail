@@ -23,8 +23,8 @@ var _ UserRepository = &UserRepositoryMock{}
 //			GetUserByIdFunc: func(ctx context.Context, db repository.Executor, userId entity.UserId) (*entity.User, error) {
 //				panic("mock out the GetUserById method")
 //			},
-//			GetUserByIdsFunc: func(ctx context.Context, db repository.Executor, userIds []entity.UserId) ([]*entity.User, error) {
-//				panic("mock out the GetUserByIds method")
+//			StoreUserFunc: func(ctx context.Context, db repository.Executor, user *entity.User) (*entity.User, error) {
+//				panic("mock out the StoreUser method")
 //			},
 //		}
 //
@@ -36,8 +36,8 @@ type UserRepositoryMock struct {
 	// GetUserByIdFunc mocks the GetUserById method.
 	GetUserByIdFunc func(ctx context.Context, db repository.Executor, userId entity.UserId) (*entity.User, error)
 
-	// GetUserByIdsFunc mocks the GetUserByIds method.
-	GetUserByIdsFunc func(ctx context.Context, db repository.Executor, userIds []entity.UserId) ([]*entity.User, error)
+	// StoreUserFunc mocks the StoreUser method.
+	StoreUserFunc func(ctx context.Context, db repository.Executor, user *entity.User) (*entity.User, error)
 
 	// calls tracks calls to the methods.
 	calls struct {
@@ -50,18 +50,18 @@ type UserRepositoryMock struct {
 			// UserId is the userId argument value.
 			UserId entity.UserId
 		}
-		// GetUserByIds holds details about calls to the GetUserByIds method.
-		GetUserByIds []struct {
+		// StoreUser holds details about calls to the StoreUser method.
+		StoreUser []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
 			// Db is the db argument value.
 			Db repository.Executor
-			// UserIds is the userIds argument value.
-			UserIds []entity.UserId
+			// User is the user argument value.
+			User *entity.User
 		}
 	}
-	lockGetUserById  sync.RWMutex
-	lockGetUserByIds sync.RWMutex
+	lockGetUserById sync.RWMutex
+	lockStoreUser   sync.RWMutex
 }
 
 // GetUserById calls GetUserByIdFunc.
@@ -104,42 +104,42 @@ func (mock *UserRepositoryMock) GetUserByIdCalls() []struct {
 	return calls
 }
 
-// GetUserByIds calls GetUserByIdsFunc.
-func (mock *UserRepositoryMock) GetUserByIds(ctx context.Context, db repository.Executor, userIds []entity.UserId) ([]*entity.User, error) {
-	if mock.GetUserByIdsFunc == nil {
-		panic("UserRepositoryMock.GetUserByIdsFunc: method is nil but UserRepository.GetUserByIds was just called")
+// StoreUser calls StoreUserFunc.
+func (mock *UserRepositoryMock) StoreUser(ctx context.Context, db repository.Executor, user *entity.User) (*entity.User, error) {
+	if mock.StoreUserFunc == nil {
+		panic("UserRepositoryMock.StoreUserFunc: method is nil but UserRepository.StoreUser was just called")
 	}
 	callInfo := struct {
-		Ctx     context.Context
-		Db      repository.Executor
-		UserIds []entity.UserId
+		Ctx  context.Context
+		Db   repository.Executor
+		User *entity.User
 	}{
-		Ctx:     ctx,
-		Db:      db,
-		UserIds: userIds,
+		Ctx:  ctx,
+		Db:   db,
+		User: user,
 	}
-	mock.lockGetUserByIds.Lock()
-	mock.calls.GetUserByIds = append(mock.calls.GetUserByIds, callInfo)
-	mock.lockGetUserByIds.Unlock()
-	return mock.GetUserByIdsFunc(ctx, db, userIds)
+	mock.lockStoreUser.Lock()
+	mock.calls.StoreUser = append(mock.calls.StoreUser, callInfo)
+	mock.lockStoreUser.Unlock()
+	return mock.StoreUserFunc(ctx, db, user)
 }
 
-// GetUserByIdsCalls gets all the calls that were made to GetUserByIds.
+// StoreUserCalls gets all the calls that were made to StoreUser.
 // Check the length with:
 //
-//	len(mockedUserRepository.GetUserByIdsCalls())
-func (mock *UserRepositoryMock) GetUserByIdsCalls() []struct {
-	Ctx     context.Context
-	Db      repository.Executor
-	UserIds []entity.UserId
+//	len(mockedUserRepository.StoreUserCalls())
+func (mock *UserRepositoryMock) StoreUserCalls() []struct {
+	Ctx  context.Context
+	Db   repository.Executor
+	User *entity.User
 } {
 	var calls []struct {
-		Ctx     context.Context
-		Db      repository.Executor
-		UserIds []entity.UserId
+		Ctx  context.Context
+		Db   repository.Executor
+		User *entity.User
 	}
-	mock.lockGetUserByIds.RLock()
-	calls = mock.calls.GetUserByIds
-	mock.lockGetUserByIds.RUnlock()
+	mock.lockStoreUser.RLock()
+	calls = mock.calls.StoreUser
+	mock.lockStoreUser.RUnlock()
 	return calls
 }

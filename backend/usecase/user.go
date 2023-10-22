@@ -6,6 +6,7 @@ import (
 
 	"github.com/kngnkg/tunetrail/backend/entity"
 	"github.com/kngnkg/tunetrail/backend/infra/repository"
+	"github.com/kngnkg/tunetrail/backend/logger"
 )
 
 type UserUseCase struct {
@@ -48,6 +49,28 @@ func NewUserResponse(user *entity.User) *UserResponse {
 	}
 }
 
+func (uc *UserUseCase) Store(ctx context.Context, user *entity.User) (*UserResponse, error) {
+	tx, err := uc.DB.BeginTxx(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	user, err = uc.userRepo.StoreUser(ctx, tx, user)
+	if err != nil {
+		if err = tx.Rollback(); err != nil {
+			logger.FromContent(ctx).Error("failed to rollback transaction: %v", err)
+		}
+		return nil, err
+	}
+
+	if err = tx.Commit(); err != nil {
+		return nil, err
+	}
+
+	resp := NewUserResponse(user)
+	return resp, nil
+}
+
 func (uc *UserUseCase) GetById(ctx context.Context, userId entity.UserId) (*UserResponse, error) {
 	user, err := uc.userRepo.GetUserById(ctx, uc.DB, userId)
 	if err != nil {
@@ -55,7 +78,6 @@ func (uc *UserUseCase) GetById(ctx context.Context, userId entity.UserId) (*User
 	}
 
 	// TODO: フォロー数等の情報を取得する
-
 	resp := NewUserResponse(user)
 	return resp, nil
 }

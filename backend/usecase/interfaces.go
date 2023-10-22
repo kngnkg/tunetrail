@@ -22,6 +22,7 @@ import (
 // }
 
 type UserRepository interface {
+	StoreUser(ctx context.Context, db repository.Executor, user *entity.User) (*entity.User, error)
 	GetUserById(ctx context.Context, db repository.Executor, userId entity.UserId) (*entity.User, error)
 	// GetUserByIds(ctx context.Context, db repository.Executor, userIds []entity.UserId) ([]*entity.User, error)
 }
