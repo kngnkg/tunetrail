@@ -1,102 +1,95 @@
 package usecase
 
-import (
-	"context"
+// type UserFollowUseCase struct {
+// 	DB             repository.DBAccesser
+// 	userFollowRepo UserFollowRepository
+// 	userRepo       UserRepository
+// }
 
-	"github.com/kngnkg/tunetrail/backend/entity"
-	"github.com/kngnkg/tunetrail/backend/infra/repository"
-)
+// type UserFollowResponse struct {
+// 	User          *entity.User
+// 	Relationships entity.Relationships
+// }
 
-type UserFollowUseCase struct {
-	DB             repository.DBAccesser
-	userFollowRepo UserFollowRepository
-	userRepo       UserRepository
-}
+// func (uc *UserFollowUseCase) LookupRelationships(ctx context.Context, sourceId entity.UserId, targetIds []entity.UserId) ([]*UserFollowResponse, error) {
+// 	users, err := uc.userRepo.GetUserByIds(ctx, uc.DB, targetIds)
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-type UserFollowResponse struct {
-	User          *entity.User
-	Relationships entity.Relationships
-}
+// 	resps := make([]*UserFollowResponse, len(users))
 
-func (uc *UserFollowUseCase) LookupRelationships(ctx context.Context, sourceId entity.UserId, targetIds []entity.UserId) ([]*UserFollowResponse, error) {
-	users, err := uc.userRepo.GetUserByIds(ctx, uc.DB, targetIds)
-	if err != nil {
-		return nil, err
-	}
+// 	for _, user := range users {
+// 		var rs entity.Relationships
 
-	resps := make([]*UserFollowResponse, len(users))
+// 		// フォローしているか確認する
+// 		follwing, err := uc.userFollowRepo.IsFollowing(ctx, uc.DB, sourceId, user.UserId)
+// 		if err != nil {
+// 			return nil, err
+// 		}
 
-	for _, user := range users {
-		var rs entity.Relationships
+// 		if follwing {
+// 			rs = append(rs, entity.RelationTypeFollowing)
+// 		}
 
-		// フォローしているか確認する
-		follwing, err := uc.userFollowRepo.IsFollowing(ctx, uc.DB, sourceId, user.UserId)
-		if err != nil {
-			return nil, err
-		}
+// 		// フォローされているか確認する
+// 		followed, err := uc.userFollowRepo.IsFollowed(ctx, uc.DB, sourceId, user.UserId)
+// 		if err != nil {
+// 			return nil, err
+// 		}
 
-		if follwing {
-			rs = append(rs, entity.RelationTypeFollowing)
-		}
+// 		if followed {
+// 			rs = append(rs, entity.RelationTypeFollowed)
+// 		}
 
-		// フォローされているか確認する
-		followed, err := uc.userFollowRepo.IsFollowed(ctx, uc.DB, sourceId, user.UserId)
-		if err != nil {
-			return nil, err
-		}
+// 		// どちらでもない場合
+// 		if len(rs) == 0 {
+// 			rs = append(rs, entity.RelationTypeNone)
+// 		}
 
-		if followed {
-			rs = append(rs, entity.RelationTypeFollowed)
-		}
+// 		resps = append(resps, &UserFollowResponse{
+// 			User:          user,
+// 			Relationships: rs,
+// 		})
+// 	}
 
-		// どちらでもない場合
-		if len(rs) == 0 {
-			rs = append(rs, entity.RelationTypeNone)
-		}
+// 	return resps, nil
+// }
 
-		resps = append(resps, &UserFollowResponse{
-			User:          user,
-			Relationships: rs,
-		})
-	}
+// func (uc *UserFollowUseCase) Follow(ctx context.Context, userFollow *entity.UserFollow) (*UserFollowResponse, error) {
+// 	_, err := uc.userFollowRepo.StoreUserFollow(ctx, uc.DB, userFollow)
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	return resps, nil
-}
+// 	user, err := uc.userRepo.GetUserById(ctx, uc.DB, userFollow.FolloweeId)
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-func (uc *UserFollowUseCase) Follow(ctx context.Context, userFollow *entity.UserFollow) (*UserFollowResponse, error) {
-	_, err := uc.userFollowRepo.StoreUserFollow(ctx, uc.DB, userFollow)
-	if err != nil {
-		return nil, err
-	}
+// 	relationships := []entity.RelationType{entity.RelationTypeFollowing}
 
-	user, err := uc.userRepo.GetUserById(ctx, uc.DB, userFollow.FolloweeId)
-	if err != nil {
-		return nil, err
-	}
+// 	followed, err := uc.userFollowRepo.IsFollowed(ctx, uc.DB, userFollow.FolloweeId, userFollow.FolloweeId)
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	relationships := []entity.RelationType{entity.RelationTypeFollowing}
+// 	if followed {
+// 		relationships = append(relationships, entity.RelationTypeFollowed)
+// 	}
 
-	followed, err := uc.userFollowRepo.IsFollowed(ctx, uc.DB, userFollow.FolloweeId, userFollow.FolloweeId)
-	if err != nil {
-		return nil, err
-	}
+// 	resp := &UserFollowResponse{
+// 		User:          user,
+// 		Relationships: relationships,
+// 	}
+// 	return resp, nil
+// }
 
-	if followed {
-		relationships = append(relationships, entity.RelationTypeFollowed)
-	}
+// func (uc *UserFollowUseCase) Unfollow(ctx context.Context, userFollow *entity.UserFollow) error {
+// 	err := uc.userFollowRepo.DeleteUserFollow(ctx, uc.DB, userFollow)
+// 	if err != nil {
+// 		return err
+// 	}
 
-	resp := &UserFollowResponse{
-		User:          user,
-		Relationships: relationships,
-	}
-	return resp, nil
-}
-
-func (uc *UserFollowUseCase) Unfollow(ctx context.Context, userFollow *entity.UserFollow) error {
-	err := uc.userFollowRepo.DeleteUserFollow(ctx, uc.DB, userFollow)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
+// 	return nil
+// }
