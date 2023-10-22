@@ -11,6 +11,7 @@ import (
 	"github.com/kngnkg/tunetrail/backend/infra/server"
 	"github.com/kngnkg/tunetrail/backend/logger"
 	"github.com/kngnkg/tunetrail/backend/usecase"
+	"github.com/kngnkg/tunetrail/backend/validator"
 
 	helloworld "github.com/kngnkg/tunetrail/backend/gen/helloworld"
 	user "github.com/kngnkg/tunetrail/backend/gen/user"
@@ -42,7 +43,9 @@ func main() {
 	helloworldServer := server.NewHelloworldServer()
 	helloworld.RegisterGreeterServer(s, helloworldServer)
 
-	userServer := server.NewUserServer(userUc, l)
+	v := validator.New()
+
+	userServer := server.NewUserServer(userUc, v, l)
 	user.RegisterUserServiceServer(s, userServer)
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%v", cfg.Port))
