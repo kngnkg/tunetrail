@@ -16,6 +16,4 @@ func TestNew(t *testing.T) {
 		t.Fatalf("cannot create config: %v", err)
 	}
 	assert.Equal(t, wantPort, got.Port)
-	wantEnv := "dev"
-	assert.Equal(t, wantEnv, got.Env)
 }

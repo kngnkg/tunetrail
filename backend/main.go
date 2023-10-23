@@ -32,7 +32,7 @@ func main() {
 	if cfg.Env == "dev" {
 		sslMode = "disable" // 開発環境の場合はSSL通信を無効にする
 	}
-	db, close, err := postgres.NewDb(&postgres.DBConfig{
+	db, close, err := postgres.NewDB(&postgres.DBConfig{
 		Host:     cfg.DBHost,
 		Port:     cfg.DBPort,
 		User:     cfg.DBUser,
