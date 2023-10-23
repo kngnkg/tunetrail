@@ -16,10 +16,11 @@ import (
 // 	DeleteReviewById(ctx context.Context, db repository.Executor, reviewId string) error
 // }
 
-// type AlbumRepository interface {
-// 	GetAlbumById(ctx context.Context, albumId string) (*entity.Album, error)
-// 	GetAlbumByIds(ctx context.Context, albumIds []string) ([]*entity.Album, error)
-// }
+type AlbumRepository interface {
+	GetAlbumById(ctx context.Context, albumId string) (*entity.Album, error)
+	// GetAlbumTracksById(ctx context.Context, albumId string) ([]*entity.Track, error)
+	// GetAlbumByIds(ctx context.Context, albumIds []string) ([]*entity.Album, error)
+}
 
 type UserRepository interface {
 	StoreUser(ctx context.Context, db repository.Executor, user *entity.User) (*entity.User, error)
