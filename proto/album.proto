@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package album;
+
+option go_package = "github.com/kngnkg/tunetrail/backend/gen/album";
+
+message Album {
+  string albumId = 1;
+  string spotifyUri = 2;
+  string spotifyUrl = 3;
+  string name = 4;
+  repeated SimpleArtist artists = 5;
+  TrackPage tracks = 6;
+  string coverUrl = 7;
+  string releaseDate = 8;
+  repeated string genres = 9;
+}
+
+message SimpleArtist {
+  string artistId = 1;
+  string spotifyUri = 3;
+  string spotifyUrl = 4;
+  string name = 5;
+}
+
+message Track {
+  string trackId = 1;
+  string spotifyUri = 3;
+  string spotifyUrl = 4;
+  string title = 5;
+  int32 durationMs = 6;
+  int32 trackNumber = 7;
+  string previewUrl = 8;
+}
+
+message TrackPage {
+  repeated Track tracks = 1;
+  int32 limit = 2;
+  int32 offset = 3;
+  int32 total = 4;
+  string next = 5;
+  string previous = 6;
+}

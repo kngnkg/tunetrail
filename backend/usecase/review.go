@@ -15,8 +15,18 @@ type ReviewUseCase struct {
 	userRepo   UserRepository
 }
 
+func NewReviewUseCase(db repository.DBAccesser, rr ReviewRepository, ar AlbumRepository, ur UserRepository) *ReviewUseCase {
+	return &ReviewUseCase{
+		DB:         db,
+		reviewRepo: rr,
+		albumRepo:  ar,
+		userRepo:   ur,
+	}
+}
+
 type ReviewResponse struct {
-	Review *entity.Review
+	Review    *entity.Review
+	TrackPage *entity.TrackPage
 }
 
 // type ReviewListResponse struct {
@@ -24,7 +34,19 @@ type ReviewResponse struct {
 // 	NextCursor string
 // }
 
-func (uc *ReviewUseCase) Store(ctx context.Context, review *entity.Review) (*ReviewResponse, error) {
+func (uc *ReviewUseCase) Store(ctx context.Context, authorId entity.UserId, albumId, title, content string, status entity.PublishedStatus) (*ReviewResponse, error) {
+	review := &entity.Review{
+		PublishedStatus: status,
+		Author: &entity.User{
+			UserId: authorId,
+		},
+		Album: &entity.Album{
+			AlbumId: albumId,
+		},
+		Title:   title,
+		Content: content,
+	}
+
 	tx, err := uc.DB.BeginTxx(ctx, nil)
 	if err != nil {
 		return nil, err
@@ -36,6 +58,7 @@ func (uc *ReviewUseCase) Store(ctx context.Context, review *entity.Review) (*Rev
 		if err = tx.Rollback(); err != nil {
 			logger.FromContent(ctx).Error("failed to rollback transaction: %v", err)
 		}
+		logger.FromContent(ctx).Error("failed to store review. transaction rollbacked: %v", err)
 		return nil, err
 	}
 
@@ -49,7 +72,8 @@ func (uc *ReviewUseCase) Store(ctx context.Context, review *entity.Review) (*Rev
 		return nil, err
 	}
 
-	album, err := uc.albumRepo.GetAlbumById(ctx, r.Album.AlbumId)
+	// TODO: トラック情報を取得する
+	album, tp, err := uc.albumRepo.GetAlbumInfoById(ctx, r.Album.AlbumId)
 	if err != nil {
 		return nil, err
 	}
@@ -66,6 +90,7 @@ func (uc *ReviewUseCase) Store(ctx context.Context, review *entity.Review) (*Rev
 			CreatedAt:       r.CreatedAt,
 			UpdatedAt:       r.UpdatedAt,
 		},
+		TrackPage: tp,
 	}
 	return resp, nil
 }
