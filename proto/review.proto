@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package review;
+
+option go_package = "github.com/kngnkg/tunetrail/backend/gen/review";
+
+import "user.proto";
+import "album.proto";
+
+service ReviewService {
+  rpc Create(CreateRequest) returns (ReviewReply) {}
+}
+
+message CreateRequest {
+  string userId = 1;
+  string albumId = 2;
+  string title = 3;
+  string content = 4;
+  string publishedStatus = 5;
+}
+
+message ReviewReply { Review review = 1; }
+
+message Review {
+  string reviewId = 1;
+  user.User user = 2;
+  album.Album album = 3;
+  string title = 4;
+  string content = 5;
+  string publishedStatus = 6;
+  int32 likesCount = 7;
+  string createdAt = 8;
+  string updatedAt = 9;
+}

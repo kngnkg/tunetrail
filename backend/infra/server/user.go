@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/kngnkg/tunetrail/backend/entity"
-	user "github.com/kngnkg/tunetrail/backend/gen/user"
+	"github.com/kngnkg/tunetrail/backend/gen/user"
 	"github.com/kngnkg/tunetrail/backend/logger"
 	"github.com/kngnkg/tunetrail/backend/usecase"
 	"github.com/kngnkg/tunetrail/backend/validator"
@@ -12,16 +12,16 @@ import (
 
 type userServer struct {
 	user.UnimplementedUserServiceServer
-	usecase *usecase.UserUseCase
-	v       *validator.Validator
-	logger  *logger.Logger
+	usecase   *usecase.UserUseCase
+	validator *validator.Validator
+	logger    *logger.Logger
 }
 
 func NewUserServer(uc *usecase.UserUseCase, v *validator.Validator, l *logger.Logger) user.UserServiceServer {
 	return &userServer{
-		usecase: uc,
-		v:       v,
-		logger:  l,
+		usecase:   uc,
+		validator: v,
+		logger:    l,
 	}
 }
 
@@ -36,7 +36,7 @@ func (s *userServer) Create(ctx context.Context, in *user.CreateRequest) (*user.
 		Bio:       in.Bio,
 	}
 
-	if err := s.v.Validate(u); err != nil {
+	if err := s.validator.Validate(u); err != nil {
 		logger.FromContent(ctx).Error("invalid user.", err)
 		return nil, err
 	}
@@ -71,7 +71,7 @@ func (s *userServer) GetById(ctx context.Context, in *user.GetByIdRequest) (*use
 	}
 	b.UserId = in.UserId
 
-	if err := s.v.Validate(b); err != nil {
+	if err := s.validator.Validate(b); err != nil {
 		logger.FromContent(ctx).Error("invalid user id.", err)
 		return nil, err
 	}
