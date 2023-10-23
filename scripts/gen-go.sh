@@ -3,10 +3,10 @@
 set -e
 
 # 生成ファイルを格納するフォルダのベースパス
-BASE_OUT_DIR="./gen"
+BASE_OUT_DIR="./backend/gen"
 
 # proto ファイルのパス
-PROTO_PATH="../proto"
+PROTO_PATH="./proto"
 
 MODULE_BASE="github.com/kngnkg/tunetrail/backend/gen"
 
