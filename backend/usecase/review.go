@@ -1,52 +1,74 @@
 package usecase
 
-// type ReviewUseCase struct {
-// 	DB         repository.DBAccesser
-// 	reviewRepo ReviewRepository
-// 	albumRepo  AlbumRepository
-// 	userRepo   UserRepository
-// }
+import (
+	"context"
 
-// type ReviewResponse struct {
-// 	Review *entity.Review
-// }
+	"github.com/kngnkg/tunetrail/backend/entity"
+	"github.com/kngnkg/tunetrail/backend/infra/repository"
+	"github.com/kngnkg/tunetrail/backend/logger"
+)
+
+type ReviewUseCase struct {
+	DB         repository.DBAccesser
+	reviewRepo ReviewRepository
+	albumRepo  AlbumRepository
+	userRepo   UserRepository
+}
+
+type ReviewResponse struct {
+	Review *entity.Review
+}
 
 // type ReviewListResponse struct {
 // 	Reviews    []*entity.Review
 // 	NextCursor string
 // }
 
-// func (uc *ReviewUseCase) Store(ctx context.Context, review *entity.Review) (*ReviewResponse, error) {
-// 	r, err := uc.reviewRepo.StoreReview(ctx, uc.DB, review)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+func (uc *ReviewUseCase) Store(ctx context.Context, review *entity.Review) (*ReviewResponse, error) {
+	tx, err := uc.DB.BeginTxx(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
 
-// 	author, err := uc.userRepo.GetUserById(ctx, uc.DB, r.Author.UserId)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+	r, err := uc.reviewRepo.StoreReview(ctx, tx, review)
+	if err != nil {
+		// TODO: ロールバックのエラーハンドリング
+		if err = tx.Rollback(); err != nil {
+			logger.FromContent(ctx).Error("failed to rollback transaction: %v", err)
+		}
+		return nil, err
+	}
 
-// 	album, err := uc.albumRepo.GetAlbumById(ctx, r.Album.AlbumId)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+	// TODO: Commitのエラーハンドリング
+	if err = tx.Commit(); err != nil {
+		return nil, err
+	}
 
-// 	resp := &ReviewResponse{
-// 		Review: &entity.Review{
-// 			ReviewId:        r.ReviewId,
-// 			PublishedStatus: r.PublishedStatus,
-// 			Author:          author,
-// 			Album:           album,
-// 			Title:           r.Title,
-// 			Content:         r.Content,
-// 			LikesCount:      r.LikesCount,
-// 			CreatedAt:       r.CreatedAt,
-// 			UpdatedAt:       r.UpdatedAt,
-// 		},
-// 	}
-// 	return resp, nil
-// }
+	author, err := uc.userRepo.GetUserById(ctx, uc.DB, r.Author.UserId)
+	if err != nil {
+		return nil, err
+	}
+
+	album, err := uc.albumRepo.GetAlbumById(ctx, r.Album.AlbumId)
+	if err != nil {
+		return nil, err
+	}
+
+	resp := &ReviewResponse{
+		Review: &entity.Review{
+			ReviewId:        r.ReviewId,
+			PublishedStatus: r.PublishedStatus,
+			Author:          author,
+			Album:           album,
+			Title:           r.Title,
+			Content:         r.Content,
+			LikesCount:      r.LikesCount,
+			CreatedAt:       r.CreatedAt,
+			UpdatedAt:       r.UpdatedAt,
+		},
+	}
+	return resp, nil
+}
 
 // func (uc *ReviewUseCase) GetById(ctx context.Context, reviewId string) (*ReviewResponse, error) {
 // 	r, err := uc.reviewRepo.GetReviewById(ctx, uc.DB, reviewId)
