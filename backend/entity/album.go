@@ -3,7 +3,7 @@ package entity
 import "time"
 
 type Album struct {
-	AlbumId     string // Spotify ID
+	AlbumId     string `db:"album_id" validate:"required"`
 	SpotifyUri  string
 	SpotifyUrl  string
 	Name        string
