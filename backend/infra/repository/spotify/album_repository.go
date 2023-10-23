@@ -11,7 +11,7 @@ type AlbumRepository struct {
 	SpotifyClient *SpotifyClient
 }
 
-func (r *AlbumRepository) GetAlbumInfo(ctx context.Context, albumId string) (*entity.Album, *entity.TrackPage, error) {
+func (r *AlbumRepository) GetAlbumInfoById(ctx context.Context, albumId string) (*entity.Album, *entity.TrackPage, error) {
 	res, err := r.SpotifyClient.GetAlbum(ctx, spotify.ID(albumId))
 	if err != nil {
 		return nil, nil, err

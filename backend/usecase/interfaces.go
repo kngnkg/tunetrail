@@ -17,7 +17,7 @@ type ReviewRepository interface {
 }
 
 type AlbumRepository interface {
-	GetAlbumById(ctx context.Context, albumId string) (*entity.Album, error)
+	GetAlbumInfoById(ctx context.Context, albumId string) (*entity.Album, *entity.TrackPage, error)
 	// GetAlbumTracksById(ctx context.Context, albumId string) ([]*entity.Track, error)
 	// GetAlbumByIds(ctx context.Context, albumIds []string) ([]*entity.Album, error)
 }

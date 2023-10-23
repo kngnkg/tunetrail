@@ -15,7 +15,6 @@ type SpotifyClient struct {
 type SpotifyClientConfig struct {
 	SpotifyId     string
 	SpotifySecret string
-	TokenURL      string
 }
 
 func NewSpotifyClient(ctx context.Context, cfg *SpotifyClientConfig) (*SpotifyClient, error) {
