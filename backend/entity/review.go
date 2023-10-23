@@ -11,14 +11,13 @@ const (
 )
 
 type Review struct {
-	ReviewId        string
-	PublishedStatus PublishedStatus
-	Author          *User
-	Album           *Album
-	Title           string
-	Content         string
+	ReviewId        string          `db:"review_id" validate:"required,uuid4"`
+	PublishedStatus PublishedStatus `db:"published_status" validate:"required"`
+	Author          *User           `db:"author" validate:"required"`
+	Album           *Album          `db:"album" validate:"required"`
+	Title           string          `db:"title" validate:"required"`
+	Content         string          `db:"content" validate:"required"`
 	LikesCount      int
-	// Liked      bool
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	CreatedAt       time.Time `db:"created_at"`
+	UpdatedAt       time.Time `db:"updated_at"`
 }
