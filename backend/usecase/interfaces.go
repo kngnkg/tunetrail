@@ -8,13 +8,13 @@ import (
 )
 
 //go:generate go run github.com/matryer/moq -out moq_test.go . UserRepository
-// type ReviewRepository interface {
-// 	StoreReview(ctx context.Context, db repository.Executor, review *entity.Review) (*entity.Review, error)
-// 	GetReviewById(ctx context.Context, db repository.Executor, reviewId string) (*entity.Review, error)
-// 	GetReviewByAuthorId(ctx context.Context, db repository.Executor, authorId entity.UserId, nextCursor string, limit int) ([]*entity.Review, string, error)
-// 	UpdateReview(ctx context.Context, db repository.Executor, review *entity.Review) (*entity.Review, error)
-// 	DeleteReviewById(ctx context.Context, db repository.Executor, reviewId string) error
-// }
+type ReviewRepository interface {
+	StoreReview(ctx context.Context, db repository.Executor, review *entity.Review) (*entity.Review, error)
+	// GetReviewById(ctx context.Context, db repository.Executor, reviewId string) (*entity.Review, error)
+	// GetReviewByAuthorId(ctx context.Context, db repository.Executor, authorId entity.UserId, nextCursor string, limit int) ([]*entity.Review, string, error)
+	// UpdateReview(ctx context.Context, db repository.Executor, review *entity.Review) (*entity.Review, error)
+	// DeleteReviewById(ctx context.Context, db repository.Executor, reviewId string) error
+}
 
 type AlbumRepository interface {
 	GetAlbumById(ctx context.Context, albumId string) (*entity.Album, error)
