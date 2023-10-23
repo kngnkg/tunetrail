@@ -28,7 +28,18 @@ func main() {
 		l.Fatal("failed to load config.", err)
 	}
 
-	db, close, err := postgres.NewDb(cfg)
+	sslMode := "require"
+	if cfg.Env == "dev" {
+		sslMode = "disable" // 開発環境の場合はSSL通信を無効にする
+	}
+	db, close, err := postgres.NewDb(&postgres.DBConfig{
+		Host:     cfg.DBHost,
+		Port:     cfg.DBPort,
+		User:     cfg.DBUser,
+		Password: cfg.DBPassword,
+		DBName:   cfg.DBName,
+		SSLMode:  sslMode,
+	})
 	if err != nil {
 		l.Fatal("failed to connect to db.", err)
 	}
