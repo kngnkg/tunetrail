@@ -13,3 +13,7 @@ dry-migrate: ## Try migration
 .PHONY: migrate
 migrate:  ## Execute migration
 	./scripts/migrate.sh
+
+.PHONY: seed
+seed: ## Seed data
+	./scripts/seed.sh && docker-compose exec -T grpc go run ./tools/seeder/seeder.go
