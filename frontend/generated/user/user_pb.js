@@ -521,7 +521,15 @@ proto.user.UserReply.prototype.toObject = function(opt_includeInstance) {
  */
 proto.user.UserReply.toObject = function(includeInstance, msg) {
   var f, obj = {
-    user: (f = msg.getUser()) && proto.user.User.toObject(includeInstance, f)
+    userid: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    displayid: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    name: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    avatarurl: jspb.Message.getFieldWithDefault(msg, 4, ""),
+    bio: jspb.Message.getFieldWithDefault(msg, 5, ""),
+    followerscount: jspb.Message.getFieldWithDefault(msg, 6, 0),
+    followingcount: jspb.Message.getFieldWithDefault(msg, 7, 0),
+    createdat: jspb.Message.getFieldWithDefault(msg, 8, ""),
+    updatedat: jspb.Message.getFieldWithDefault(msg, 9, "")
   };
 
   if (includeInstance) {
@@ -559,9 +567,40 @@ proto.user.UserReply.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = new proto.user.User;
-      reader.readMessage(value,proto.user.User.deserializeBinaryFromReader);
-      msg.setUser(value);
+      var value = /** @type {string} */ (reader.readString());
+      msg.setUserid(value);
+      break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setDisplayid(value);
+      break;
+    case 3:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setName(value);
+      break;
+    case 4:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setAvatarurl(value);
+      break;
+    case 5:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setBio(value);
+      break;
+    case 6:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setFollowerscount(value);
+      break;
+    case 7:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setFollowingcount(value);
+      break;
+    case 8:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setCreatedat(value);
+      break;
+    case 9:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setUpdatedat(value);
       break;
     default:
       reader.skipField();
@@ -592,51 +631,231 @@ proto.user.UserReply.prototype.serializeBinary = function() {
  */
 proto.user.UserReply.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getUser();
-  if (f != null) {
-    writer.writeMessage(
+  f = message.getUserid();
+  if (f.length > 0) {
+    writer.writeString(
       1,
-      f,
-      proto.user.User.serializeBinaryToWriter
+      f
+    );
+  }
+  f = message.getDisplayid();
+  if (f.length > 0) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
+  f = message.getName();
+  if (f.length > 0) {
+    writer.writeString(
+      3,
+      f
+    );
+  }
+  f = message.getAvatarurl();
+  if (f.length > 0) {
+    writer.writeString(
+      4,
+      f
+    );
+  }
+  f = message.getBio();
+  if (f.length > 0) {
+    writer.writeString(
+      5,
+      f
+    );
+  }
+  f = message.getFollowerscount();
+  if (f !== 0) {
+    writer.writeInt32(
+      6,
+      f
+    );
+  }
+  f = message.getFollowingcount();
+  if (f !== 0) {
+    writer.writeInt32(
+      7,
+      f
+    );
+  }
+  f = message.getCreatedat();
+  if (f.length > 0) {
+    writer.writeString(
+      8,
+      f
+    );
+  }
+  f = message.getUpdatedat();
+  if (f.length > 0) {
+    writer.writeString(
+      9,
+      f
     );
   }
 };
 
 
 /**
- * optional User user = 1;
- * @return {?proto.user.User}
+ * optional string userId = 1;
+ * @return {string}
  */
-proto.user.UserReply.prototype.getUser = function() {
-  return /** @type{?proto.user.User} */ (
-    jspb.Message.getWrapperField(this, proto.user.User, 1));
+proto.user.UserReply.prototype.getUserid = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /**
- * @param {?proto.user.User|undefined} value
- * @return {!proto.user.UserReply} returns this
-*/
-proto.user.UserReply.prototype.setUser = function(value) {
-  return jspb.Message.setWrapperField(this, 1, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
+ * @param {string} value
  * @return {!proto.user.UserReply} returns this
  */
-proto.user.UserReply.prototype.clearUser = function() {
-  return this.setUser(undefined);
+proto.user.UserReply.prototype.setUserid = function(value) {
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
 /**
- * Returns whether this field is set.
- * @return {boolean}
+ * optional string displayId = 2;
+ * @return {string}
  */
-proto.user.UserReply.prototype.hasUser = function() {
-  return jspb.Message.getField(this, 1) != null;
+proto.user.UserReply.prototype.getDisplayid = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.user.UserReply} returns this
+ */
+proto.user.UserReply.prototype.setDisplayid = function(value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+
+/**
+ * optional string name = 3;
+ * @return {string}
+ */
+proto.user.UserReply.prototype.getName = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.user.UserReply} returns this
+ */
+proto.user.UserReply.prototype.setName = function(value) {
+  return jspb.Message.setProto3StringField(this, 3, value);
+};
+
+
+/**
+ * optional string avatarUrl = 4;
+ * @return {string}
+ */
+proto.user.UserReply.prototype.getAvatarurl = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.user.UserReply} returns this
+ */
+proto.user.UserReply.prototype.setAvatarurl = function(value) {
+  return jspb.Message.setProto3StringField(this, 4, value);
+};
+
+
+/**
+ * optional string bio = 5;
+ * @return {string}
+ */
+proto.user.UserReply.prototype.getBio = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.user.UserReply} returns this
+ */
+proto.user.UserReply.prototype.setBio = function(value) {
+  return jspb.Message.setProto3StringField(this, 5, value);
+};
+
+
+/**
+ * optional int32 followersCount = 6;
+ * @return {number}
+ */
+proto.user.UserReply.prototype.getFollowerscount = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.user.UserReply} returns this
+ */
+proto.user.UserReply.prototype.setFollowerscount = function(value) {
+  return jspb.Message.setProto3IntField(this, 6, value);
+};
+
+
+/**
+ * optional int32 followingCount = 7;
+ * @return {number}
+ */
+proto.user.UserReply.prototype.getFollowingcount = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 7, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.user.UserReply} returns this
+ */
+proto.user.UserReply.prototype.setFollowingcount = function(value) {
+  return jspb.Message.setProto3IntField(this, 7, value);
+};
+
+
+/**
+ * optional string createdAt = 8;
+ * @return {string}
+ */
+proto.user.UserReply.prototype.getCreatedat = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 8, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.user.UserReply} returns this
+ */
+proto.user.UserReply.prototype.setCreatedat = function(value) {
+  return jspb.Message.setProto3StringField(this, 8, value);
+};
+
+
+/**
+ * optional string updatedAt = 9;
+ * @return {string}
+ */
+proto.user.UserReply.prototype.getUpdatedat = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 9, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.user.UserReply} returns this
+ */
+proto.user.UserReply.prototype.setUpdatedat = function(value) {
+  return jspb.Message.setProto3StringField(this, 9, value);
 };
 
 

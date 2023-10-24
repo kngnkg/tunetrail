@@ -373,7 +373,15 @@ proto.review.ReviewReply.prototype.toObject = function(opt_includeInstance) {
  */
 proto.review.ReviewReply.toObject = function(includeInstance, msg) {
   var f, obj = {
-    review: (f = msg.getReview()) && proto.review.Review.toObject(includeInstance, f)
+    reviewid: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    user: (f = msg.getUser()) && user_pb.User.toObject(includeInstance, f),
+    album: (f = msg.getAlbum()) && album_pb.Album.toObject(includeInstance, f),
+    title: jspb.Message.getFieldWithDefault(msg, 4, ""),
+    content: jspb.Message.getFieldWithDefault(msg, 5, ""),
+    publishedstatus: jspb.Message.getFieldWithDefault(msg, 6, ""),
+    likescount: jspb.Message.getFieldWithDefault(msg, 7, 0),
+    createdat: jspb.Message.getFieldWithDefault(msg, 8, ""),
+    updatedat: jspb.Message.getFieldWithDefault(msg, 9, "")
   };
 
   if (includeInstance) {
@@ -411,9 +419,42 @@ proto.review.ReviewReply.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = new proto.review.Review;
-      reader.readMessage(value,proto.review.Review.deserializeBinaryFromReader);
-      msg.setReview(value);
+      var value = /** @type {string} */ (reader.readString());
+      msg.setReviewid(value);
+      break;
+    case 2:
+      var value = new user_pb.User;
+      reader.readMessage(value,user_pb.User.deserializeBinaryFromReader);
+      msg.setUser(value);
+      break;
+    case 3:
+      var value = new album_pb.Album;
+      reader.readMessage(value,album_pb.Album.deserializeBinaryFromReader);
+      msg.setAlbum(value);
+      break;
+    case 4:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setTitle(value);
+      break;
+    case 5:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setContent(value);
+      break;
+    case 6:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setPublishedstatus(value);
+      break;
+    case 7:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setLikescount(value);
+      break;
+    case 8:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setCreatedat(value);
+      break;
+    case 9:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setUpdatedat(value);
       break;
     default:
       reader.skipField();
@@ -444,33 +485,108 @@ proto.review.ReviewReply.prototype.serializeBinary = function() {
  */
 proto.review.ReviewReply.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getReview();
+  f = message.getReviewid();
+  if (f.length > 0) {
+    writer.writeString(
+      1,
+      f
+    );
+  }
+  f = message.getUser();
   if (f != null) {
     writer.writeMessage(
-      1,
+      2,
       f,
-      proto.review.Review.serializeBinaryToWriter
+      user_pb.User.serializeBinaryToWriter
+    );
+  }
+  f = message.getAlbum();
+  if (f != null) {
+    writer.writeMessage(
+      3,
+      f,
+      album_pb.Album.serializeBinaryToWriter
+    );
+  }
+  f = message.getTitle();
+  if (f.length > 0) {
+    writer.writeString(
+      4,
+      f
+    );
+  }
+  f = message.getContent();
+  if (f.length > 0) {
+    writer.writeString(
+      5,
+      f
+    );
+  }
+  f = message.getPublishedstatus();
+  if (f.length > 0) {
+    writer.writeString(
+      6,
+      f
+    );
+  }
+  f = message.getLikescount();
+  if (f !== 0) {
+    writer.writeInt32(
+      7,
+      f
+    );
+  }
+  f = message.getCreatedat();
+  if (f.length > 0) {
+    writer.writeString(
+      8,
+      f
+    );
+  }
+  f = message.getUpdatedat();
+  if (f.length > 0) {
+    writer.writeString(
+      9,
+      f
     );
   }
 };
 
 
 /**
- * optional Review review = 1;
- * @return {?proto.review.Review}
+ * optional string reviewId = 1;
+ * @return {string}
  */
-proto.review.ReviewReply.prototype.getReview = function() {
-  return /** @type{?proto.review.Review} */ (
-    jspb.Message.getWrapperField(this, proto.review.Review, 1));
+proto.review.ReviewReply.prototype.getReviewid = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /**
- * @param {?proto.review.Review|undefined} value
+ * @param {string} value
+ * @return {!proto.review.ReviewReply} returns this
+ */
+proto.review.ReviewReply.prototype.setReviewid = function(value) {
+  return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+/**
+ * optional user.User user = 2;
+ * @return {?proto.user.User}
+ */
+proto.review.ReviewReply.prototype.getUser = function() {
+  return /** @type{?proto.user.User} */ (
+    jspb.Message.getWrapperField(this, user_pb.User, 2));
+};
+
+
+/**
+ * @param {?proto.user.User|undefined} value
  * @return {!proto.review.ReviewReply} returns this
 */
-proto.review.ReviewReply.prototype.setReview = function(value) {
-  return jspb.Message.setWrapperField(this, 1, value);
+proto.review.ReviewReply.prototype.setUser = function(value) {
+  return jspb.Message.setWrapperField(this, 2, value);
 };
 
 
@@ -478,8 +594,8 @@ proto.review.ReviewReply.prototype.setReview = function(value) {
  * Clears the message field making it undefined.
  * @return {!proto.review.ReviewReply} returns this
  */
-proto.review.ReviewReply.prototype.clearReview = function() {
-  return this.setReview(undefined);
+proto.review.ReviewReply.prototype.clearUser = function() {
+  return this.setUser(undefined);
 };
 
 
@@ -487,8 +603,153 @@ proto.review.ReviewReply.prototype.clearReview = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.review.ReviewReply.prototype.hasReview = function() {
-  return jspb.Message.getField(this, 1) != null;
+proto.review.ReviewReply.prototype.hasUser = function() {
+  return jspb.Message.getField(this, 2) != null;
+};
+
+
+/**
+ * optional album.Album album = 3;
+ * @return {?proto.album.Album}
+ */
+proto.review.ReviewReply.prototype.getAlbum = function() {
+  return /** @type{?proto.album.Album} */ (
+    jspb.Message.getWrapperField(this, album_pb.Album, 3));
+};
+
+
+/**
+ * @param {?proto.album.Album|undefined} value
+ * @return {!proto.review.ReviewReply} returns this
+*/
+proto.review.ReviewReply.prototype.setAlbum = function(value) {
+  return jspb.Message.setWrapperField(this, 3, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.review.ReviewReply} returns this
+ */
+proto.review.ReviewReply.prototype.clearAlbum = function() {
+  return this.setAlbum(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.review.ReviewReply.prototype.hasAlbum = function() {
+  return jspb.Message.getField(this, 3) != null;
+};
+
+
+/**
+ * optional string title = 4;
+ * @return {string}
+ */
+proto.review.ReviewReply.prototype.getTitle = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.review.ReviewReply} returns this
+ */
+proto.review.ReviewReply.prototype.setTitle = function(value) {
+  return jspb.Message.setProto3StringField(this, 4, value);
+};
+
+
+/**
+ * optional string content = 5;
+ * @return {string}
+ */
+proto.review.ReviewReply.prototype.getContent = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.review.ReviewReply} returns this
+ */
+proto.review.ReviewReply.prototype.setContent = function(value) {
+  return jspb.Message.setProto3StringField(this, 5, value);
+};
+
+
+/**
+ * optional string publishedStatus = 6;
+ * @return {string}
+ */
+proto.review.ReviewReply.prototype.getPublishedstatus = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.review.ReviewReply} returns this
+ */
+proto.review.ReviewReply.prototype.setPublishedstatus = function(value) {
+  return jspb.Message.setProto3StringField(this, 6, value);
+};
+
+
+/**
+ * optional int32 likesCount = 7;
+ * @return {number}
+ */
+proto.review.ReviewReply.prototype.getLikescount = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 7, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.review.ReviewReply} returns this
+ */
+proto.review.ReviewReply.prototype.setLikescount = function(value) {
+  return jspb.Message.setProto3IntField(this, 7, value);
+};
+
+
+/**
+ * optional string createdAt = 8;
+ * @return {string}
+ */
+proto.review.ReviewReply.prototype.getCreatedat = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 8, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.review.ReviewReply} returns this
+ */
+proto.review.ReviewReply.prototype.setCreatedat = function(value) {
+  return jspb.Message.setProto3StringField(this, 8, value);
+};
+
+
+/**
+ * optional string updatedAt = 9;
+ * @return {string}
+ */
+proto.review.ReviewReply.prototype.getUpdatedat = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 9, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.review.ReviewReply} returns this
+ */
+proto.review.ReviewReply.prototype.setUpdatedat = function(value) {
+  return jspb.Message.setProto3StringField(this, 9, value);
 };
 
 

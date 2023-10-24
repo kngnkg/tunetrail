@@ -55,23 +55,21 @@ func (s *reviewServer) Create(ctx context.Context, in *review.CreateRequest) (*r
 		return nil, err
 	}
 
-	album := toAlbum(res.Review.Album, res.TrackPage)
+	return toReviewReply(res), nil
+}
 
-	reply := &review.ReviewReply{
-		Review: &review.Review{
-			ReviewId:        res.Review.ReviewId,
-			User:            toUser(res.Review.Author),
-			Album:           album,
-			Title:           res.Review.Title,
-			Content:         res.Review.Content,
-			LikesCount:      int32(res.Review.LikesCount),
-			CreatedAt:       res.Review.CreatedAt.String(),
-			UpdatedAt:       res.Review.UpdatedAt.String(),
-			PublishedStatus: string(res.Review.PublishedStatus),
-		},
+func toReviewReply(res *usecase.ReviewResponse) *review.ReviewReply {
+	return &review.ReviewReply{
+		ReviewId:        res.Review.ReviewId,
+		User:            toUser(res.Review.Author),
+		Album:           toAlbum(res.Review.Album, res.TrackPage),
+		Title:           res.Review.Title,
+		Content:         res.Review.Content,
+		LikesCount:      int32(res.Review.LikesCount),
+		CreatedAt:       res.Review.CreatedAt.String(),
+		UpdatedAt:       res.Review.UpdatedAt.String(),
+		PublishedStatus: string(res.Review.PublishedStatus),
 	}
-
-	return reply, nil
 }
 
 func toUser(u *entity.User) *user.User {
@@ -88,7 +86,7 @@ func toUser(u *entity.User) *user.User {
 	}
 }
 
-func toAlbum(a *entity.Album, tp *entity.TrackPage) *album.Album {
+func toTrackPage(tp *entity.TrackPage) *album.TrackPage {
 	var ts []*album.Track
 	for _, t := range tp.Tracks {
 		ts = append(ts, &album.Track{
@@ -102,7 +100,7 @@ func toAlbum(a *entity.Album, tp *entity.TrackPage) *album.Album {
 		})
 	}
 
-	trackPage := &album.TrackPage{
+	return &album.TrackPage{
 		Tracks:   ts,
 		Limit:    int32(tp.Limit),
 		Offset:   int32(tp.Offset),
@@ -110,14 +108,16 @@ func toAlbum(a *entity.Album, tp *entity.TrackPage) *album.Album {
 		Next:     tp.Next,
 		Previous: tp.Previous,
 	}
+}
 
+func toAlbum(a *entity.Album, tp *entity.TrackPage) *album.Album {
 	return &album.Album{
 		AlbumId:     a.AlbumId,
 		SpotifyUri:  a.SpotifyUri,
 		SpotifyUrl:  a.SpotifyUrl,
 		Name:        a.Name,
 		Artists:     toSimpleArtists(a.Artists),
-		Tracks:      trackPage,
+		Tracks:      toTrackPage(tp),
 		CoverUrl:    a.CoverUrl,
 		ReleaseDate: a.ReleaseDate.String(),
 		Genres:      a.Genres,
