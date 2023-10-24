@@ -60,10 +60,32 @@ export namespace GetByIdRequest {
 }
 
 export class UserReply extends jspb.Message {
-  hasUser(): boolean;
-  clearUser(): void;
-  getUser(): User | undefined;
-  setUser(value?: User): void;
+  getUserid(): string;
+  setUserid(value: string): void;
+
+  getDisplayid(): string;
+  setDisplayid(value: string): void;
+
+  getName(): string;
+  setName(value: string): void;
+
+  getAvatarurl(): string;
+  setAvatarurl(value: string): void;
+
+  getBio(): string;
+  setBio(value: string): void;
+
+  getFollowerscount(): number;
+  setFollowerscount(value: number): void;
+
+  getFollowingcount(): number;
+  setFollowingcount(value: number): void;
+
+  getCreatedat(): string;
+  setCreatedat(value: string): void;
+
+  getUpdatedat(): string;
+  setUpdatedat(value: string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): UserReply.AsObject;
@@ -77,7 +99,15 @@ export class UserReply extends jspb.Message {
 
 export namespace UserReply {
   export type AsObject = {
-    user?: User.AsObject,
+    userid: string,
+    displayid: string,
+    name: string,
+    avatarurl: string,
+    bio: string,
+    followerscount: number,
+    followingcount: number,
+    createdat: string,
+    updatedat: string,
   }
 }
 

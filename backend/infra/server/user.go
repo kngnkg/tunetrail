@@ -47,20 +47,7 @@ func (s *userServer) Create(ctx context.Context, in *user.CreateRequest) (*user.
 		return nil, err
 	}
 
-	reply := &user.UserReply{
-		User: &user.User{
-			UserId:         string(res.UserId),
-			DisplayId:      res.DisplayId,
-			Name:           res.Name,
-			AvatarUrl:      res.AvatarUrl,
-			Bio:            res.Bio,
-			FollowersCount: int32(res.FollowersCount),
-			FollowingCount: int32(res.FollowingCount),
-			CreatedAt:      res.CreatedAt.String(),
-			UpdatedAt:      res.UpdatedAt.String(),
-		},
-	}
-	return reply, nil
+	return toUserReply(res), nil
 }
 
 func (s *userServer) GetById(ctx context.Context, in *user.GetByIdRequest) (*user.UserReply, error) {
@@ -82,18 +69,19 @@ func (s *userServer) GetById(ctx context.Context, in *user.GetByIdRequest) (*use
 		return nil, err
 	}
 
-	reply := &user.UserReply{
-		User: &user.User{
-			UserId:         string(res.UserId),
-			DisplayId:      res.DisplayId,
-			Name:           res.Name,
-			AvatarUrl:      res.AvatarUrl,
-			Bio:            res.Bio,
-			FollowersCount: int32(res.FollowersCount),
-			FollowingCount: int32(res.FollowingCount),
-			CreatedAt:      res.CreatedAt.String(),
-			UpdatedAt:      res.UpdatedAt.String(),
-		},
+	return toUserReply(res), nil
+}
+
+func toUserReply(res *usecase.UserResponse) *user.UserReply {
+	return &user.UserReply{
+		UserId:         string(res.UserId),
+		DisplayId:      res.DisplayId,
+		Name:           res.Name,
+		AvatarUrl:      res.AvatarUrl,
+		Bio:            res.Bio,
+		FollowersCount: int32(res.FollowersCount),
+		FollowingCount: int32(res.FollowingCount),
+		CreatedAt:      res.CreatedAt.String(),
+		UpdatedAt:      res.UpdatedAt.String(),
 	}
-	return reply, nil
 }

@@ -19,7 +19,17 @@ message CreateRequest {
   string publishedStatus = 5;
 }
 
-message ReviewReply { Review review = 1; }
+message ReviewReply {
+  string reviewId = 1;
+  user.User user = 2;
+  album.Album album = 3;
+  string title = 4;
+  string content = 5;
+  string publishedStatus = 6;
+  int32 likesCount = 7;
+  string createdAt = 8;
+  string updatedAt = 9;
+}
 
 message Review {
   string reviewId = 1;

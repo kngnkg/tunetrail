@@ -42,10 +42,36 @@ export namespace CreateRequest {
 }
 
 export class ReviewReply extends jspb.Message {
-  hasReview(): boolean;
-  clearReview(): void;
-  getReview(): Review | undefined;
-  setReview(value?: Review): void;
+  getReviewid(): string;
+  setReviewid(value: string): void;
+
+  hasUser(): boolean;
+  clearUser(): void;
+  getUser(): user_pb.User | undefined;
+  setUser(value?: user_pb.User): void;
+
+  hasAlbum(): boolean;
+  clearAlbum(): void;
+  getAlbum(): album_pb.Album | undefined;
+  setAlbum(value?: album_pb.Album): void;
+
+  getTitle(): string;
+  setTitle(value: string): void;
+
+  getContent(): string;
+  setContent(value: string): void;
+
+  getPublishedstatus(): string;
+  setPublishedstatus(value: string): void;
+
+  getLikescount(): number;
+  setLikescount(value: number): void;
+
+  getCreatedat(): string;
+  setCreatedat(value: string): void;
+
+  getUpdatedat(): string;
+  setUpdatedat(value: string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ReviewReply.AsObject;
@@ -59,7 +85,15 @@ export class ReviewReply extends jspb.Message {
 
 export namespace ReviewReply {
   export type AsObject = {
-    review?: Review.AsObject,
+    reviewid: string,
+    user?: user_pb.User.AsObject,
+    album?: album_pb.Album.AsObject,
+    title: string,
+    content: string,
+    publishedstatus: string,
+    likescount: number,
+    createdat: string,
+    updatedat: string,
   }
 }
 

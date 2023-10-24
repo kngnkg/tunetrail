@@ -19,7 +19,17 @@ message CreateRequest {
 
 message GetByIdRequest { string userId = 1; }
 
-message UserReply { User user = 1; }
+message UserReply {
+  string userId = 1;
+  string displayId = 2;
+  string name = 3;
+  string avatarUrl = 4;
+  string bio = 5;
+  int32 followersCount = 6;
+  int32 followingCount = 7;
+  string createdAt = 8;
+  string updatedAt = 9;
+}
 
 message User {
   string userId = 1;
