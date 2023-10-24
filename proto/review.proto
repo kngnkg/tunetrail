@@ -8,7 +8,8 @@ import "user.proto";
 import "album.proto";
 
 service ReviewService {
-  rpc Create(CreateRequest) returns (ReviewReply) {}
+  rpc GetReviewById(GetByIdRequest) returns (ReviewReply) {}
+  rpc CreateReview(CreateRequest) returns (ReviewReply) {}
 }
 
 message CreateRequest {
@@ -18,6 +19,8 @@ message CreateRequest {
   string content = 4;
   string publishedStatus = 5;
 }
+
+message GetByIdRequest { string reviewId = 1; }
 
 message ReviewReply {
   string reviewId = 1;

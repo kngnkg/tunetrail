@@ -41,6 +41,26 @@ export namespace CreateRequest {
   }
 }
 
+export class GetByIdRequest extends jspb.Message {
+  getReviewid(): string;
+  setReviewid(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): GetByIdRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: GetByIdRequest): GetByIdRequest.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: GetByIdRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GetByIdRequest;
+  static deserializeBinaryFromReader(message: GetByIdRequest, reader: jspb.BinaryReader): GetByIdRequest;
+}
+
+export namespace GetByIdRequest {
+  export type AsObject = {
+    reviewid: string,
+  }
+}
+
 export class ReviewReply extends jspb.Message {
   getReviewid(): string;
   setReviewid(value: string): void;

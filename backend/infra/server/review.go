@@ -27,7 +27,43 @@ func NewReviewServer(uc *usecase.ReviewUseCase, v *validator.Validator, l *logge
 	}
 }
 
-func (s *reviewServer) Create(ctx context.Context, in *review.CreateRequest) (*review.ReviewReply, error) {
+func (s *reviewServer) GetReviewById(ctx context.Context, in *review.GetByIdRequest) (*review.ReviewReply, error) {
+	ctx = logger.WithContent(ctx, s.logger)
+
+	var b struct {
+		ReviewId string `validate:"required,uuid4"`
+	}
+	b.ReviewId = in.ReviewId
+
+	if err := s.validator.Validate(b); err != nil {
+		logger.FromContent(ctx).Error("invalid request.", err)
+		return nil, err
+	}
+
+	res, err := s.uc.GetById(ctx, b.ReviewId)
+	if err != nil {
+		logger.FromContent(ctx).Error("failed to get review.", err)
+		return nil, err
+	}
+
+	return toReviewReply(res), nil
+}
+
+func toReviewReply(res *usecase.ReviewResponse) *review.ReviewReply {
+	return &review.ReviewReply{
+		ReviewId:        res.Review.ReviewId,
+		User:            toUser(res.Review.Author),
+		Album:           toAlbum(res.Review.Album, res.TrackPage),
+		Title:           res.Review.Title,
+		Content:         res.Review.Content,
+		LikesCount:      int32(res.Review.LikesCount),
+		CreatedAt:       res.Review.CreatedAt.String(),
+		UpdatedAt:       res.Review.UpdatedAt.String(),
+		PublishedStatus: string(res.Review.PublishedStatus),
+	}
+}
+
+func (s *reviewServer) CreateReview(ctx context.Context, in *review.CreateRequest) (*review.ReviewReply, error) {
 	ctx = logger.WithContent(ctx, s.logger)
 
 	// TODO: ここでのバリデーションはどうするか
@@ -56,20 +92,6 @@ func (s *reviewServer) Create(ctx context.Context, in *review.CreateRequest) (*r
 	}
 
 	return toReviewReply(res), nil
-}
-
-func toReviewReply(res *usecase.ReviewResponse) *review.ReviewReply {
-	return &review.ReviewReply{
-		ReviewId:        res.Review.ReviewId,
-		User:            toUser(res.Review.Author),
-		Album:           toAlbum(res.Review.Album, res.TrackPage),
-		Title:           res.Review.Title,
-		Content:         res.Review.Content,
-		LikesCount:      int32(res.Review.LikesCount),
-		CreatedAt:       res.Review.CreatedAt.String(),
-		UpdatedAt:       res.Review.UpdatedAt.String(),
-		PublishedStatus: string(res.Review.PublishedStatus),
-	}
 }
 
 func toUser(u *entity.User) *user.User {

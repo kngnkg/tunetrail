@@ -25,3 +25,19 @@ func (r *ReviewRepository) StoreReview(ctx context.Context, db repository.Execut
 
 	return review, nil
 }
+
+func (r *ReviewRepository) GetReviewById(ctx context.Context, db repository.Executor, reviewId string) (*entity.Review, error) {
+	query := `
+		SELECT review_id, user_id AS "author.user_id", album_id AS "album.album_id", title, content, published_status, created_at, updated_at
+		FROM reviews
+		WHERE review_id = $1;`
+
+	review := &entity.Review{}
+	err := db.GetContext(ctx, review, query, reviewId)
+	if err != nil {
+		logger.FromContent(ctx).Error("failed to get review by id.", err)
+		return nil, err
+	}
+
+	return review, nil
+}

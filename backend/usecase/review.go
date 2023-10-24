@@ -78,7 +78,30 @@ func (uc *ReviewUseCase) Store(ctx context.Context, authorId entity.UserId, albu
 		return nil, err
 	}
 
-	resp := &ReviewResponse{
+	return toReviewResponse(r, author, album, tp), nil
+}
+
+func (uc *ReviewUseCase) GetById(ctx context.Context, reviewId string) (*ReviewResponse, error) {
+	r, err := uc.reviewRepo.GetReviewById(ctx, uc.DB, reviewId)
+	if err != nil {
+		return nil, err
+	}
+
+	author, err := uc.userRepo.GetUserById(ctx, uc.DB, r.Author.UserId)
+	if err != nil {
+		return nil, err
+	}
+
+	album, tp, err := uc.albumRepo.GetAlbumInfoById(ctx, r.Album.AlbumId)
+	if err != nil {
+		return nil, err
+	}
+
+	return toReviewResponse(r, author, album, tp), nil
+}
+
+func toReviewResponse(r *entity.Review, author *entity.User, album *entity.Album, tp *entity.TrackPage) *ReviewResponse {
+	return &ReviewResponse{
 		Review: &entity.Review{
 			ReviewId:        r.ReviewId,
 			PublishedStatus: r.PublishedStatus,
@@ -92,40 +115,7 @@ func (uc *ReviewUseCase) Store(ctx context.Context, authorId entity.UserId, albu
 		},
 		TrackPage: tp,
 	}
-	return resp, nil
 }
-
-// func (uc *ReviewUseCase) GetById(ctx context.Context, reviewId string) (*ReviewResponse, error) {
-// 	r, err := uc.reviewRepo.GetReviewById(ctx, uc.DB, reviewId)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	author, err := uc.userRepo.GetUserById(ctx, uc.DB, r.Author.UserId)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	album, err := uc.albumRepo.GetAlbumById(ctx, r.Album.AlbumId)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	resp := &ReviewResponse{
-// 		Review: &entity.Review{
-// 			ReviewId:        r.ReviewId,
-// 			PublishedStatus: r.PublishedStatus,
-// 			Author:          author,
-// 			Album:           album,
-// 			Title:           r.Title,
-// 			Content:         r.Content,
-// 			LikesCount:      r.LikesCount,
-// 			CreatedAt:       r.CreatedAt,
-// 			UpdatedAt:       r.UpdatedAt,
-// 		},
-// 	}
-// 	return resp, nil
-// }
 
 // func (uc *ReviewUseCase) GetByAuthorId(ctx context.Context, authorId entity.UserId, nextCursor string, limit int) (*ReviewListResponse, error) {
 // 	rs, nc, err := uc.reviewRepo.GetReviewByAuthorId(ctx, uc.DB, authorId, nextCursor, limit)
