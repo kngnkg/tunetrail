@@ -22,7 +22,8 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ReviewServiceClient interface {
-	Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*ReviewReply, error)
+	GetReviewById(ctx context.Context, in *GetByIdRequest, opts ...grpc.CallOption) (*ReviewReply, error)
+	CreateReview(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*ReviewReply, error)
 }
 
 type reviewServiceClient struct {
@@ -33,9 +34,18 @@ func NewReviewServiceClient(cc grpc.ClientConnInterface) ReviewServiceClient {
 	return &reviewServiceClient{cc}
 }
 
-func (c *reviewServiceClient) Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*ReviewReply, error) {
+func (c *reviewServiceClient) GetReviewById(ctx context.Context, in *GetByIdRequest, opts ...grpc.CallOption) (*ReviewReply, error) {
 	out := new(ReviewReply)
-	err := c.cc.Invoke(ctx, "/review.ReviewService/Create", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/review.ReviewService/GetReviewById", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *reviewServiceClient) CreateReview(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*ReviewReply, error) {
+	out := new(ReviewReply)
+	err := c.cc.Invoke(ctx, "/review.ReviewService/CreateReview", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +56,8 @@ func (c *reviewServiceClient) Create(ctx context.Context, in *CreateRequest, opt
 // All implementations must embed UnimplementedReviewServiceServer
 // for forward compatibility
 type ReviewServiceServer interface {
-	Create(context.Context, *CreateRequest) (*ReviewReply, error)
+	GetReviewById(context.Context, *GetByIdRequest) (*ReviewReply, error)
+	CreateReview(context.Context, *CreateRequest) (*ReviewReply, error)
 	mustEmbedUnimplementedReviewServiceServer()
 }
 
@@ -54,8 +65,11 @@ type ReviewServiceServer interface {
 type UnimplementedReviewServiceServer struct {
 }
 
-func (UnimplementedReviewServiceServer) Create(context.Context, *CreateRequest) (*ReviewReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
+func (UnimplementedReviewServiceServer) GetReviewById(context.Context, *GetByIdRequest) (*ReviewReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetReviewById not implemented")
+}
+func (UnimplementedReviewServiceServer) CreateReview(context.Context, *CreateRequest) (*ReviewReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateReview not implemented")
 }
 func (UnimplementedReviewServiceServer) mustEmbedUnimplementedReviewServiceServer() {}
 
@@ -70,20 +84,38 @@ func RegisterReviewServiceServer(s grpc.ServiceRegistrar, srv ReviewServiceServe
 	s.RegisterService(&ReviewService_ServiceDesc, srv)
 }
 
-func _ReviewService_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _ReviewService_GetReviewById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetByIdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ReviewServiceServer).GetReviewById(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/review.ReviewService/GetReviewById",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ReviewServiceServer).GetReviewById(ctx, req.(*GetByIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ReviewService_CreateReview_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreateRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ReviewServiceServer).Create(ctx, in)
+		return srv.(ReviewServiceServer).CreateReview(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/review.ReviewService/Create",
+		FullMethod: "/review.ReviewService/CreateReview",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ReviewServiceServer).Create(ctx, req.(*CreateRequest))
+		return srv.(ReviewServiceServer).CreateReview(ctx, req.(*CreateRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -96,8 +128,12 @@ var ReviewService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*ReviewServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Create",
-			Handler:    _ReviewService_Create_Handler,
+			MethodName: "GetReviewById",
+			Handler:    _ReviewService_GetReviewById_Handler,
+		},
+		{
+			MethodName: "CreateReview",
+			Handler:    _ReviewService_CreateReview_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

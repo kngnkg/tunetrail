@@ -5,8 +5,8 @@ package user;
 option go_package = "github.com/kngnkg/tunetrail/backend/gen/user";
 
 service UserService {
-  rpc Create(CreateRequest) returns (UserReply) {}
-  rpc GetById(GetByIdRequest) returns (UserReply) {}
+  rpc GetUserById(GetByIdRequest) returns (UserReply) {}
+  rpc CreateUser(CreateRequest) returns (UserReply) {}
 }
 
 message CreateRequest {

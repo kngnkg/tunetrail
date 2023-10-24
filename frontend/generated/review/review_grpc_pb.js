@@ -17,6 +17,17 @@ function deserialize_review_CreateRequest(buffer_arg) {
   return review_pb.CreateRequest.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
+function serialize_review_GetByIdRequest(arg) {
+  if (!(arg instanceof review_pb.GetByIdRequest)) {
+    throw new Error('Expected argument of type review.GetByIdRequest');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_review_GetByIdRequest(buffer_arg) {
+  return review_pb.GetByIdRequest.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
 function serialize_review_ReviewReply(arg) {
   if (!(arg instanceof review_pb.ReviewReply)) {
     throw new Error('Expected argument of type review.ReviewReply');
@@ -30,8 +41,19 @@ function deserialize_review_ReviewReply(buffer_arg) {
 
 
 var ReviewServiceService = exports.ReviewServiceService = {
-  create: {
-    path: '/review.ReviewService/Create',
+  getReviewById: {
+    path: '/review.ReviewService/GetReviewById',
+    requestStream: false,
+    responseStream: false,
+    requestType: review_pb.GetByIdRequest,
+    responseType: review_pb.ReviewReply,
+    requestSerialize: serialize_review_GetByIdRequest,
+    requestDeserialize: deserialize_review_GetByIdRequest,
+    responseSerialize: serialize_review_ReviewReply,
+    responseDeserialize: deserialize_review_ReviewReply,
+  },
+  createReview: {
+    path: '/review.ReviewService/CreateReview',
     requestStream: false,
     responseStream: false,
     requestType: review_pb.CreateRequest,

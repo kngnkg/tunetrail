@@ -25,7 +25,29 @@ func NewUserServer(uc *usecase.UserUseCase, v *validator.Validator, l *logger.Lo
 	}
 }
 
-func (s *userServer) Create(ctx context.Context, in *user.CreateRequest) (*user.UserReply, error) {
+func (s *userServer) GetUserById(ctx context.Context, in *user.GetByIdRequest) (*user.UserReply, error) {
+	ctx = logger.WithContent(ctx, s.logger)
+
+	var b struct {
+		UserId string `validate:"required,uuid4"`
+	}
+	b.UserId = in.UserId
+
+	if err := s.validator.Validate(b); err != nil {
+		logger.FromContent(ctx).Error("invalid user id.", err)
+		return nil, err
+	}
+
+	res, err := s.usecase.GetById(ctx, entity.UserId(in.UserId))
+	if err != nil {
+		logger.FromContent(ctx).Error("failed to get user.", err)
+		return nil, err
+	}
+
+	return toUserReply(res), nil
+}
+
+func (s *userServer) CreateUser(ctx context.Context, in *user.CreateRequest) (*user.UserReply, error) {
 	ctx = logger.WithContent(ctx, s.logger)
 
 	u := &entity.User{
@@ -44,28 +66,6 @@ func (s *userServer) Create(ctx context.Context, in *user.CreateRequest) (*user.
 	res, err := s.usecase.Store(ctx, u)
 	if err != nil {
 		logger.FromContent(ctx).Error("failed to create user.", err)
-		return nil, err
-	}
-
-	return toUserReply(res), nil
-}
-
-func (s *userServer) GetById(ctx context.Context, in *user.GetByIdRequest) (*user.UserReply, error) {
-	ctx = logger.WithContent(ctx, s.logger)
-
-	var b struct {
-		UserId string `validate:"required,uuid4"`
-	}
-	b.UserId = in.UserId
-
-	if err := s.validator.Validate(b); err != nil {
-		logger.FromContent(ctx).Error("invalid user id.", err)
-		return nil, err
-	}
-
-	res, err := s.usecase.GetById(ctx, entity.UserId(in.UserId))
-	if err != nil {
-		logger.FromContent(ctx).Error("failed to get user.", err)
 		return nil, err
 	}
 

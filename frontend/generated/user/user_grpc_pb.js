@@ -39,25 +39,25 @@ function deserialize_user_UserReply(buffer_arg) {
 
 
 var UserServiceService = exports.UserServiceService = {
-  create: {
-    path: '/user.UserService/Create',
-    requestStream: false,
-    responseStream: false,
-    requestType: user_pb.CreateRequest,
-    responseType: user_pb.UserReply,
-    requestSerialize: serialize_user_CreateRequest,
-    requestDeserialize: deserialize_user_CreateRequest,
-    responseSerialize: serialize_user_UserReply,
-    responseDeserialize: deserialize_user_UserReply,
-  },
-  getById: {
-    path: '/user.UserService/GetById',
+  getUserById: {
+    path: '/user.UserService/GetUserById',
     requestStream: false,
     responseStream: false,
     requestType: user_pb.GetByIdRequest,
     responseType: user_pb.UserReply,
     requestSerialize: serialize_user_GetByIdRequest,
     requestDeserialize: deserialize_user_GetByIdRequest,
+    responseSerialize: serialize_user_UserReply,
+    responseDeserialize: deserialize_user_UserReply,
+  },
+  createUser: {
+    path: '/user.UserService/CreateUser',
+    requestStream: false,
+    responseStream: false,
+    requestType: user_pb.CreateRequest,
+    responseType: user_pb.UserReply,
+    requestSerialize: serialize_user_CreateRequest,
+    requestDeserialize: deserialize_user_CreateRequest,
     responseSerialize: serialize_user_UserReply,
     responseDeserialize: deserialize_user_UserReply,
   },
