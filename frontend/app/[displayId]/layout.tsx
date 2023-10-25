@@ -19,7 +19,9 @@ export default async function UserLayout({
   children,
 }: UserLayoutProps) {
   const displayId = decodeURIComponent(params.displayId)
-  const user = await getUser(`${env.API_ROOT}/users?display_id=${displayId}`)
+  const user = await getUser(
+    `${env.MOCK_API_ROOT}/users?display_id=${displayId}`
+  )
 
   if (!user) {
     notFound()

@@ -36,7 +36,7 @@ export default async function UserSearchPage({
   const query = searchParams.q || ""
 
   const users = await getUsers(
-    `${env.API_ROOT}/users?name=${query}&display_id=${query}`
+    `${env.MOCK_API_ROOT}/users?name=${query}&display_id=${query}`
   )
 
   if (!users) {

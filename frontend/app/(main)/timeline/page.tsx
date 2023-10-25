@@ -3,7 +3,7 @@ import { getReviews } from "@/lib/get-reviews"
 import { ReviewList } from "@/components/review-list"
 
 export default async function Timeline() {
-  const reviews = await getReviews(`${env.API_ROOT}/timeline`)
+  const reviews = await getReviews(`${env.MOCK_API_ROOT}/timeline`)
 
   if (!reviews) {
     return <p>Something went wrong.</p>

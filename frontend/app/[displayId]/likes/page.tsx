@@ -11,13 +11,17 @@ interface LikesPageProps {
 
 export default async function LikesPage({ params }: LikesPageProps) {
   const displayId = decodeURIComponent(params.displayId)
-  const user = await getUser(`${env.API_ROOT}/users?display_id=${displayId}`)
+  const user = await getUser(
+    `${env.MOCK_API_ROOT}/users?display_id=${displayId}`
+  )
 
   if (!user) {
     notFound()
   }
 
-  const reviews = await getReviews(`${env.API_ROOT}/users/${user.userId}/likes`)
+  const reviews = await getReviews(
+    `${env.MOCK_API_ROOT}/users/${user.userId}/likes`
+  )
 
   if (!reviews) {
     return <p>まだレビューをいいねしていません。</p>

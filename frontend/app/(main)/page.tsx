@@ -4,7 +4,7 @@ import { ReviewList } from "@/components/review-list"
 
 async function getHello(): Promise<any> {
   try {
-    const response = await fetch("http://localhost:3000/api/hello")
+    const response = await fetch(`${env.API_ROOT}/hello`)
     return response.json()
   } catch (error) {
     console.error(error)
@@ -13,7 +13,7 @@ async function getHello(): Promise<any> {
 }
 
 export default async function IndexPage() {
-  const reviews = await getReviews(`${env.API_ROOT}/trends`)
+  const reviews = await getReviews(`${env.MOCK_API_ROOT}/trends`)
 
   if (!reviews) {
     return <p>Something went wrong.</p>

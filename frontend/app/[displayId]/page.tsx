@@ -11,14 +11,16 @@ interface UserPageProps {
 
 export default async function UserPage({ params }: UserPageProps) {
   const displayId = decodeURIComponent(params.displayId)
-  const user = await getUser(`${env.API_ROOT}/users?display_id=${displayId}`)
+  const user = await getUser(
+    `${env.MOCK_API_ROOT}/users?display_id=${displayId}`
+  )
 
   if (!user) {
     notFound()
   }
 
   const reviews = await getReviews(
-    `${env.API_ROOT}/users/${user.userId}/reviews`
+    `${env.MOCK_API_ROOT}/users/${user.userId}/reviews`
   )
 
   if (!reviews) {
