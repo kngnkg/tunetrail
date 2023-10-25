@@ -6,12 +6,14 @@ option go_package = "github.com/kngnkg/tunetrail/backend/gen/review";
 
 import "user.proto";
 import "album.proto";
+import "google/protobuf/empty.proto";
 
 service ReviewService {
   rpc ListReviews(ListReviewsRequest) returns (ReviewListReply) {}
   rpc GetReviewById(GetByIdRequest) returns (ReviewReply) {}
   rpc CreateReview(CreateRequest) returns (ReviewReply) {}
   rpc UpdateReview(UpdateRequest) returns (ReviewReply) {}
+  rpc DeleteReview(DeleteReviewRequest) returns (google.protobuf.Empty) {}
 }
 
 message ListReviewsRequest {
@@ -38,6 +40,8 @@ message UpdateRequest {
   string content = 3;
   string publishedStatus = 4;
 }
+
+message DeleteReviewRequest { string reviewId = 1; }
 
 message ReviewReply {
   string reviewId = 1;

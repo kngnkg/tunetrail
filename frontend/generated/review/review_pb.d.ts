@@ -4,6 +4,7 @@
 import * as jspb from "google-protobuf";
 import * as user_pb from "./user_pb";
 import * as album_pb from "./album_pb";
+import * as google_protobuf_empty_pb from "google-protobuf/google/protobuf/empty_pb";
 
 export class ListReviewsRequest extends jspb.Message {
   clearReviewidsList(): void;
@@ -132,6 +133,26 @@ export namespace UpdateRequest {
     title: string,
     content: string,
     publishedstatus: string,
+  }
+}
+
+export class DeleteReviewRequest extends jspb.Message {
+  getReviewid(): string;
+  setReviewid(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): DeleteReviewRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: DeleteReviewRequest): DeleteReviewRequest.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: DeleteReviewRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): DeleteReviewRequest;
+  static deserializeBinaryFromReader(message: DeleteReviewRequest, reader: jspb.BinaryReader): DeleteReviewRequest;
+}
+
+export namespace DeleteReviewRequest {
+  export type AsObject = {
+    reviewid: string,
   }
 }
 

@@ -10,6 +10,7 @@ import (
 	"github.com/kngnkg/tunetrail/backend/logger"
 	"github.com/kngnkg/tunetrail/backend/usecase"
 	"github.com/kngnkg/tunetrail/backend/validator"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 type reviewServer struct {
@@ -154,6 +155,28 @@ func (s *reviewServer) UpdateReview(ctx context.Context, in *review.UpdateReques
 	}
 
 	return toReviewReply(res), nil
+}
+
+func (s *reviewServer) DeleteReview(ctx context.Context, in *review.DeleteReviewRequest) (*emptypb.Empty, error) {
+	ctx = logger.WithContent(ctx, s.logger)
+
+	var b struct {
+		ReviewId string `validate:"required,uuid4"`
+	}
+	b.ReviewId = in.ReviewId
+
+	if err := s.validator.Validate(b); err != nil {
+		logger.FromContent(ctx).Error("invalid request.", err)
+		return nil, err
+	}
+
+	err := s.uc.DeleteReview(ctx, b.ReviewId)
+	if err != nil {
+		logger.FromContent(ctx).Error("failed to delete review.", err)
+		return nil, err
+	}
+
+	return &emptypb.Empty{}, nil
 }
 
 func toReviewReply(res *usecase.ReviewResponse) *review.ReviewReply {

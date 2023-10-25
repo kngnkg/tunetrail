@@ -153,3 +153,15 @@ func (r *ReviewRepository) UpdateReview(ctx context.Context, db repository.Execu
 
 	return review, nil
 }
+
+func (r *ReviewRepository) DeleteReview(ctx context.Context, db repository.Executor, reviewId string) error {
+	query := `DELETE FROM reviews WHERE review_id = $1;`
+
+	_, err := db.ExecContext(ctx, query, reviewId)
+	if err != nil {
+		logger.FromContent(ctx).Error("failed to delete review.", err)
+		return err
+	}
+
+	return nil
+}

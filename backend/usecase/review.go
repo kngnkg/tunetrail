@@ -225,6 +225,22 @@ func (uc *ReviewUseCase) Update(ctx context.Context, reviewId string, title stri
 	return toReviewResponse(r, author, album, tp), nil
 }
 
-// func (uc *ReviewUseCase) DeleteById(ctx context.Context, reviewId string) error {
-// 	return uc.reviewRepo.DeleteReviewById(ctx, uc.DB, reviewId)
-// }
+func (uc *ReviewUseCase) DeleteReview(ctx context.Context, reviewId string) error {
+	tx, err := uc.DB.BeginTxx(ctx, nil)
+	if err != nil {
+		return err
+	}
+
+	err = uc.reviewRepo.DeleteReview(ctx, tx, reviewId)
+	if err != nil {
+		// TODO: ロールバックのエラーハンドリング
+		if err = tx.Rollback(); err != nil {
+			logger.FromContent(ctx).Error("failed to rollback transaction: %v", err)
+		}
+		logger.FromContent(ctx).Error("failed to store review. transaction rollbacked: %v", err)
+		return err
+	}
+
+	// TODO: Commitのエラーハンドリング
+	return tx.Commit()
+}
