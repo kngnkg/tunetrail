@@ -10,6 +10,14 @@ import (
 	_ "github.com/lib/pq"
 )
 
+const (
+	// 重複エラーコード
+	ErrCodePostgresDuplicate = "23505"
+
+	// usersテーブルのユニーク制約
+	ConstraintUsersDisplayId = "users_display_id_key"
+)
+
 type DB struct {
 	*sqlx.DB
 }

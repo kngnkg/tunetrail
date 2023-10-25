@@ -45,8 +45,7 @@ func (s *reviewServer) ListReviews(ctx context.Context, in *review.ListReviewsRe
 	b.Limit = int(in.Limit)
 
 	if err := s.validator.Validate(b); err != nil {
-		logger.FromContent(ctx).Error("invalid request.", err)
-		return nil, err
+		return nil, invalidArgument(ctx, err)
 	}
 
 	userIds := make([]entity.UserId, len(b.UserIds))
@@ -56,8 +55,7 @@ func (s *reviewServer) ListReviews(ctx context.Context, in *review.ListReviewsRe
 
 	res, err := s.uc.ListReviews(ctx, b.ReviewIds, userIds, b.AlbumIds, b.Cursor, b.Limit)
 	if err != nil {
-		logger.FromContent(ctx).Error("failed to get reviews.", err)
-		return nil, err
+		return nil, internal(ctx, err)
 	}
 
 	return toReviewListReply(res), nil
@@ -85,14 +83,15 @@ func (s *reviewServer) GetReviewById(ctx context.Context, in *review.GetByIdRequ
 	b.ReviewId = in.ReviewId
 
 	if err := s.validator.Validate(b); err != nil {
-		logger.FromContent(ctx).Error("invalid request.", err)
-		return nil, err
+		return nil, invalidArgument(ctx, err)
 	}
 
 	res, err := s.uc.GetById(ctx, b.ReviewId)
 	if err != nil {
-		logger.FromContent(ctx).Error("failed to get review.", err)
-		return nil, err
+		return nil, internal(ctx, err)
+	}
+	if res == nil {
+		return nil, notFound(ctx, err)
 	}
 
 	return toReviewReply(res), nil
@@ -116,14 +115,12 @@ func (s *reviewServer) CreateReview(ctx context.Context, in *review.CreateReques
 	r.PublishedStatus = entity.PublishedStatus(in.PublishedStatus)
 
 	if err := s.validator.Validate(r); err != nil {
-		logger.FromContent(ctx).Error("invalid request.", err)
-		return nil, err
+		return nil, invalidArgument(ctx, err)
 	}
 
 	res, err := s.uc.Store(ctx, r.AuthorId, r.AlbumId, r.Title, r.Content, r.PublishedStatus)
 	if err != nil {
-		logger.FromContent(ctx).Error("failed to create review.", err)
-		return nil, err
+		return nil, internal(ctx, err)
 	}
 
 	return toReviewReply(res), nil
@@ -144,14 +141,12 @@ func (s *reviewServer) UpdateReview(ctx context.Context, in *review.UpdateReques
 	r.PublishedStatus = entity.PublishedStatus(in.PublishedStatus)
 
 	if err := s.validator.Validate(r); err != nil {
-		logger.FromContent(ctx).Error("invalid request.", err)
-		return nil, err
+		return nil, invalidArgument(ctx, err)
 	}
 
 	res, err := s.uc.Update(ctx, r.ReviewId, r.Title, r.Content, r.PublishedStatus)
 	if err != nil {
-		logger.FromContent(ctx).Error("failed to update review.", err)
-		return nil, err
+		return nil, internal(ctx, err)
 	}
 
 	return toReviewReply(res), nil
@@ -166,14 +161,12 @@ func (s *reviewServer) DeleteReview(ctx context.Context, in *review.DeleteReview
 	b.ReviewId = in.ReviewId
 
 	if err := s.validator.Validate(b); err != nil {
-		logger.FromContent(ctx).Error("invalid request.", err)
-		return nil, err
+		return nil, invalidArgument(ctx, err)
 	}
 
 	err := s.uc.DeleteReview(ctx, b.ReviewId)
 	if err != nil {
-		logger.FromContent(ctx).Error("failed to delete review.", err)
-		return nil, err
+		return nil, internal(ctx, err)
 	}
 
 	return &emptypb.Empty{}, nil
