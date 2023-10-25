@@ -13,7 +13,7 @@ type ReviewRepository interface {
 	GetReviewById(ctx context.Context, db repository.Executor, reviewId string) (*entity.Review, error)
 	StoreReview(ctx context.Context, db repository.Executor, review *entity.Review) (*entity.Review, error)
 	UpdateReview(ctx context.Context, db repository.Executor, review *entity.Review) (*entity.Review, error)
-	// DeleteReviewById(ctx context.Context, db repository.Executor, reviewId string) error
+	DeleteReview(ctx context.Context, db repository.Executor, reviewId string) error
 }
 
 type AlbumRepository interface {

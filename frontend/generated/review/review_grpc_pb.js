@@ -5,6 +5,18 @@ var grpc = require('@grpc/grpc-js');
 var review_pb = require('./review_pb.js');
 var user_pb = require('./user_pb.js');
 var album_pb = require('./album_pb.js');
+var google_protobuf_empty_pb = require('google-protobuf/google/protobuf/empty_pb.js');
+
+function serialize_google_protobuf_Empty(arg) {
+  if (!(arg instanceof google_protobuf_empty_pb.Empty)) {
+    throw new Error('Expected argument of type google.protobuf.Empty');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_google_protobuf_Empty(buffer_arg) {
+  return google_protobuf_empty_pb.Empty.deserializeBinary(new Uint8Array(buffer_arg));
+}
 
 function serialize_review_CreateRequest(arg) {
   if (!(arg instanceof review_pb.CreateRequest)) {
@@ -15,6 +27,17 @@ function serialize_review_CreateRequest(arg) {
 
 function deserialize_review_CreateRequest(buffer_arg) {
   return review_pb.CreateRequest.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_review_DeleteReviewRequest(arg) {
+  if (!(arg instanceof review_pb.DeleteReviewRequest)) {
+    throw new Error('Expected argument of type review.DeleteReviewRequest');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_review_DeleteReviewRequest(buffer_arg) {
+  return review_pb.DeleteReviewRequest.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
 function serialize_review_GetByIdRequest(arg) {
@@ -117,6 +140,17 @@ var ReviewServiceService = exports.ReviewServiceService = {
     requestDeserialize: deserialize_review_UpdateRequest,
     responseSerialize: serialize_review_ReviewReply,
     responseDeserialize: deserialize_review_ReviewReply,
+  },
+  deleteReview: {
+    path: '/review.ReviewService/DeleteReview',
+    requestStream: false,
+    responseStream: false,
+    requestType: review_pb.DeleteReviewRequest,
+    responseType: google_protobuf_empty_pb.Empty,
+    requestSerialize: serialize_review_DeleteReviewRequest,
+    requestDeserialize: deserialize_review_DeleteReviewRequest,
+    responseSerialize: serialize_google_protobuf_Empty,
+    responseDeserialize: deserialize_google_protobuf_Empty,
   },
 };
 
