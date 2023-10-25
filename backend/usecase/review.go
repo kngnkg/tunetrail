@@ -105,6 +105,9 @@ func (uc *ReviewUseCase) GetById(ctx context.Context, reviewId string) (*ReviewR
 	if err != nil {
 		return nil, err
 	}
+	if r == nil {
+		return nil, nil
+	}
 
 	author, err := uc.userRepo.GetUserById(ctx, uc.DB, r.Author.UserId)
 	if err != nil {
@@ -156,11 +159,12 @@ func (uc *ReviewUseCase) Store(ctx context.Context, authorId entity.UserId, albu
 
 	r, err := uc.reviewRepo.StoreReview(ctx, tx, review)
 	if err != nil {
-		// TODO: ロールバックのエラーハンドリング
-		if err = tx.Rollback(); err != nil {
-			logger.FromContent(ctx).Error("failed to rollback transaction: %v", err)
-		}
-		logger.FromContent(ctx).Error("failed to store review. transaction rollbacked: %v", err)
+		defer func() {
+			if err := tx.Rollback(); err != nil {
+				logger.FromContent(ctx).Error("failed to rollback transaction: %v", err)
+			}
+		}()
+
 		return nil, err
 	}
 
@@ -198,11 +202,12 @@ func (uc *ReviewUseCase) Update(ctx context.Context, reviewId string, title stri
 
 	r, err = uc.reviewRepo.UpdateReview(ctx, tx, r)
 	if err != nil {
-		// TODO: ロールバックのエラーハンドリング
-		if err = tx.Rollback(); err != nil {
-			logger.FromContent(ctx).Error("failed to rollback transaction: %v", err)
-		}
-		logger.FromContent(ctx).Error("failed to store review. transaction rollbacked: %v", err)
+		defer func() {
+			if err := tx.Rollback(); err != nil {
+				logger.FromContent(ctx).Error("failed to rollback transaction: %v", err)
+			}
+		}()
+
 		return nil, err
 	}
 
@@ -233,11 +238,12 @@ func (uc *ReviewUseCase) DeleteReview(ctx context.Context, reviewId string) erro
 
 	err = uc.reviewRepo.DeleteReview(ctx, tx, reviewId)
 	if err != nil {
-		// TODO: ロールバックのエラーハンドリング
-		if err = tx.Rollback(); err != nil {
-			logger.FromContent(ctx).Error("failed to rollback transaction: %v", err)
-		}
-		logger.FromContent(ctx).Error("failed to store review. transaction rollbacked: %v", err)
+		defer func() {
+			if err := tx.Rollback(); err != nil {
+				logger.FromContent(ctx).Error("failed to rollback transaction: %v", err)
+			}
+		}()
+
 		return err
 	}
 

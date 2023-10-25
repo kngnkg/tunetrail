@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"errors"
 
 	"github.com/kngnkg/tunetrail/backend/entity"
 	"github.com/kngnkg/tunetrail/backend/gen/user"
@@ -34,14 +35,15 @@ func (s *userServer) GetUserById(ctx context.Context, in *user.GetByIdRequest) (
 	b.UserId = in.UserId
 
 	if err := s.validator.Validate(b); err != nil {
-		logger.FromContent(ctx).Error("invalid user id.", err)
-		return nil, err
+		return nil, invalidArgument(ctx, err)
 	}
 
 	res, err := s.usecase.GetById(ctx, entity.UserId(in.UserId))
 	if err != nil {
-		logger.FromContent(ctx).Error("failed to get user.", err)
-		return nil, err
+		return nil, internal(ctx, err)
+	}
+	if res == nil {
+		return nil, notFound(ctx, err)
 	}
 
 	return toUserReply(res), nil
@@ -59,14 +61,15 @@ func (s *userServer) CreateUser(ctx context.Context, in *user.CreateRequest) (*u
 	}
 
 	if err := s.validator.Validate(u); err != nil {
-		logger.FromContent(ctx).Error("invalid user.", err)
-		return nil, err
+		return nil, invalidArgument(ctx, err)
 	}
 
 	res, err := s.usecase.Store(ctx, u)
 	if err != nil {
-		logger.FromContent(ctx).Error("failed to create user.", err)
-		return nil, err
+		if errors.Is(err, usecase.ErrorDisplayIdAlreadyExists) {
+			return nil, alreadyExists(ctx, err)
+		}
+		return nil, internal(ctx, err)
 	}
 
 	return toUserReply(res), nil

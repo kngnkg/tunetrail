@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"errors"
 
 	"github.com/jmoiron/sqlx"
 )
@@ -36,4 +37,8 @@ type Executor interface {
 var (
 	_ Executor = (*sqlx.DB)(nil)
 	_ Executor = (*sqlx.Tx)(nil)
+)
+
+var (
+	ErrorDisplayIdAlreadyExists = errors.New("repository: display id already exists")
 )

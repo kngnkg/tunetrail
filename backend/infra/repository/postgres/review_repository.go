@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 
 	"github.com/kngnkg/tunetrail/backend/entity"
@@ -114,7 +115,9 @@ func (r *ReviewRepository) GetReviewById(ctx context.Context, db repository.Exec
 	review := &entity.Review{}
 	err := db.GetContext(ctx, review, query, reviewId)
 	if err != nil {
-		logger.FromContent(ctx).Error("failed to get review by id.", err)
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
 		return nil, err
 	}
 

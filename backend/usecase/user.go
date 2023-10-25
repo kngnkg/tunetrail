@@ -2,6 +2,8 @@ package usecase
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"time"
 
 	"github.com/kngnkg/tunetrail/backend/entity"
@@ -49,6 +51,8 @@ func NewUserResponse(user *entity.User) *UserResponse {
 	}
 }
 
+var ErrorDisplayIdAlreadyExists = errors.New("usecase: display id already exists")
+
 func (uc *UserUseCase) Store(ctx context.Context, user *entity.User) (*UserResponse, error) {
 	tx, err := uc.DB.BeginTxx(ctx, nil)
 	if err != nil {
@@ -57,9 +61,16 @@ func (uc *UserUseCase) Store(ctx context.Context, user *entity.User) (*UserRespo
 
 	user, err = uc.userRepo.StoreUser(ctx, tx, user)
 	if err != nil {
-		if err = tx.Rollback(); err != nil {
-			logger.FromContent(ctx).Error("failed to rollback transaction: %v", err)
+		defer func() {
+			if err := tx.Rollback(); err != nil {
+				logger.FromContent(ctx).Error("failed to rollback transaction: %v", err)
+			}
+		}()
+
+		if errors.Is(err, repository.ErrorDisplayIdAlreadyExists) {
+			return nil, fmt.Errorf("%w: %w", ErrorDisplayIdAlreadyExists, err)
 		}
+
 		return nil, err
 	}
 
@@ -75,6 +86,9 @@ func (uc *UserUseCase) GetById(ctx context.Context, userId entity.UserId) (*User
 	user, err := uc.userRepo.GetUserById(ctx, uc.DB, userId)
 	if err != nil {
 		return nil, err
+	}
+	if user == nil {
+		return nil, nil
 	}
 
 	// TODO: フォロー数等の情報を取得する

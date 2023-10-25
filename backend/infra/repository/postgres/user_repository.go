@@ -2,12 +2,15 @@ package postgres
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"fmt"
 
 	"github.com/kngnkg/tunetrail/backend/entity"
 	"github.com/kngnkg/tunetrail/backend/helper"
 	"github.com/kngnkg/tunetrail/backend/infra/repository"
 	"github.com/kngnkg/tunetrail/backend/logger"
+	"github.com/lib/pq"
 )
 
 type UserRepository struct{}
@@ -70,6 +73,13 @@ func (r *UserRepository) StoreUser(ctx context.Context, db repository.Executor, 
 
 	_, err := db.NamedExecContext(ctx, query, user)
 	if err != nil {
+		// 重複エラーの場合
+		var pqError *pq.Error
+		if errors.As(err, &pqError) && pqError.Code == ErrCodePostgresDuplicate {
+			if pqError.Constraint == ConstraintUsersDisplayId {
+				return nil, fmt.Errorf("%w: %w", repository.ErrorDisplayIdAlreadyExists, err)
+			}
+		}
 		return nil, err
 	}
 
@@ -85,6 +95,9 @@ func (r *UserRepository) GetUserById(ctx context.Context, db repository.Executor
 	u := &entity.User{}
 	err := db.GetContext(ctx, u, query, userId)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
 		return nil, err
 	}
 
