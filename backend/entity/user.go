@@ -18,14 +18,12 @@ type User struct {
 }
 
 type UserFilter struct {
-	Page
 	UserIds    []UserId
 	DisplayIds []string
 }
 
-func NewUserFilter(cursor string, limit int, userIds []UserId, displayIds []string) *UserFilter {
+func NewUserFilter(userIds []UserId, displayIds []string) *UserFilter {
 	return &UserFilter{
-		Page:       *NewPage(cursor, limit),
 		UserIds:    userIds,
 		DisplayIds: displayIds,
 	}

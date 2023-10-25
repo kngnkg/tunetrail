@@ -23,7 +23,7 @@ type AlbumRepository interface {
 }
 
 type UserRepository interface {
-	ListUsers(ctx context.Context, db repository.Executor, filter *entity.UserFilter) ([]*entity.User, entity.UserId, error)
+	ListUsers(ctx context.Context, db repository.Executor, filter *entity.UserFilter) ([]*entity.User, error)
 	GetUserById(ctx context.Context, db repository.Executor, userId entity.UserId) (*entity.User, error)
 	StoreUser(ctx context.Context, db repository.Executor, user *entity.User) (*entity.User, error)
 }

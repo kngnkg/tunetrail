@@ -11,6 +11,8 @@ import (
 	"github.com/kngnkg/tunetrail/backend/logger"
 )
 
+var ErrorDisplayIdAlreadyExists = errors.New("usecase: display id already exists")
+
 type UserUseCase struct {
 	DB       repository.DBAccesser
 	userRepo UserRepository
@@ -37,6 +39,10 @@ type UserResponse struct {
 	UpdatedAt      time.Time
 }
 
+type UserListResponse struct {
+	Users []*UserResponse
+}
+
 func NewUserResponse(user *entity.User) *UserResponse {
 	return &UserResponse{
 		UserId:         user.UserId,
@@ -51,7 +57,37 @@ func NewUserResponse(user *entity.User) *UserResponse {
 	}
 }
 
-var ErrorDisplayIdAlreadyExists = errors.New("usecase: display id already exists")
+func (uc *UserUseCase) ListUsers(ctx context.Context, userIds []entity.UserId, displayIds []string) (*UserListResponse, error) {
+	uf := entity.NewUserFilter(userIds, displayIds)
+	users, err := uc.userRepo.ListUsers(ctx, uc.DB, uf)
+	if err != nil {
+		return nil, err
+	}
+
+	var resps []*UserResponse
+	for _, user := range users {
+		resps = append(resps, NewUserResponse(user))
+	}
+
+	resp := &UserListResponse{
+		Users: resps,
+	}
+	return resp, nil
+}
+
+func (uc *UserUseCase) GetById(ctx context.Context, userId entity.UserId) (*UserResponse, error) {
+	user, err := uc.userRepo.GetUserById(ctx, uc.DB, userId)
+	if err != nil {
+		return nil, err
+	}
+	if user == nil {
+		return nil, nil
+	}
+
+	// TODO: フォロー数等の情報を取得する
+	resp := NewUserResponse(user)
+	return resp, nil
+}
 
 func (uc *UserUseCase) Store(ctx context.Context, user *entity.User) (*UserResponse, error) {
 	tx, err := uc.DB.BeginTxx(ctx, nil)
@@ -78,20 +114,6 @@ func (uc *UserUseCase) Store(ctx context.Context, user *entity.User) (*UserRespo
 		return nil, err
 	}
 
-	resp := NewUserResponse(user)
-	return resp, nil
-}
-
-func (uc *UserUseCase) GetById(ctx context.Context, userId entity.UserId) (*UserResponse, error) {
-	user, err := uc.userRepo.GetUserById(ctx, uc.DB, userId)
-	if err != nil {
-		return nil, err
-	}
-	if user == nil {
-		return nil, nil
-	}
-
-	// TODO: フォロー数等の情報を取得する
 	resp := NewUserResponse(user)
 	return resp, nil
 }

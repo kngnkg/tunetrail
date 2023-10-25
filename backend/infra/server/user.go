@@ -26,7 +26,34 @@ func NewUserServer(uc *usecase.UserUseCase, v *validator.Validator, l *logger.Lo
 	}
 }
 
-func (s *userServer) GetUserById(ctx context.Context, in *user.GetByIdRequest) (*user.UserReply, error) {
+func (s *userServer) ListUsers(ctx context.Context, in *user.ListUsersRequest) (*user.UserListReply, error) {
+	ctx = logger.WithContent(ctx, s.logger)
+
+	var b struct {
+		UserIds    []string `validate:"omitempty,dive,uuid4"`
+		DisplayIds []string `validate:"omitempty,dive,display_id"`
+	}
+	b.UserIds = in.UserIds
+	b.DisplayIds = in.DisplayIds
+
+	if err := s.validator.Validate(b); err != nil {
+		return nil, invalidArgument(ctx, err)
+	}
+
+	userIds := make([]entity.UserId, len(b.UserIds))
+	for i, id := range b.UserIds {
+		userIds[i] = entity.UserId(id)
+	}
+
+	res, err := s.usecase.ListUsers(ctx, userIds, b.DisplayIds)
+	if err != nil {
+		return nil, internal(ctx, err)
+	}
+
+	return toUserListReply(res), nil
+}
+
+func (s *userServer) GetUserById(ctx context.Context, in *user.GetUserByIdRequest) (*user.UserReply, error) {
 	ctx = logger.WithContent(ctx, s.logger)
 
 	var b struct {
@@ -49,7 +76,7 @@ func (s *userServer) GetUserById(ctx context.Context, in *user.GetByIdRequest) (
 	return toUserReply(res), nil
 }
 
-func (s *userServer) CreateUser(ctx context.Context, in *user.CreateRequest) (*user.UserReply, error) {
+func (s *userServer) CreateUser(ctx context.Context, in *user.CreateUserRequest) (*user.UserReply, error) {
 	ctx = logger.WithContent(ctx, s.logger)
 
 	u := &entity.User{
@@ -73,6 +100,17 @@ func (s *userServer) CreateUser(ctx context.Context, in *user.CreateRequest) (*u
 	}
 
 	return toUserReply(res), nil
+}
+
+func toUserListReply(res *usecase.UserListResponse) *user.UserListReply {
+	var users []*user.UserReply
+	for _, user := range res.Users {
+		users = append(users, toUserReply(user))
+	}
+
+	return &user.UserListReply{
+		Users: users,
+	}
 }
 
 func toUserReply(res *usecase.UserResponse) *user.UserReply {

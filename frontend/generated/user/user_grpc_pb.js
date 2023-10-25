@@ -4,26 +4,48 @@
 var grpc = require('@grpc/grpc-js');
 var user_pb = require('./user_pb.js');
 
-function serialize_user_CreateRequest(arg) {
-  if (!(arg instanceof user_pb.CreateRequest)) {
-    throw new Error('Expected argument of type user.CreateRequest');
+function serialize_user_CreateUserRequest(arg) {
+  if (!(arg instanceof user_pb.CreateUserRequest)) {
+    throw new Error('Expected argument of type user.CreateUserRequest');
   }
   return Buffer.from(arg.serializeBinary());
 }
 
-function deserialize_user_CreateRequest(buffer_arg) {
-  return user_pb.CreateRequest.deserializeBinary(new Uint8Array(buffer_arg));
+function deserialize_user_CreateUserRequest(buffer_arg) {
+  return user_pb.CreateUserRequest.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
-function serialize_user_GetByIdRequest(arg) {
-  if (!(arg instanceof user_pb.GetByIdRequest)) {
-    throw new Error('Expected argument of type user.GetByIdRequest');
+function serialize_user_GetUserByIdRequest(arg) {
+  if (!(arg instanceof user_pb.GetUserByIdRequest)) {
+    throw new Error('Expected argument of type user.GetUserByIdRequest');
   }
   return Buffer.from(arg.serializeBinary());
 }
 
-function deserialize_user_GetByIdRequest(buffer_arg) {
-  return user_pb.GetByIdRequest.deserializeBinary(new Uint8Array(buffer_arg));
+function deserialize_user_GetUserByIdRequest(buffer_arg) {
+  return user_pb.GetUserByIdRequest.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_user_ListUsersRequest(arg) {
+  if (!(arg instanceof user_pb.ListUsersRequest)) {
+    throw new Error('Expected argument of type user.ListUsersRequest');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_user_ListUsersRequest(buffer_arg) {
+  return user_pb.ListUsersRequest.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_user_UserListReply(arg) {
+  if (!(arg instanceof user_pb.UserListReply)) {
+    throw new Error('Expected argument of type user.UserListReply');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_user_UserListReply(buffer_arg) {
+  return user_pb.UserListReply.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
 function serialize_user_UserReply(arg) {
@@ -39,14 +61,25 @@ function deserialize_user_UserReply(buffer_arg) {
 
 
 var UserServiceService = exports.UserServiceService = {
+  listUsers: {
+    path: '/user.UserService/ListUsers',
+    requestStream: false,
+    responseStream: false,
+    requestType: user_pb.ListUsersRequest,
+    responseType: user_pb.UserListReply,
+    requestSerialize: serialize_user_ListUsersRequest,
+    requestDeserialize: deserialize_user_ListUsersRequest,
+    responseSerialize: serialize_user_UserListReply,
+    responseDeserialize: deserialize_user_UserListReply,
+  },
   getUserById: {
     path: '/user.UserService/GetUserById',
     requestStream: false,
     responseStream: false,
-    requestType: user_pb.GetByIdRequest,
+    requestType: user_pb.GetUserByIdRequest,
     responseType: user_pb.UserReply,
-    requestSerialize: serialize_user_GetByIdRequest,
-    requestDeserialize: deserialize_user_GetByIdRequest,
+    requestSerialize: serialize_user_GetUserByIdRequest,
+    requestDeserialize: deserialize_user_GetUserByIdRequest,
     responseSerialize: serialize_user_UserReply,
     responseDeserialize: deserialize_user_UserReply,
   },
@@ -54,10 +87,10 @@ var UserServiceService = exports.UserServiceService = {
     path: '/user.UserService/CreateUser',
     requestStream: false,
     responseStream: false,
-    requestType: user_pb.CreateRequest,
+    requestType: user_pb.CreateUserRequest,
     responseType: user_pb.UserReply,
-    requestSerialize: serialize_user_CreateRequest,
-    requestDeserialize: deserialize_user_CreateRequest,
+    requestSerialize: serialize_user_CreateUserRequest,
+    requestDeserialize: deserialize_user_CreateUserRequest,
     responseSerialize: serialize_user_UserReply,
     responseDeserialize: deserialize_user_UserReply,
   },
