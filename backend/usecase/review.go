@@ -183,101 +183,47 @@ func (uc *ReviewUseCase) Store(ctx context.Context, authorId entity.UserId, albu
 	return toReviewResponse(r, author, album, tp), nil
 }
 
-// func (uc *ReviewUseCase) GetByAuthorId(ctx context.Context, authorId entity.UserId, nextCursor string, limit int) (*ReviewListResponse, error) {
-// 	rs, nc, err := uc.reviewRepo.GetReviewByAuthorId(ctx, uc.DB, authorId, nextCursor, limit)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+func (uc *ReviewUseCase) Update(ctx context.Context, reviewId string, title string, content string, publishedStatus entity.PublishedStatus) (*ReviewResponse, error) {
+	r := &entity.Review{
+		ReviewId:        reviewId,
+		Title:           title,
+		Content:         content,
+		PublishedStatus: publishedStatus,
+	}
 
-// 	// アルバムIDのスライスを作成する
-// 	aIds := make([]string, len(rs))
-// 	for i, r := range rs {
-// 		aIds[i] = r.Album.AlbumId
-// 	}
+	tx, err := uc.DB.BeginTxx(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
 
-// 	// 取得済みのアルバム情報を格納するマップ
-// 	albumMap := make(map[string]*entity.Album)
+	r, err = uc.reviewRepo.UpdateReview(ctx, tx, r)
+	if err != nil {
+		// TODO: ロールバックのエラーハンドリング
+		if err = tx.Rollback(); err != nil {
+			logger.FromContent(ctx).Error("failed to rollback transaction: %v", err)
+		}
+		logger.FromContent(ctx).Error("failed to store review. transaction rollbacked: %v", err)
+		return nil, err
+	}
 
-// 	eg, ctx := errgroup.WithContext(ctx)
-// 	eg.Go(func() error {
-// 		// アルバム情報を取得する
-// 		as, err := uc.albumRepo.GetAlbumByIds(ctx, aIds)
-// 		if err != nil {
-// 			return err
-// 		}
+	// TODO: Commitのエラーハンドリング
+	if err = tx.Commit(); err != nil {
+		return nil, err
+	}
 
-// 		// 一旦マップに格納する
-// 		for _, a := range as {
-// 			albumMap[a.AlbumId] = a
-// 		}
+	author, err := uc.userRepo.GetUserById(ctx, uc.DB, r.Author.UserId)
+	if err != nil {
+		return nil, err
+	}
 
-// 		return nil
-// 	})
+	// TODO: トラック情報を取得する
+	album, tp, err := uc.albumRepo.GetAlbumInfoById(ctx, r.Album.AlbumId)
+	if err != nil {
+		return nil, err
+	}
 
-// 	var author *entity.User
-// 	// ユーザー情報を取得する
-// 	eg.Go(func() error {
-// 		a, err := uc.userRepo.GetUserById(ctx, uc.DB, authorId)
-// 		if err != nil {
-// 			return err
-// 		}
-
-// 		author = a
-// 		return nil
-// 	})
-
-// 	if err := eg.Wait(); err != nil {
-// 		return nil, err
-// 	}
-
-// 	for _, r := range rs {
-// 		// アルバム情報を埋め込む
-// 		if album, ok := albumMap[r.Album.AlbumId]; ok {
-// 			r.Album = album
-// 		}
-
-// 		// ユーザー情報を埋め込む
-// 		r.Author = author
-// 	}
-
-// 	resp := &ReviewListResponse{
-// 		Reviews:    rs,
-// 		NextCursor: nc,
-// 	}
-// 	return resp, nil
-// }
-
-// func (uc *ReviewUseCase) Update(ctx context.Context, review *entity.Review) (*ReviewResponse, error) {
-// 	r, err := uc.reviewRepo.UpdateReview(ctx, uc.DB, review)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	author, err := uc.userRepo.GetUserById(ctx, uc.DB, r.Author.UserId)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	album, err := uc.albumRepo.GetAlbumById(ctx, r.Album.AlbumId)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	resp := &ReviewResponse{
-// 		Review: &entity.Review{
-// 			ReviewId:        r.ReviewId,
-// 			PublishedStatus: r.PublishedStatus,
-// 			Author:          author,
-// 			Album:           album,
-// 			Title:           r.Title,
-// 			Content:         r.Content,
-// 			LikesCount:      r.LikesCount,
-// 			CreatedAt:       r.CreatedAt,
-// 			UpdatedAt:       r.UpdatedAt,
-// 		},
-// 	}
-// 	return resp, nil
-// }
+	return toReviewResponse(r, author, album, tp), nil
+}
 
 // func (uc *ReviewUseCase) DeleteById(ctx context.Context, reviewId string) error {
 // 	return uc.reviewRepo.DeleteReviewById(ctx, uc.DB, reviewId)

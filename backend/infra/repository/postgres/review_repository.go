@@ -136,3 +136,20 @@ func (r *ReviewRepository) StoreReview(ctx context.Context, db repository.Execut
 
 	return review, nil
 }
+
+func (r *ReviewRepository) UpdateReview(ctx context.Context, db repository.Executor, review *entity.Review) (*entity.Review, error) {
+	query := `
+		UPDATE reviews
+		SET title = $1, content = $2, published_status = $3, updated_at = NOW()
+		WHERE review_id = $4
+		RETURNING review_id, user_id AS "author.user_id", album_id AS "album.album_id", title, content, published_status, created_at, updated_at;`
+
+	err := db.QueryRowxContext(ctx, query, review.Title, review.Content, review.PublishedStatus, review.ReviewId).
+		StructScan(review)
+	if err != nil {
+		logger.FromContent(ctx).Error("failed to update review.", err)
+		return nil, err
+	}
+
+	return review, nil
+}

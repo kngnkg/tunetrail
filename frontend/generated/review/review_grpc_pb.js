@@ -61,6 +61,17 @@ function deserialize_review_ReviewReply(buffer_arg) {
   return review_pb.ReviewReply.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
+function serialize_review_UpdateRequest(arg) {
+  if (!(arg instanceof review_pb.UpdateRequest)) {
+    throw new Error('Expected argument of type review.UpdateRequest');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_review_UpdateRequest(buffer_arg) {
+  return review_pb.UpdateRequest.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
 
 var ReviewServiceService = exports.ReviewServiceService = {
   listReviews: {
@@ -93,6 +104,17 @@ var ReviewServiceService = exports.ReviewServiceService = {
     responseType: review_pb.ReviewReply,
     requestSerialize: serialize_review_CreateRequest,
     requestDeserialize: deserialize_review_CreateRequest,
+    responseSerialize: serialize_review_ReviewReply,
+    responseDeserialize: deserialize_review_ReviewReply,
+  },
+  updateReview: {
+    path: '/review.ReviewService/UpdateReview',
+    requestStream: false,
+    responseStream: false,
+    requestType: review_pb.UpdateRequest,
+    responseType: review_pb.ReviewReply,
+    requestSerialize: serialize_review_UpdateRequest,
+    requestDeserialize: deserialize_review_UpdateRequest,
     responseSerialize: serialize_review_ReviewReply,
     responseDeserialize: deserialize_review_ReviewReply,
   },

@@ -128,6 +128,34 @@ func (s *reviewServer) CreateReview(ctx context.Context, in *review.CreateReques
 	return toReviewReply(res), nil
 }
 
+func (s *reviewServer) UpdateReview(ctx context.Context, in *review.UpdateRequest) (*review.ReviewReply, error) {
+	ctx = logger.WithContent(ctx, s.logger)
+
+	var r struct {
+		ReviewId        string                 `validate:"required,uuid4"`
+		Title           string                 `validate:"required"`
+		Content         string                 `validate:"required"`
+		PublishedStatus entity.PublishedStatus `validate:"required"`
+	}
+	r.ReviewId = in.ReviewId
+	r.Title = in.Title
+	r.Content = in.Content
+	r.PublishedStatus = entity.PublishedStatus(in.PublishedStatus)
+
+	if err := s.validator.Validate(r); err != nil {
+		logger.FromContent(ctx).Error("invalid request.", err)
+		return nil, err
+	}
+
+	res, err := s.uc.Update(ctx, r.ReviewId, r.Title, r.Content, r.PublishedStatus)
+	if err != nil {
+		logger.FromContent(ctx).Error("failed to update review.", err)
+		return nil, err
+	}
+
+	return toReviewReply(res), nil
+}
+
 func toReviewReply(res *usecase.ReviewResponse) *review.ReviewReply {
 	return &review.ReviewReply{
 		ReviewId:        res.Review.ReviewId,
