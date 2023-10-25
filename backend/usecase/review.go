@@ -51,8 +51,8 @@ func (uc *ReviewUseCase) ListReviews(ctx context.Context, reviewIds []string, us
 	}
 
 	// ユーザー情報を取得する
-	uf := entity.NewUserFilter("", len(rs), uids, nil)
-	us, _, err := uc.userRepo.ListUsers(ctx, uc.DB, uf)
+	uf := entity.NewUserFilter(uids, nil)
+	us, err := uc.userRepo.ListUsers(ctx, uc.DB, uf)
 	if err != nil {
 		return nil, err
 	}

@@ -23,7 +23,7 @@ var _ UserRepository = &UserRepositoryMock{}
 //			GetUserByIdFunc: func(ctx context.Context, db repository.Executor, userId entity.UserId) (*entity.User, error) {
 //				panic("mock out the GetUserById method")
 //			},
-//			ListUsersFunc: func(ctx context.Context, db repository.Executor, filter *entity.UserFilter) ([]*entity.User, entity.UserId, error) {
+//			ListUsersFunc: func(ctx context.Context, db repository.Executor, filter *entity.UserFilter) ([]*entity.User, error) {
 //				panic("mock out the ListUsers method")
 //			},
 //			StoreUserFunc: func(ctx context.Context, db repository.Executor, user *entity.User) (*entity.User, error) {
@@ -40,7 +40,7 @@ type UserRepositoryMock struct {
 	GetUserByIdFunc func(ctx context.Context, db repository.Executor, userId entity.UserId) (*entity.User, error)
 
 	// ListUsersFunc mocks the ListUsers method.
-	ListUsersFunc func(ctx context.Context, db repository.Executor, filter *entity.UserFilter) ([]*entity.User, entity.UserId, error)
+	ListUsersFunc func(ctx context.Context, db repository.Executor, filter *entity.UserFilter) ([]*entity.User, error)
 
 	// StoreUserFunc mocks the StoreUser method.
 	StoreUserFunc func(ctx context.Context, db repository.Executor, user *entity.User) (*entity.User, error)
@@ -121,7 +121,7 @@ func (mock *UserRepositoryMock) GetUserByIdCalls() []struct {
 }
 
 // ListUsers calls ListUsersFunc.
-func (mock *UserRepositoryMock) ListUsers(ctx context.Context, db repository.Executor, filter *entity.UserFilter) ([]*entity.User, entity.UserId, error) {
+func (mock *UserRepositoryMock) ListUsers(ctx context.Context, db repository.Executor, filter *entity.UserFilter) ([]*entity.User, error) {
 	if mock.ListUsersFunc == nil {
 		panic("UserRepositoryMock.ListUsersFunc: method is nil but UserRepository.ListUsers was just called")
 	}
