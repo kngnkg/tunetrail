@@ -16,8 +16,7 @@ func Album(a *entity.Album) *entity.Album {
 		SpotifyUri:  "spotify:album:" + id,
 		SpotifyUrl:  "https://open.spotify.com/album/" + id,
 		Name:        "album name",
-		Artists:     []entity.Artist{Artist(nil)},
-		Tracks:      []entity.Track{Track(nil)},
+		Artists:     []*entity.SimpleArtist{SimpleArtist(nil)},
 		CoverUrl:    "https://example.com/cover.png",
 		ReleaseDate: time.Now(),
 		Genres:      []string{"genre1", "genre2"},
@@ -40,9 +39,9 @@ func Album(a *entity.Album) *entity.Album {
 	if a.Artists != nil {
 		result.Artists = a.Artists
 	}
-	if a.Tracks != nil {
-		result.Tracks = a.Tracks
-	}
+	// if a.Tracks != nil {
+	// 	result.Tracks = a.Tracks
+	// }
 	if a.CoverUrl != "" {
 		result.CoverUrl = a.CoverUrl
 	}
@@ -55,43 +54,9 @@ func Album(a *entity.Album) *entity.Album {
 	return result
 }
 
-func Artist(a *entity.Artist) entity.Artist {
+func Track(t *entity.Track) *entity.Track {
 	id := testutil.GenRamdomString(spotifyIdLength)
-	result := entity.Artist{
-		ArtistId:   id,
-		SpotifyUri: "spotify:artist:" + id,
-		SpotifyUrl: "https://open.spotify.com/artist/" + id,
-		Name:       "artist name",
-		ImageUrl:   "https://example.com/image.png",
-		Genres:     []string{"genre1", "genre2"},
-	}
-	if a == nil {
-		return result
-	}
-	if a.ArtistId != "" {
-		result.ArtistId = a.ArtistId
-	}
-	if a.SpotifyUri != "" {
-		result.SpotifyUri = a.SpotifyUri
-	}
-	if a.SpotifyUrl != "" {
-		result.SpotifyUrl = a.SpotifyUrl
-	}
-	if a.Name != "" {
-		result.Name = a.Name
-	}
-	if a.ImageUrl != "" {
-		result.ImageUrl = a.ImageUrl
-	}
-	if a.Genres != nil {
-		result.Genres = a.Genres
-	}
-	return result
-}
-
-func Track(t *entity.Track) entity.Track {
-	id := testutil.GenRamdomString(spotifyIdLength)
-	result := entity.Track{
+	result := &entity.Track{
 		TrackId:     id,
 		SpotifyUri:  "spotify:track:" + id,
 		SpotifyUrl:  "https://open.spotify.com/track/" + id,

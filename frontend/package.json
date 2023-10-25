@@ -9,8 +9,7 @@
     "lint": "next lint",
     "test": "jest",
     "format": "prettier --write --ignore-path .gitignore './**/*.{js,jsx,ts,tsx,json}'",
-    "mock": "json-server --watch mock/db.json --routes mock/routes.json --host 0.0.0.0 --port 3001",
-    "gen": "./scripts/gen.sh"
+    "mock": "json-server --watch mock/db.json --routes mock/routes.json --host 0.0.0.0 --port 3001"
   },
   "dependencies": {
     "@editorjs/editorjs": "^2.28.1",

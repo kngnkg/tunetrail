@@ -22,8 +22,8 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserServiceClient interface {
-	Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*UserReply, error)
-	GetById(ctx context.Context, in *GetByIdRequest, opts ...grpc.CallOption) (*UserReply, error)
+	GetUserById(ctx context.Context, in *GetByIdRequest, opts ...grpc.CallOption) (*UserReply, error)
+	CreateUser(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*UserReply, error)
 }
 
 type userServiceClient struct {
@@ -34,18 +34,18 @@ func NewUserServiceClient(cc grpc.ClientConnInterface) UserServiceClient {
 	return &userServiceClient{cc}
 }
 
-func (c *userServiceClient) Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*UserReply, error) {
+func (c *userServiceClient) GetUserById(ctx context.Context, in *GetByIdRequest, opts ...grpc.CallOption) (*UserReply, error) {
 	out := new(UserReply)
-	err := c.cc.Invoke(ctx, "/user.UserService/Create", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/user.UserService/GetUserById", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *userServiceClient) GetById(ctx context.Context, in *GetByIdRequest, opts ...grpc.CallOption) (*UserReply, error) {
+func (c *userServiceClient) CreateUser(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*UserReply, error) {
 	out := new(UserReply)
-	err := c.cc.Invoke(ctx, "/user.UserService/GetById", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/user.UserService/CreateUser", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -56,8 +56,8 @@ func (c *userServiceClient) GetById(ctx context.Context, in *GetByIdRequest, opt
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
 type UserServiceServer interface {
-	Create(context.Context, *CreateRequest) (*UserReply, error)
-	GetById(context.Context, *GetByIdRequest) (*UserReply, error)
+	GetUserById(context.Context, *GetByIdRequest) (*UserReply, error)
+	CreateUser(context.Context, *CreateRequest) (*UserReply, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -65,11 +65,11 @@ type UserServiceServer interface {
 type UnimplementedUserServiceServer struct {
 }
 
-func (UnimplementedUserServiceServer) Create(context.Context, *CreateRequest) (*UserReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
+func (UnimplementedUserServiceServer) GetUserById(context.Context, *GetByIdRequest) (*UserReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserById not implemented")
 }
-func (UnimplementedUserServiceServer) GetById(context.Context, *GetByIdRequest) (*UserReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetById not implemented")
+func (UnimplementedUserServiceServer) CreateUser(context.Context, *CreateRequest) (*UserReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateUser not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
@@ -84,38 +84,38 @@ func RegisterUserServiceServer(s grpc.ServiceRegistrar, srv UserServiceServer) {
 	s.RegisterService(&UserService_ServiceDesc, srv)
 }
 
-func _UserService_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserServiceServer).Create(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/user.UserService/Create",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).Create(ctx, req.(*CreateRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _UserService_GetById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _UserService_GetUserById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetByIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserServiceServer).GetById(ctx, in)
+		return srv.(UserServiceServer).GetUserById(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/user.UserService/GetById",
+		FullMethod: "/user.UserService/GetUserById",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).GetById(ctx, req.(*GetByIdRequest))
+		return srv.(UserServiceServer).GetUserById(ctx, req.(*GetByIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_CreateUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).CreateUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.UserService/CreateUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).CreateUser(ctx, req.(*CreateRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -128,12 +128,12 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*UserServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Create",
-			Handler:    _UserService_Create_Handler,
+			MethodName: "GetUserById",
+			Handler:    _UserService_GetUserById_Handler,
 		},
 		{
-			MethodName: "GetById",
-			Handler:    _UserService_GetById_Handler,
+			MethodName: "CreateUser",
+			Handler:    _UserService_CreateUser_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

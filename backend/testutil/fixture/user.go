@@ -11,7 +11,7 @@ import (
 func User(u *entity.User) *entity.User {
 	result := &entity.User{
 		UserId:         entity.UserId(testutil.GenRandomUUID()),
-		DisplayId:      "@display_id" + testutil.GenRamdomString(5),
+		DisplayId:      "@display_id" + testutil.GenRamdomString(10),
 		Name:           "name",
 		AvatarUrl:      "https://example.com/avatar.png",
 		Bio:            "bio",

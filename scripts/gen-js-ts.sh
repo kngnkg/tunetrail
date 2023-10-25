@@ -1,16 +1,16 @@
 #! /bin/bash
 
 # protoc(proto ファイルから各種ファイルを生成するコンパイラ)のパス
-NODE_PROTOC="./node_modules/.bin/grpc_tools_node_protoc"
+NODE_PROTOC="./frontend/node_modules/.bin/grpc_tools_node_protoc"
 
 # TypeScript 用のファイルを生成するためのプラグインのパス
-PROTOC_GEN_TS_PATH="./node_modules/.bin/protoc-gen-ts"
+PROTOC_GEN_TS_PATH="./frontend/node_modules/.bin/protoc-gen-ts"
 
 # 生成ファイルを格納するフォルダのベースパス
-BASE_OUT_DIR="./generated"
+BASE_OUT_DIR="./frontend/generated"
 
 # proto ファイルのパス
-PROTO_PATH="../proto"
+PROTO_PATH="./proto"
 
 # proto のコンパイル
 for PROTO_FILE in ${PROTO_PATH}/*.proto; do
