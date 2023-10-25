@@ -41,6 +41,48 @@ export namespace CreateRequest {
   }
 }
 
+export class ListReviewsRequest extends jspb.Message {
+  clearReviewidsList(): void;
+  getReviewidsList(): Array<string>;
+  setReviewidsList(value: Array<string>): void;
+  addReviewids(value: string, index?: number): string;
+
+  clearUseridsList(): void;
+  getUseridsList(): Array<string>;
+  setUseridsList(value: Array<string>): void;
+  addUserids(value: string, index?: number): string;
+
+  clearAlbumidsList(): void;
+  getAlbumidsList(): Array<string>;
+  setAlbumidsList(value: Array<string>): void;
+  addAlbumids(value: string, index?: number): string;
+
+  getCursor(): string;
+  setCursor(value: string): void;
+
+  getLimit(): number;
+  setLimit(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ListReviewsRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: ListReviewsRequest): ListReviewsRequest.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: ListReviewsRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ListReviewsRequest;
+  static deserializeBinaryFromReader(message: ListReviewsRequest, reader: jspb.BinaryReader): ListReviewsRequest;
+}
+
+export namespace ListReviewsRequest {
+  export type AsObject = {
+    reviewidsList: Array<string>,
+    useridsList: Array<string>,
+    albumidsList: Array<string>,
+    cursor: string,
+    limit: number,
+  }
+}
+
 export class GetByIdRequest extends jspb.Message {
   getReviewid(): string;
   setReviewid(value: string): void;
@@ -117,6 +159,36 @@ export namespace ReviewReply {
   }
 }
 
+export class ReviewListReply extends jspb.Message {
+  clearReviewsList(): void;
+  getReviewsList(): Array<Review>;
+  setReviewsList(value: Array<Review>): void;
+  addReviews(value?: Review, index?: number): Review;
+
+  getNextcursor(): string;
+  setNextcursor(value: string): void;
+
+  getTotal(): number;
+  setTotal(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ReviewListReply.AsObject;
+  static toObject(includeInstance: boolean, msg: ReviewListReply): ReviewListReply.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: ReviewListReply, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ReviewListReply;
+  static deserializeBinaryFromReader(message: ReviewListReply, reader: jspb.BinaryReader): ReviewListReply;
+}
+
+export namespace ReviewListReply {
+  export type AsObject = {
+    reviewsList: Array<Review.AsObject>,
+    nextcursor: string,
+    total: number,
+  }
+}
+
 export class Review extends jspb.Message {
   getReviewid(): string;
   setReviewid(value: string): void;
@@ -128,8 +200,8 @@ export class Review extends jspb.Message {
 
   hasAlbum(): boolean;
   clearAlbum(): void;
-  getAlbum(): album_pb.Album | undefined;
-  setAlbum(value?: album_pb.Album): void;
+  getAlbum(): album_pb.SimpleAlbum | undefined;
+  setAlbum(value?: album_pb.SimpleAlbum): void;
 
   getTitle(): string;
   setTitle(value: string): void;
@@ -163,7 +235,7 @@ export namespace Review {
   export type AsObject = {
     reviewid: string,
     user?: user_pb.User.AsObject,
-    album?: album_pb.Album.AsObject,
+    album?: album_pb.SimpleAlbum.AsObject,
     title: string,
     content: string,
     publishedstatus: string,

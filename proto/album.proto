@@ -16,6 +16,16 @@ message Album {
   repeated string genres = 9;
 }
 
+message SimpleAlbum {
+  string albumId = 1;
+  string spotifyUri = 2;
+  string spotifyUrl = 3;
+  string name = 4;
+  repeated SimpleArtist artists = 5;
+  string coverUrl = 6;
+  repeated string genres = 7;
+}
+
 message SimpleArtist {
   string artistId = 1;
   string spotifyUri = 3;

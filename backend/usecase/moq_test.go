@@ -23,6 +23,9 @@ var _ UserRepository = &UserRepositoryMock{}
 //			GetUserByIdFunc: func(ctx context.Context, db repository.Executor, userId entity.UserId) (*entity.User, error) {
 //				panic("mock out the GetUserById method")
 //			},
+//			ListUsersFunc: func(ctx context.Context, db repository.Executor, filter *entity.UserFilter) ([]*entity.User, entity.UserId, error) {
+//				panic("mock out the ListUsers method")
+//			},
 //			StoreUserFunc: func(ctx context.Context, db repository.Executor, user *entity.User) (*entity.User, error) {
 //				panic("mock out the StoreUser method")
 //			},
@@ -35,6 +38,9 @@ var _ UserRepository = &UserRepositoryMock{}
 type UserRepositoryMock struct {
 	// GetUserByIdFunc mocks the GetUserById method.
 	GetUserByIdFunc func(ctx context.Context, db repository.Executor, userId entity.UserId) (*entity.User, error)
+
+	// ListUsersFunc mocks the ListUsers method.
+	ListUsersFunc func(ctx context.Context, db repository.Executor, filter *entity.UserFilter) ([]*entity.User, entity.UserId, error)
 
 	// StoreUserFunc mocks the StoreUser method.
 	StoreUserFunc func(ctx context.Context, db repository.Executor, user *entity.User) (*entity.User, error)
@@ -50,6 +56,15 @@ type UserRepositoryMock struct {
 			// UserId is the userId argument value.
 			UserId entity.UserId
 		}
+		// ListUsers holds details about calls to the ListUsers method.
+		ListUsers []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Db is the db argument value.
+			Db repository.Executor
+			// Filter is the filter argument value.
+			Filter *entity.UserFilter
+		}
 		// StoreUser holds details about calls to the StoreUser method.
 		StoreUser []struct {
 			// Ctx is the ctx argument value.
@@ -61,6 +76,7 @@ type UserRepositoryMock struct {
 		}
 	}
 	lockGetUserById sync.RWMutex
+	lockListUsers   sync.RWMutex
 	lockStoreUser   sync.RWMutex
 }
 
@@ -101,6 +117,46 @@ func (mock *UserRepositoryMock) GetUserByIdCalls() []struct {
 	mock.lockGetUserById.RLock()
 	calls = mock.calls.GetUserById
 	mock.lockGetUserById.RUnlock()
+	return calls
+}
+
+// ListUsers calls ListUsersFunc.
+func (mock *UserRepositoryMock) ListUsers(ctx context.Context, db repository.Executor, filter *entity.UserFilter) ([]*entity.User, entity.UserId, error) {
+	if mock.ListUsersFunc == nil {
+		panic("UserRepositoryMock.ListUsersFunc: method is nil but UserRepository.ListUsers was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		Db     repository.Executor
+		Filter *entity.UserFilter
+	}{
+		Ctx:    ctx,
+		Db:     db,
+		Filter: filter,
+	}
+	mock.lockListUsers.Lock()
+	mock.calls.ListUsers = append(mock.calls.ListUsers, callInfo)
+	mock.lockListUsers.Unlock()
+	return mock.ListUsersFunc(ctx, db, filter)
+}
+
+// ListUsersCalls gets all the calls that were made to ListUsers.
+// Check the length with:
+//
+//	len(mockedUserRepository.ListUsersCalls())
+func (mock *UserRepositoryMock) ListUsersCalls() []struct {
+	Ctx    context.Context
+	Db     repository.Executor
+	Filter *entity.UserFilter
+} {
+	var calls []struct {
+		Ctx    context.Context
+		Db     repository.Executor
+		Filter *entity.UserFilter
+	}
+	mock.lockListUsers.RLock()
+	calls = mock.calls.ListUsers
+	mock.lockListUsers.RUnlock()
 	return calls
 }
 

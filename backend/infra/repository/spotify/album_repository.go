@@ -11,29 +11,38 @@ type AlbumRepository struct {
 	SpotifyClient *SpotifyClient
 }
 
+func (r *AlbumRepository) ListAlbums(ctx context.Context, albumIds []string) ([]*entity.Album, []*entity.TrackPage, error) {
+	var ids []spotify.ID
+	for _, id := range albumIds {
+		ids = append(ids, spotify.ID(id))
+	}
+
+	res, err := r.SpotifyClient.GetAlbums(ctx, ids)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var as []*entity.Album
+	for _, a := range res {
+		as = append(as, toAlbum(a))
+	}
+
+	var tps []*entity.TrackPage
+	for _, a := range res {
+		tps = append(tps, toTrackPage(&a.Tracks))
+	}
+
+	return as, tps, nil
+}
+
 func (r *AlbumRepository) GetAlbumInfoById(ctx context.Context, albumId string) (*entity.Album, *entity.TrackPage, error) {
 	res, err := r.SpotifyClient.GetAlbum(ctx, spotify.ID(albumId))
 	if err != nil {
 		return nil, nil, err
 	}
 
-	var artists []*entity.SimpleArtist
-	for _, a := range res.Artists {
-		artists = append(artists, simpleArtist(&a))
-	}
-
-	a := &entity.Album{
-		AlbumId:     res.ID.String(),
-		SpotifyUri:  string(res.URI),
-		SpotifyUrl:  res.ExternalURLs["spotify"],
-		Name:        res.Name,
-		Artists:     artists,
-		CoverUrl:    res.Images[0].URL,
-		ReleaseDate: res.ReleaseDateTime(),
-		Genres:      res.Genres,
-	}
-
-	tp := trackPage(&res.Tracks)
+	a := toAlbum(res)
+	tp := toTrackPage(&res.Tracks)
 
 	return a, tp, nil
 }
@@ -48,7 +57,29 @@ func (r *AlbumRepository) GetAlbumInfoById(ctx context.Context, albumId string) 
 // 	return tp, nil
 // }
 
-func simpleArtist(artist *spotify.SimpleArtist) *entity.SimpleArtist {
+func toAlbum(res *spotify.FullAlbum) *entity.Album {
+	return &entity.Album{
+		AlbumId:     res.ID.String(),
+		SpotifyUri:  string(res.URI),
+		SpotifyUrl:  res.ExternalURLs["spotify"],
+		Name:        res.Name,
+		Artists:     toSimpleArtists(res.Artists),
+		CoverUrl:    res.Images[0].URL,
+		ReleaseDate: res.ReleaseDateTime(),
+		Genres:      res.Genres,
+	}
+}
+
+func toSimpleArtists(artists []spotify.SimpleArtist) []*entity.SimpleArtist {
+	var as []*entity.SimpleArtist
+	for _, a := range artists {
+		as = append(as, toSimpleArtist(&a))
+	}
+
+	return as
+}
+
+func toSimpleArtist(artist *spotify.SimpleArtist) *entity.SimpleArtist {
 	return &entity.SimpleArtist{
 		ArtistId:   artist.ID.String(),
 		SpotifyUri: string(artist.URI),
@@ -57,7 +88,7 @@ func simpleArtist(artist *spotify.SimpleArtist) *entity.SimpleArtist {
 	}
 }
 
-func track(tp *spotify.SimpleTrack) *entity.Track {
+func toTrack(tp *spotify.SimpleTrack) *entity.Track {
 	return &entity.Track{
 		TrackId:     tp.ID.String(),
 		SpotifyUri:  string(tp.URI),
@@ -69,10 +100,10 @@ func track(tp *spotify.SimpleTrack) *entity.Track {
 	}
 }
 
-func trackPage(tp *spotify.SimpleTrackPage) *entity.TrackPage {
+func toTrackPage(tp *spotify.SimpleTrackPage) *entity.TrackPage {
 	var ts []*entity.Track
 	for _, t := range tp.Tracks {
-		ts = append(ts, track(&t))
+		ts = append(ts, toTrack(&t))
 	}
 
 	return &entity.TrackPage{

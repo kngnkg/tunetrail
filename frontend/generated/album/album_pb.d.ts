@@ -61,6 +61,54 @@ export namespace Album {
   }
 }
 
+export class SimpleAlbum extends jspb.Message {
+  getAlbumid(): string;
+  setAlbumid(value: string): void;
+
+  getSpotifyuri(): string;
+  setSpotifyuri(value: string): void;
+
+  getSpotifyurl(): string;
+  setSpotifyurl(value: string): void;
+
+  getName(): string;
+  setName(value: string): void;
+
+  clearArtistsList(): void;
+  getArtistsList(): Array<SimpleArtist>;
+  setArtistsList(value: Array<SimpleArtist>): void;
+  addArtists(value?: SimpleArtist, index?: number): SimpleArtist;
+
+  getCoverurl(): string;
+  setCoverurl(value: string): void;
+
+  clearGenresList(): void;
+  getGenresList(): Array<string>;
+  setGenresList(value: Array<string>): void;
+  addGenres(value: string, index?: number): string;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): SimpleAlbum.AsObject;
+  static toObject(includeInstance: boolean, msg: SimpleAlbum): SimpleAlbum.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: SimpleAlbum, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): SimpleAlbum;
+  static deserializeBinaryFromReader(message: SimpleAlbum, reader: jspb.BinaryReader): SimpleAlbum;
+}
+
+export namespace SimpleAlbum {
+  export type AsObject = {
+    albumid: string,
+    spotifyuri: string,
+    spotifyurl: string,
+    name: string,
+    artistsList: Array<SimpleArtist.AsObject>,
+    coverurl: string,
+    genresList: Array<string>,
+  }
+}
+
 export class SimpleArtist extends jspb.Message {
   getArtistid(): string;
   setArtistid(value: string): void;
