@@ -25,6 +25,7 @@ type ReviewServiceClient interface {
 	ListReviews(ctx context.Context, in *ListReviewsRequest, opts ...grpc.CallOption) (*ReviewListReply, error)
 	GetReviewById(ctx context.Context, in *GetByIdRequest, opts ...grpc.CallOption) (*ReviewReply, error)
 	CreateReview(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*ReviewReply, error)
+	UpdateReview(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*ReviewReply, error)
 }
 
 type reviewServiceClient struct {
@@ -62,6 +63,15 @@ func (c *reviewServiceClient) CreateReview(ctx context.Context, in *CreateReques
 	return out, nil
 }
 
+func (c *reviewServiceClient) UpdateReview(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*ReviewReply, error) {
+	out := new(ReviewReply)
+	err := c.cc.Invoke(ctx, "/review.ReviewService/UpdateReview", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ReviewServiceServer is the server API for ReviewService service.
 // All implementations must embed UnimplementedReviewServiceServer
 // for forward compatibility
@@ -69,6 +79,7 @@ type ReviewServiceServer interface {
 	ListReviews(context.Context, *ListReviewsRequest) (*ReviewListReply, error)
 	GetReviewById(context.Context, *GetByIdRequest) (*ReviewReply, error)
 	CreateReview(context.Context, *CreateRequest) (*ReviewReply, error)
+	UpdateReview(context.Context, *UpdateRequest) (*ReviewReply, error)
 	mustEmbedUnimplementedReviewServiceServer()
 }
 
@@ -84,6 +95,9 @@ func (UnimplementedReviewServiceServer) GetReviewById(context.Context, *GetByIdR
 }
 func (UnimplementedReviewServiceServer) CreateReview(context.Context, *CreateRequest) (*ReviewReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateReview not implemented")
+}
+func (UnimplementedReviewServiceServer) UpdateReview(context.Context, *UpdateRequest) (*ReviewReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateReview not implemented")
 }
 func (UnimplementedReviewServiceServer) mustEmbedUnimplementedReviewServiceServer() {}
 
@@ -152,6 +166,24 @@ func _ReviewService_CreateReview_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ReviewService_UpdateReview_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ReviewServiceServer).UpdateReview(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/review.ReviewService/UpdateReview",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ReviewServiceServer).UpdateReview(ctx, req.(*UpdateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ReviewService_ServiceDesc is the grpc.ServiceDesc for ReviewService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -170,6 +202,10 @@ var ReviewService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateReview",
 			Handler:    _ReviewService_CreateReview_Handler,
+		},
+		{
+			MethodName: "UpdateReview",
+			Handler:    _ReviewService_UpdateReview_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
