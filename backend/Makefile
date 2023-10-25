@@ -6,10 +6,6 @@ test:
 gen: ## Generate mocks and test boilerplate
 	go generate ./...
 
-.PHONY: gen-pb
-gen-pb: ## Generate pb files
-	./scripts/gen.sh
-
 .PHONY: dry-migrate
 dry-migrate: ## Try migration
 	./scripts/migrate.sh dry
@@ -17,3 +13,7 @@ dry-migrate: ## Try migration
 .PHONY: migrate
 migrate:  ## Execute migration
 	./scripts/migrate.sh
+
+.PHONY: seed
+seed: ## Seed data
+	docker-compose exec -T grpc go run ./tools/seeder/main.go

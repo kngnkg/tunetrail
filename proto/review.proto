@@ -1,0 +1,74 @@
+syntax = "proto3";
+
+package review;
+
+option go_package = "github.com/kngnkg/tunetrail/backend/gen/review";
+
+import "user.proto";
+import "album.proto";
+import "google/protobuf/empty.proto";
+
+service ReviewService {
+  rpc ListReviews(ListReviewsRequest) returns (ReviewListReply) {}
+  rpc GetReviewById(GetByIdRequest) returns (ReviewReply) {}
+  rpc CreateReview(CreateRequest) returns (ReviewReply) {}
+  rpc UpdateReview(UpdateRequest) returns (ReviewReply) {}
+  rpc DeleteReview(DeleteReviewRequest) returns (google.protobuf.Empty) {}
+}
+
+message ListReviewsRequest {
+  repeated string reviewIds = 1;
+  repeated string userIds = 2;
+  repeated string albumIds = 3;
+  string cursor = 4;
+  int32 limit = 5;
+}
+
+message GetByIdRequest { string reviewId = 1; }
+
+message CreateRequest {
+  string userId = 1;
+  string albumId = 2;
+  string title = 3;
+  string content = 4;
+  string publishedStatus = 5;
+}
+
+message UpdateRequest {
+  string reviewId = 1;
+  string title = 2;
+  string content = 3;
+  string publishedStatus = 4;
+}
+
+message DeleteReviewRequest { string reviewId = 1; }
+
+message ReviewReply {
+  string reviewId = 1;
+  user.User user = 2;
+  album.Album album = 3;
+  string title = 4;
+  string content = 5;
+  string publishedStatus = 6;
+  int32 likesCount = 7;
+  string createdAt = 8;
+  string updatedAt = 9;
+}
+
+message ReviewListReply {
+  repeated Review reviews = 1;
+  string nextCursor = 2;
+  int32 total = 3;
+}
+
+message Review {
+  string reviewId = 1;
+  user.User user = 2;
+  album.SimpleAlbum album = 3;
+  string title = 4;
+  string content = 5;
+  string publishedStatus = 6;
+  int32 likesCount = 7;
+  string createdAt = 8;
+  string updatedAt = 9;
+}

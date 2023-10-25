@@ -25,6 +25,8 @@ services:
       - ./backend:/app
     ports:
       - 50051:50051
+    env_file:
+      - ./backend/.env
   db:
     container_name: tunetrail-db
     hostname: tunetrail-db
