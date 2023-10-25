@@ -3,7 +3,7 @@
 import { User } from "@/types"
 
 import { env } from "@/env.mjs"
-import { useUsers } from "@/lib/use-users"
+import { useUsers } from "@/hooks/use-users"
 import {
   Dialog,
   DialogContent,

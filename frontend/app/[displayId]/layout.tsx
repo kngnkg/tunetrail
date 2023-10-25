@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation"
+import { getUsers } from "@/service/user/get-users"
 
 import { env } from "@/env.mjs"
-import { getUser } from "@/lib/get-user"
 import { FollowButton } from "@/components/follow-button"
 import { GenreList } from "@/components/genre-list"
 import { MainNav } from "@/components/main-nav"
@@ -19,13 +19,17 @@ export default async function UserLayout({
   children,
 }: UserLayoutProps) {
   const displayId = decodeURIComponent(params.displayId)
-  const user = await getUser(
-    `${env.MOCK_API_ROOT}/users?display_id=${displayId}`
-  )
+  const users = await getUsers(`${env.API_ROOT}/users?display_id=${displayId}`)
 
-  if (!user) {
+  if (!users || users.length === 0) {
     notFound()
   }
+
+  if (users.length > 1) {
+    throw new Error("displayIdが重複しています。")
+  }
+
+  const user = users[0]
 
   const tabs: MenuTab[] = [
     { label: "レビュー", value: "reviews", href: `/${displayId}` },

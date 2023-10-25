@@ -1,7 +1,7 @@
+import { transformUser } from "@/service/transform"
 import { User } from "@/types"
 
 import { env } from "@/env.mjs"
-import { transformUser } from "@/lib/transform"
 import { UserList } from "@/components/user-list"
 
 async function getUsers(

@@ -1,5 +1,6 @@
+import { getReviews } from "@/service/review/get-reviews"
+
 import { env } from "@/env.mjs"
-import { getReviews } from "@/lib/get-reviews"
 import { ReviewList } from "@/components/review-list"
 
 export default async function Timeline() {

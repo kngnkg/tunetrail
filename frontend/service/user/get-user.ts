@@ -1,11 +1,10 @@
-import { Review } from "@/types"
+import { transformUser } from "@/service/transform"
+import { User } from "@/types"
 
-import { transformReview } from "@/lib/transform"
-
-export async function getReview(
+export async function getUser(
   resource: RequestInfo,
   init?: RequestInit
-): Promise<Review | null> {
+): Promise<User | null> {
   try {
     const res = await fetch(resource, init)
 
@@ -15,7 +14,7 @@ export async function getReview(
 
     const data = await res.json()
 
-    const review = transformReview(data)
+    const review = transformUser(data)
 
     return review
   } catch (error) {
