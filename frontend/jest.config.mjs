@@ -2,8 +2,10 @@ import nextJest from "next/jest.js"
 
 // テスト実行前に環境変数を設定する
 process.env.API_ROOT = "http://api.example.com"
+process.env.MOCK_API_ROOT = "http://api.example.com"
 process.env.GRPC_API_ROOT = "grpc://api.example.com"
 process.env.NEXT_PUBLIC_API_ROOT = "http://api.example.com"
+process.env.NEXT_PUBLIC_MOCK_API_ROOT = "http://api.example.com"
 process.env.NEXT_PUBLIC_SPOTIFY_CDN_HOST = "http://cdn.example.com"
 
 const createJestConfig = nextJest({

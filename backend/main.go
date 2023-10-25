@@ -68,7 +68,7 @@ func main() {
 
 	v := validator.New()
 
-	helloworldServer := server.NewHelloworldServer()
+	helloworldServer := server.NewHelloworldServer(l)
 	helloworld.RegisterGreeterServer(s, helloworldServer)
 
 	userServer := server.NewUserServer(userUc, v, l)

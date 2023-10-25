@@ -14,7 +14,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   }
 
   const reviews = await getReviews(
-    `${env.API_ROOT}/reviews?title=${query}&genre=${query}`
+    `${env.MOCK_API_ROOT}/reviews?title=${query}&genre=${query}`
   )
 
   if (!reviews) {

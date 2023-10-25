@@ -24,7 +24,7 @@ export const UserListDialog: React.FC<UserListDialogProps> = ({
   user,
 }) => {
   const { users, isError, isLoading } = useUsers({
-    endpoint: `${env.NEXT_PUBLIC_API_ROOT}/users/${user.userId}/${type}`,
+    endpoint: `${env.NEXT_PUBLIC_MOCK_API_ROOT}/users/${user.userId}/${type}`,
   })
 
   return (

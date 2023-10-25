@@ -30,7 +30,7 @@ export default async function GenreSearchPage({
 }: GenreSearchPageProps) {
   const query = searchParams.q || ""
 
-  const genres = await getGenres(`${env.API_ROOT}/genres?q=${query}`)
+  const genres = await getGenres(`${env.MOCK_API_ROOT}/genres?q=${query}`)
 
   if (!genres) {
     return <p>ジャンルは見つかりませんでした。</p>

@@ -8,7 +8,7 @@ interface GenrePageProps {
 
 export default async function GenrePage({ params }: GenrePageProps) {
   const reviews = await getReviews(
-    `${env.API_ROOT}/reviews?genre=${params.genre}`
+    `${env.MOCK_API_ROOT}/reviews?genre=${params.genre}`
   )
 
   if (!reviews) {

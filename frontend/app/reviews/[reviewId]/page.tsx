@@ -13,7 +13,9 @@ interface ReviewPageProps {
 }
 
 export default async function ReviewPage({ params }: ReviewPageProps) {
-  const review = await getReview(`${env.API_ROOT}/reviews/${params.reviewId}`)
+  const review = await getReview(
+    `${env.MOCK_API_ROOT}/reviews/${params.reviewId}`
+  )
 
   if (!review) {
     notFound()
