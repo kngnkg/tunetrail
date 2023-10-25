@@ -21,3 +21,21 @@ type Review struct {
 	CreatedAt       time.Time `db:"created_at"`
 	UpdatedAt       time.Time `db:"updated_at"`
 }
+
+type ReviewFilter struct {
+	Page
+	PublishedOnly bool
+	ReviewIds     []string
+	AuthorIds     []UserId
+	AlbumIds      []string
+}
+
+func NewReviewFilter(cursor string, limit int, publishedOnly bool, reviewIds []string, authorIds []UserId, albumIds []string) *ReviewFilter {
+	return &ReviewFilter{
+		Page:          *NewPage(cursor, limit),
+		PublishedOnly: publishedOnly,
+		ReviewIds:     reviewIds,
+		AuthorIds:     authorIds,
+		AlbumIds:      albumIds,
+	}
+}

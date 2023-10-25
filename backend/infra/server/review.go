@@ -27,6 +27,54 @@ func NewReviewServer(uc *usecase.ReviewUseCase, v *validator.Validator, l *logge
 	}
 }
 
+func (s *reviewServer) ListReviews(ctx context.Context, in *review.ListReviewsRequest) (*review.ReviewListReply, error) {
+	ctx = logger.WithContent(ctx, s.logger)
+
+	var b struct {
+		ReviewIds []string `validate:"omitempty,max=50,dive,uuid4"`
+		UserIds   []string `validate:"omitempty,max=50,dive,uuid4"`
+		AlbumIds  []string `validate:"omitempty,max=50"`
+		Cursor    string   `validate:"omitempty,uuid4"`
+		Limit     int      `validate:"omitempty,min=1,max=50"`
+	}
+	b.ReviewIds = in.ReviewIds
+	b.UserIds = in.UserIds
+	b.AlbumIds = in.AlbumIds
+	b.Cursor = in.Cursor
+	b.Limit = int(in.Limit)
+
+	if err := s.validator.Validate(b); err != nil {
+		logger.FromContent(ctx).Error("invalid request.", err)
+		return nil, err
+	}
+
+	userIds := make([]entity.UserId, len(b.UserIds))
+	for i, id := range b.UserIds {
+		userIds[i] = entity.UserId(id)
+	}
+
+	res, err := s.uc.ListReviews(ctx, b.ReviewIds, userIds, b.AlbumIds, b.Cursor, b.Limit)
+	if err != nil {
+		logger.FromContent(ctx).Error("failed to get reviews.", err)
+		return nil, err
+	}
+
+	return toReviewListReply(res), nil
+}
+
+func toReviewListReply(res *usecase.ReviewListResponse) *review.ReviewListReply {
+	var rs []*review.Review
+	for _, r := range res.Reviews {
+		rs = append(rs, toReview(r))
+	}
+
+	return &review.ReviewListReply{
+		Reviews:    rs,
+		NextCursor: res.NextCursor,
+		Total:      int32(len(rs)),
+	}
+}
+
 func (s *reviewServer) GetReviewById(ctx context.Context, in *review.GetByIdRequest) (*review.ReviewReply, error) {
 	ctx = logger.WithContent(ctx, s.logger)
 
@@ -47,20 +95,6 @@ func (s *reviewServer) GetReviewById(ctx context.Context, in *review.GetByIdRequ
 	}
 
 	return toReviewReply(res), nil
-}
-
-func toReviewReply(res *usecase.ReviewResponse) *review.ReviewReply {
-	return &review.ReviewReply{
-		ReviewId:        res.Review.ReviewId,
-		User:            toUser(res.Review.Author),
-		Album:           toAlbum(res.Review.Album, res.TrackPage),
-		Title:           res.Review.Title,
-		Content:         res.Review.Content,
-		LikesCount:      int32(res.Review.LikesCount),
-		CreatedAt:       res.Review.CreatedAt.String(),
-		UpdatedAt:       res.Review.UpdatedAt.String(),
-		PublishedStatus: string(res.Review.PublishedStatus),
-	}
 }
 
 func (s *reviewServer) CreateReview(ctx context.Context, in *review.CreateRequest) (*review.ReviewReply, error) {
@@ -92,6 +126,46 @@ func (s *reviewServer) CreateReview(ctx context.Context, in *review.CreateReques
 	}
 
 	return toReviewReply(res), nil
+}
+
+func toReviewReply(res *usecase.ReviewResponse) *review.ReviewReply {
+	return &review.ReviewReply{
+		ReviewId:        res.Review.ReviewId,
+		User:            toUser(res.Review.Author),
+		Album:           toAlbum(res.Review.Album, res.TrackPage),
+		Title:           res.Review.Title,
+		Content:         res.Review.Content,
+		LikesCount:      int32(res.Review.LikesCount),
+		CreatedAt:       res.Review.CreatedAt.String(),
+		UpdatedAt:       res.Review.UpdatedAt.String(),
+		PublishedStatus: string(res.Review.PublishedStatus),
+	}
+}
+
+func toReview(r *entity.Review) *review.Review {
+	return &review.Review{
+		ReviewId:        r.ReviewId,
+		User:            toUser(r.Author),
+		Album:           toSimpleAlbum(r.Album),
+		Title:           r.Title,
+		Content:         r.Content,
+		LikesCount:      int32(r.LikesCount),
+		CreatedAt:       r.CreatedAt.String(),
+		UpdatedAt:       r.UpdatedAt.String(),
+		PublishedStatus: string(r.PublishedStatus),
+	}
+}
+
+func toSimpleAlbum(a *entity.Album) *album.SimpleAlbum {
+	return &album.SimpleAlbum{
+		AlbumId:    a.AlbumId,
+		SpotifyUri: a.SpotifyUri,
+		SpotifyUrl: a.SpotifyUrl,
+		Name:       a.Name,
+		Artists:    toSimpleArtists(a.Artists),
+		CoverUrl:   a.CoverUrl,
+		Genres:     a.Genres,
+	}
 }
 
 func toUser(u *entity.User) *user.User {

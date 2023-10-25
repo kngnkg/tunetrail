@@ -16,3 +16,17 @@ type User struct {
 	CreatedAt time.Time `db:"created_at"`
 	UpdatedAt time.Time `db:"updated_at"`
 }
+
+type UserFilter struct {
+	Page
+	UserIds    []UserId
+	DisplayIds []string
+}
+
+func NewUserFilter(cursor string, limit int, userIds []UserId, displayIds []string) *UserFilter {
+	return &UserFilter{
+		Page:       *NewPage(cursor, limit),
+		UserIds:    userIds,
+		DisplayIds: displayIds,
+	}
+}

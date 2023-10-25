@@ -9,23 +9,23 @@ import (
 
 //go:generate go run github.com/matryer/moq -out moq_test.go . UserRepository
 type ReviewRepository interface {
-	StoreReview(ctx context.Context, db repository.Executor, review *entity.Review) (*entity.Review, error)
+	ListReviews(ctx context.Context, db repository.Executor, filter *entity.ReviewFilter) ([]*entity.Review, string, error)
 	GetReviewById(ctx context.Context, db repository.Executor, reviewId string) (*entity.Review, error)
-	// GetReviewByAuthorId(ctx context.Context, db repository.Executor, authorId entity.UserId, nextCursor string, limit int) ([]*entity.Review, string, error)
+	StoreReview(ctx context.Context, db repository.Executor, review *entity.Review) (*entity.Review, error)
 	// UpdateReview(ctx context.Context, db repository.Executor, review *entity.Review) (*entity.Review, error)
 	// DeleteReviewById(ctx context.Context, db repository.Executor, reviewId string) error
 }
 
 type AlbumRepository interface {
+	ListAlbums(ctx context.Context, albumIds []string) ([]*entity.Album, []*entity.TrackPage, error)
 	GetAlbumInfoById(ctx context.Context, albumId string) (*entity.Album, *entity.TrackPage, error)
-	// GetAlbumTracksById(ctx context.Context, albumId string) ([]*entity.Track, error)
-	// GetAlbumByIds(ctx context.Context, albumIds []string) ([]*entity.Album, error)
+	// ListAlbumTracksByAlbumId(ctx context.Context, albumId string) ([]*entity.Track, error)
 }
 
 type UserRepository interface {
-	StoreUser(ctx context.Context, db repository.Executor, user *entity.User) (*entity.User, error)
+	ListUsers(ctx context.Context, db repository.Executor, filter *entity.UserFilter) ([]*entity.User, entity.UserId, error)
 	GetUserById(ctx context.Context, db repository.Executor, userId entity.UserId) (*entity.User, error)
-	// GetUserByIds(ctx context.Context, db repository.Executor, userIds []entity.UserId) ([]*entity.User, error)
+	StoreUser(ctx context.Context, db repository.Executor, user *entity.User) (*entity.User, error)
 }
 
 // type UserFollowRepository interface {

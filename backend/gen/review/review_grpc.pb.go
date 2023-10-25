@@ -22,6 +22,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ReviewServiceClient interface {
+	ListReviews(ctx context.Context, in *ListReviewsRequest, opts ...grpc.CallOption) (*ReviewListReply, error)
 	GetReviewById(ctx context.Context, in *GetByIdRequest, opts ...grpc.CallOption) (*ReviewReply, error)
 	CreateReview(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*ReviewReply, error)
 }
@@ -32,6 +33,15 @@ type reviewServiceClient struct {
 
 func NewReviewServiceClient(cc grpc.ClientConnInterface) ReviewServiceClient {
 	return &reviewServiceClient{cc}
+}
+
+func (c *reviewServiceClient) ListReviews(ctx context.Context, in *ListReviewsRequest, opts ...grpc.CallOption) (*ReviewListReply, error) {
+	out := new(ReviewListReply)
+	err := c.cc.Invoke(ctx, "/review.ReviewService/ListReviews", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *reviewServiceClient) GetReviewById(ctx context.Context, in *GetByIdRequest, opts ...grpc.CallOption) (*ReviewReply, error) {
@@ -56,6 +66,7 @@ func (c *reviewServiceClient) CreateReview(ctx context.Context, in *CreateReques
 // All implementations must embed UnimplementedReviewServiceServer
 // for forward compatibility
 type ReviewServiceServer interface {
+	ListReviews(context.Context, *ListReviewsRequest) (*ReviewListReply, error)
 	GetReviewById(context.Context, *GetByIdRequest) (*ReviewReply, error)
 	CreateReview(context.Context, *CreateRequest) (*ReviewReply, error)
 	mustEmbedUnimplementedReviewServiceServer()
@@ -65,6 +76,9 @@ type ReviewServiceServer interface {
 type UnimplementedReviewServiceServer struct {
 }
 
+func (UnimplementedReviewServiceServer) ListReviews(context.Context, *ListReviewsRequest) (*ReviewListReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListReviews not implemented")
+}
 func (UnimplementedReviewServiceServer) GetReviewById(context.Context, *GetByIdRequest) (*ReviewReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetReviewById not implemented")
 }
@@ -82,6 +96,24 @@ type UnsafeReviewServiceServer interface {
 
 func RegisterReviewServiceServer(s grpc.ServiceRegistrar, srv ReviewServiceServer) {
 	s.RegisterService(&ReviewService_ServiceDesc, srv)
+}
+
+func _ReviewService_ListReviews_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListReviewsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ReviewServiceServer).ListReviews(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/review.ReviewService/ListReviews",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ReviewServiceServer).ListReviews(ctx, req.(*ListReviewsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _ReviewService_GetReviewById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -127,6 +159,10 @@ var ReviewService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "review.ReviewService",
 	HandlerType: (*ReviewServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "ListReviews",
+			Handler:    _ReviewService_ListReviews_Handler,
+		},
 		{
 			MethodName: "GetReviewById",
 			Handler:    _ReviewService_GetReviewById_Handler,
