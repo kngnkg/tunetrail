@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation"
+import { getReview } from "@/service/review/get-review"
 
 import { env } from "@/env.mjs"
-import { getReview } from "@/lib/get-review"
 import { Editor } from "@/components/editor"
 
 interface EditorPageProps {

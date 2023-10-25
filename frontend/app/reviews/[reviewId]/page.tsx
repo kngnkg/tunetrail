@@ -1,8 +1,8 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
+import { getReview } from "@/service/review/get-review"
 
 import { env } from "@/env.mjs"
-import { getReview } from "@/lib/get-review"
 import { FollowButton } from "@/components/follow-button"
 import { ReviewContent } from "@/components/review-content"
 import { TimeStamp } from "@/components/timestamp"

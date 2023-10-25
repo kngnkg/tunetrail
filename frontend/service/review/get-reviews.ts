@@ -1,6 +1,5 @@
+import { transformReview } from "@/service/transform"
 import { Review } from "@/types"
-
-import { transformReview } from "@/lib/transform"
 
 export async function getReviews(
   resource: RequestInfo,
