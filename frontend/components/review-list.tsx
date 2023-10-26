@@ -1,9 +1,9 @@
-import { Review } from "@/types"
+import { Review, ReviewPreview } from "@/types"
 
 import { ReviewCard } from "./review-card"
 
 interface ReviewListProps {
-  reviews: Review[]
+  reviews: ReviewPreview[]
 }
 
 export const ReviewList: React.FC<ReviewListProps> = ({ reviews }) => {

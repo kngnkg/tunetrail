@@ -8,8 +8,6 @@ export type User = {
   bio?: string
   followersCount: number
   followingCount: number
-  followed: boolean
-  following: boolean
   createdAt: Date
   updatedAt: Date
 }
@@ -18,9 +16,11 @@ export type LoginUser = Omit<User, "followed" | "following">
 
 export type Author = Pick<User, "userId" | "displayId" | "name" | "avatarUrl">
 
+export type PublishedStatus = "published" | "draft" | "unlisted"
+
 export type Review = {
   reviewId: string
-  published: boolean
+  publishedStatus: PublishedStatus
   author: Author
   album: Album
   title: string
@@ -32,7 +32,12 @@ export type Review = {
 
 export type ReviewPreview = Pick<
   Review,
-  "reviewId" | "published" | "author" | "title" | "createdAt"
+  | "reviewId"
+  | "publishedStatus"
+  | "author"
+  | "title"
+  | "likesCount"
+  | "createdAt"
 > & { album: AlbumInfo }
 
 export type Album = {
