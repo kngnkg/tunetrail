@@ -24,11 +24,6 @@ export const Search: React.FC = () => {
       value: "users",
       href: `${baseUrl}/users?q=${query}`,
     },
-    {
-      label: "ジャンル",
-      value: "genres",
-      href: `${baseUrl}/genres?q=${query}`,
-    },
   ]
 
   return (

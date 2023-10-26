@@ -11,7 +11,6 @@ export function transformUser(apiUser: any): User {
     followingCount: apiUser.followingCount,
     followed: apiUser.followed,
     following: apiUser.following,
-    followingGenres: apiUser.followingGenres ?? [],
     createdAt: apiUser.createdAt ? new Date(apiUser.createdAt) : new Date(),
     updatedAt: apiUser.updatedAt ? new Date(apiUser.updatedAt) : new Date(),
   }
@@ -24,7 +23,6 @@ export function transformReview(apiReview: any): Review {
     title: apiReview.title,
     content: apiReview.content ?? "", // デフォルト値
     likesCount: apiReview.likes_count,
-    liked: apiReview.liked,
     createdAt: new Date(apiReview.created_at),
     updatedAt: new Date(apiReview.updated_at),
     author: transformUser(apiReview.author),
@@ -39,12 +37,10 @@ export function transformReview(apiReview: any): Review {
         spotifyUri: artist.spotify_uri,
         name: artist.name,
         imageUrl: artist.image_url,
-        genres: artist.genres,
       })),
       tracks: [], // デフォルト値
       coverUrl: apiReview.album.cover_url,
       releaseDate: new Date(apiReview.album.release_date),
-      genres: apiReview.album.genres,
     },
   }
 }

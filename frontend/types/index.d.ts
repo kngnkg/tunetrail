@@ -8,7 +8,6 @@ export type User = {
   bio?: string
   followersCount: number
   followingCount: number
-  followingGenres: string[]
   followed: boolean
   following: boolean
   createdAt: Date
@@ -17,18 +16,24 @@ export type User = {
 
 export type LoginUser = Omit<User, "followed" | "following">
 
+export type Author = Pick<User, "userId" | "displayId" | "name" | "avatarUrl">
+
 export type Review = {
   reviewId: string
   published: boolean
-  author: User
+  author: Author
   album: Album
   title: string
   content: string
   likesCount: number
-  liked: boolean
   createdAt: Date
   updatedAt: Date
 }
+
+export type ReviewPreview = Pick<
+  Review,
+  "reviewId" | "published" | "author" | "title" | "createdAt"
+> & { album: AlbumInfo }
 
 export type Album = {
   albumId: string // Spotify ID
@@ -36,21 +41,23 @@ export type Album = {
   spotifyUrl: string
   name: string
   diskNumber: number
-  artists: Artist[]
+  artists: ArtistInfo[]
   tracks: Track[]
   coverUrl: string
   releaseDate: Date
-  genres: string[]
 }
+
+export type AlbumInfo = Pick<Album, "albumId" | "name" | "artists" | "coverUrl">
 
 export type Artist = {
   artistId: string // Spotify ID
   spotifyUri: string
-  //   spotifyUrl: string
+  spotifyUrl: string
   name: string
   imageUrl: string
-  genres: string[]
 }
+
+export type ArtistInfo = Pick<Artist, "artistId" | "name">
 
 export type Track = {
   trackId: string // Spotify ID
