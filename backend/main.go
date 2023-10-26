@@ -1,15 +1,13 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"log/slog"
 	"net"
 	"strconv"
 
 	"github.com/kngnkg/tunetrail/backend/config"
-	"github.com/kngnkg/tunetrail/backend/infra/repository/postgres"
-	"github.com/kngnkg/tunetrail/backend/infra/repository/spotify"
+	"github.com/kngnkg/tunetrail/backend/infra/repository"
 	"github.com/kngnkg/tunetrail/backend/infra/server"
 	"github.com/kngnkg/tunetrail/backend/logger"
 	"github.com/kngnkg/tunetrail/backend/usecase"
@@ -35,7 +33,7 @@ func main() {
 	if cfg.Env == "dev" {
 		sslMode = "disable" // 開発環境の場合はSSL通信を無効にする
 	}
-	db, close, err := postgres.NewDB(&postgres.DBConfig{
+	db, close, err := repository.NewDB(&repository.DBConfig{
 		Host:     cfg.DBHost,
 		Port:     cfg.DBPort,
 		User:     cfg.DBUser,
@@ -48,21 +46,11 @@ func main() {
 	}
 	defer close()
 
-	// TODO: contextを渡す
-	sc, err := spotify.NewSpotifyClient(context.Background(), &spotify.SpotifyClientConfig{
-		SpotifyId:     cfg.SpotifyId,
-		SpotifySecret: cfg.SpotifySecret,
-	})
-	if err != nil {
-		l.Fatal("failed to create spotify client.", err)
-	}
-
-	ur := &postgres.UserRepository{}
-	rr := &postgres.ReviewRepository{}
-	ar := &spotify.AlbumRepository{SpotifyClient: sc}
+	ur := &repository.UserRepository{}
+	rr := &repository.ReviewRepository{}
 
 	userUc := usecase.NewUserUseCase(db, ur)
-	reviewUc := usecase.NewReviewUseCase(db, rr, ar, ur)
+	reviewUc := usecase.NewReviewUseCase(db, rr, ur)
 
 	s := grpc.NewServer()
 

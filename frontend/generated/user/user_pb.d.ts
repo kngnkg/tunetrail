@@ -4,15 +4,10 @@
 import * as jspb from "google-protobuf";
 
 export class ListUsersRequest extends jspb.Message {
-  clearUseridsList(): void;
-  getUseridsList(): Array<string>;
-  setUseridsList(value: Array<string>): void;
-  addUserids(value: string, index?: number): string;
-
-  clearDisplayidsList(): void;
-  getDisplayidsList(): Array<string>;
-  setDisplayidsList(value: Array<string>): void;
-  addDisplayids(value: string, index?: number): string;
+  clearUsernamesList(): void;
+  getUsernamesList(): Array<string>;
+  setUsernamesList(value: Array<string>): void;
+  addUsernames(value: string, index?: number): string;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ListUsersRequest.AsObject;
@@ -26,20 +21,19 @@ export class ListUsersRequest extends jspb.Message {
 
 export namespace ListUsersRequest {
   export type AsObject = {
-    useridsList: Array<string>,
-    displayidsList: Array<string>,
+    usernamesList: Array<string>,
   }
 }
 
 export class CreateUserRequest extends jspb.Message {
-  getUserid(): string;
-  setUserid(value: string): void;
+  getUsername(): string;
+  setUsername(value: string): void;
 
-  getDisplayid(): string;
-  setDisplayid(value: string): void;
+  getImmutableid(): string;
+  setImmutableid(value: string): void;
 
-  getName(): string;
-  setName(value: string): void;
+  getDisplayname(): string;
+  setDisplayname(value: string): void;
 
   getAvatarurl(): string;
   setAvatarurl(value: string): void;
@@ -59,117 +53,43 @@ export class CreateUserRequest extends jspb.Message {
 
 export namespace CreateUserRequest {
   export type AsObject = {
-    userid: string,
-    displayid: string,
-    name: string,
+    username: string,
+    immutableid: string,
+    displayname: string,
     avatarurl: string,
     bio: string,
   }
 }
 
-export class GetUserByIdRequest extends jspb.Message {
-  getUserid(): string;
-  setUserid(value: string): void;
+export class GetUserByUsernameRequest extends jspb.Message {
+  getUsername(): string;
+  setUsername(value: string): void;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): GetUserByIdRequest.AsObject;
-  static toObject(includeInstance: boolean, msg: GetUserByIdRequest): GetUserByIdRequest.AsObject;
+  toObject(includeInstance?: boolean): GetUserByUsernameRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: GetUserByUsernameRequest): GetUserByUsernameRequest.AsObject;
   static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
   static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: GetUserByIdRequest, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): GetUserByIdRequest;
-  static deserializeBinaryFromReader(message: GetUserByIdRequest, reader: jspb.BinaryReader): GetUserByIdRequest;
+  static serializeBinaryToWriter(message: GetUserByUsernameRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GetUserByUsernameRequest;
+  static deserializeBinaryFromReader(message: GetUserByUsernameRequest, reader: jspb.BinaryReader): GetUserByUsernameRequest;
 }
 
-export namespace GetUserByIdRequest {
+export namespace GetUserByUsernameRequest {
   export type AsObject = {
-    userid: string,
-  }
-}
-
-export class UserReply extends jspb.Message {
-  getUserid(): string;
-  setUserid(value: string): void;
-
-  getDisplayid(): string;
-  setDisplayid(value: string): void;
-
-  getName(): string;
-  setName(value: string): void;
-
-  getAvatarurl(): string;
-  setAvatarurl(value: string): void;
-
-  getBio(): string;
-  setBio(value: string): void;
-
-  getFollowerscount(): number;
-  setFollowerscount(value: number): void;
-
-  getFollowingcount(): number;
-  setFollowingcount(value: number): void;
-
-  getCreatedat(): string;
-  setCreatedat(value: string): void;
-
-  getUpdatedat(): string;
-  setUpdatedat(value: string): void;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): UserReply.AsObject;
-  static toObject(includeInstance: boolean, msg: UserReply): UserReply.AsObject;
-  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: UserReply, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): UserReply;
-  static deserializeBinaryFromReader(message: UserReply, reader: jspb.BinaryReader): UserReply;
-}
-
-export namespace UserReply {
-  export type AsObject = {
-    userid: string,
-    displayid: string,
-    name: string,
-    avatarurl: string,
-    bio: string,
-    followerscount: number,
-    followingcount: number,
-    createdat: string,
-    updatedat: string,
-  }
-}
-
-export class UserListReply extends jspb.Message {
-  clearUsersList(): void;
-  getUsersList(): Array<UserReply>;
-  setUsersList(value: Array<UserReply>): void;
-  addUsers(value?: UserReply, index?: number): UserReply;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): UserListReply.AsObject;
-  static toObject(includeInstance: boolean, msg: UserListReply): UserListReply.AsObject;
-  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: UserListReply, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): UserListReply;
-  static deserializeBinaryFromReader(message: UserListReply, reader: jspb.BinaryReader): UserListReply;
-}
-
-export namespace UserListReply {
-  export type AsObject = {
-    usersList: Array<UserReply.AsObject>,
+    username: string,
   }
 }
 
 export class User extends jspb.Message {
-  getUserid(): string;
-  setUserid(value: string): void;
+  getUsername(): string;
+  setUsername(value: string): void;
 
-  getDisplayid(): string;
-  setDisplayid(value: string): void;
+  getImmutableid(): string;
+  setImmutableid(value: string): void;
 
-  getName(): string;
-  setName(value: string): void;
+  getDisplayname(): string;
+  setDisplayname(value: string): void;
 
   getAvatarurl(): string;
   setAvatarurl(value: string): void;
@@ -201,15 +121,41 @@ export class User extends jspb.Message {
 
 export namespace User {
   export type AsObject = {
-    userid: string,
-    displayid: string,
-    name: string,
+    username: string,
+    immutableid: string,
+    displayname: string,
     avatarurl: string,
     bio: string,
     followerscount: number,
     followingcount: number,
     createdat: string,
     updatedat: string,
+  }
+}
+
+export class UserList extends jspb.Message {
+  clearUsersList(): void;
+  getUsersList(): Array<User>;
+  setUsersList(value: Array<User>): void;
+  addUsers(value?: User, index?: number): User;
+
+  getNextcursor(): string;
+  setNextcursor(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): UserList.AsObject;
+  static toObject(includeInstance: boolean, msg: UserList): UserList.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: UserList, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UserList;
+  static deserializeBinaryFromReader(message: UserList, reader: jspb.BinaryReader): UserList;
+}
+
+export namespace UserList {
+  export type AsObject = {
+    usersList: Array<User.AsObject>,
+    nextcursor: string,
   }
 }
 

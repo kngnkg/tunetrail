@@ -9,8 +9,8 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
  */
 CREATE TABLE users (
     user_id UUID,
-    display_id VARCHAR(100) UNIQUE,
-    name VARCHAR(100),
+    username VARCHAR(100) UNIQUE,
+    display_name VARCHAR(100),
     avatar_url VARCHAR(100),
     bio VARCHAR(1000),
     created_at TIMESTAMP NOT NULL,

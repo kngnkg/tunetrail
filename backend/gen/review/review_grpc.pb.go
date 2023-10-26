@@ -23,10 +23,10 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ReviewServiceClient interface {
-	ListReviews(ctx context.Context, in *ListReviewsRequest, opts ...grpc.CallOption) (*ReviewListReply, error)
-	GetReviewById(ctx context.Context, in *GetByIdRequest, opts ...grpc.CallOption) (*ReviewReply, error)
-	CreateReview(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*ReviewReply, error)
-	UpdateReview(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*ReviewReply, error)
+	ListReviews(ctx context.Context, in *ListReviewsRequest, opts ...grpc.CallOption) (*ReviewList, error)
+	GetReviewById(ctx context.Context, in *GetReviewByIdRequest, opts ...grpc.CallOption) (*Review, error)
+	CreateReview(ctx context.Context, in *CreateReviewRequest, opts ...grpc.CallOption) (*Review, error)
+	UpdateReview(ctx context.Context, in *UpdateReviewRequest, opts ...grpc.CallOption) (*Review, error)
 	DeleteReview(ctx context.Context, in *DeleteReviewRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
@@ -38,8 +38,8 @@ func NewReviewServiceClient(cc grpc.ClientConnInterface) ReviewServiceClient {
 	return &reviewServiceClient{cc}
 }
 
-func (c *reviewServiceClient) ListReviews(ctx context.Context, in *ListReviewsRequest, opts ...grpc.CallOption) (*ReviewListReply, error) {
-	out := new(ReviewListReply)
+func (c *reviewServiceClient) ListReviews(ctx context.Context, in *ListReviewsRequest, opts ...grpc.CallOption) (*ReviewList, error) {
+	out := new(ReviewList)
 	err := c.cc.Invoke(ctx, "/review.ReviewService/ListReviews", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -47,8 +47,8 @@ func (c *reviewServiceClient) ListReviews(ctx context.Context, in *ListReviewsRe
 	return out, nil
 }
 
-func (c *reviewServiceClient) GetReviewById(ctx context.Context, in *GetByIdRequest, opts ...grpc.CallOption) (*ReviewReply, error) {
-	out := new(ReviewReply)
+func (c *reviewServiceClient) GetReviewById(ctx context.Context, in *GetReviewByIdRequest, opts ...grpc.CallOption) (*Review, error) {
+	out := new(Review)
 	err := c.cc.Invoke(ctx, "/review.ReviewService/GetReviewById", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -56,8 +56,8 @@ func (c *reviewServiceClient) GetReviewById(ctx context.Context, in *GetByIdRequ
 	return out, nil
 }
 
-func (c *reviewServiceClient) CreateReview(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*ReviewReply, error) {
-	out := new(ReviewReply)
+func (c *reviewServiceClient) CreateReview(ctx context.Context, in *CreateReviewRequest, opts ...grpc.CallOption) (*Review, error) {
+	out := new(Review)
 	err := c.cc.Invoke(ctx, "/review.ReviewService/CreateReview", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -65,8 +65,8 @@ func (c *reviewServiceClient) CreateReview(ctx context.Context, in *CreateReques
 	return out, nil
 }
 
-func (c *reviewServiceClient) UpdateReview(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*ReviewReply, error) {
-	out := new(ReviewReply)
+func (c *reviewServiceClient) UpdateReview(ctx context.Context, in *UpdateReviewRequest, opts ...grpc.CallOption) (*Review, error) {
+	out := new(Review)
 	err := c.cc.Invoke(ctx, "/review.ReviewService/UpdateReview", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -87,10 +87,10 @@ func (c *reviewServiceClient) DeleteReview(ctx context.Context, in *DeleteReview
 // All implementations must embed UnimplementedReviewServiceServer
 // for forward compatibility
 type ReviewServiceServer interface {
-	ListReviews(context.Context, *ListReviewsRequest) (*ReviewListReply, error)
-	GetReviewById(context.Context, *GetByIdRequest) (*ReviewReply, error)
-	CreateReview(context.Context, *CreateRequest) (*ReviewReply, error)
-	UpdateReview(context.Context, *UpdateRequest) (*ReviewReply, error)
+	ListReviews(context.Context, *ListReviewsRequest) (*ReviewList, error)
+	GetReviewById(context.Context, *GetReviewByIdRequest) (*Review, error)
+	CreateReview(context.Context, *CreateReviewRequest) (*Review, error)
+	UpdateReview(context.Context, *UpdateReviewRequest) (*Review, error)
 	DeleteReview(context.Context, *DeleteReviewRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedReviewServiceServer()
 }
@@ -99,16 +99,16 @@ type ReviewServiceServer interface {
 type UnimplementedReviewServiceServer struct {
 }
 
-func (UnimplementedReviewServiceServer) ListReviews(context.Context, *ListReviewsRequest) (*ReviewListReply, error) {
+func (UnimplementedReviewServiceServer) ListReviews(context.Context, *ListReviewsRequest) (*ReviewList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListReviews not implemented")
 }
-func (UnimplementedReviewServiceServer) GetReviewById(context.Context, *GetByIdRequest) (*ReviewReply, error) {
+func (UnimplementedReviewServiceServer) GetReviewById(context.Context, *GetReviewByIdRequest) (*Review, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetReviewById not implemented")
 }
-func (UnimplementedReviewServiceServer) CreateReview(context.Context, *CreateRequest) (*ReviewReply, error) {
+func (UnimplementedReviewServiceServer) CreateReview(context.Context, *CreateReviewRequest) (*Review, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateReview not implemented")
 }
-func (UnimplementedReviewServiceServer) UpdateReview(context.Context, *UpdateRequest) (*ReviewReply, error) {
+func (UnimplementedReviewServiceServer) UpdateReview(context.Context, *UpdateReviewRequest) (*Review, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateReview not implemented")
 }
 func (UnimplementedReviewServiceServer) DeleteReview(context.Context, *DeleteReviewRequest) (*emptypb.Empty, error) {
@@ -146,7 +146,7 @@ func _ReviewService_ListReviews_Handler(srv interface{}, ctx context.Context, de
 }
 
 func _ReviewService_GetReviewById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetByIdRequest)
+	in := new(GetReviewByIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -158,13 +158,13 @@ func _ReviewService_GetReviewById_Handler(srv interface{}, ctx context.Context, 
 		FullMethod: "/review.ReviewService/GetReviewById",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ReviewServiceServer).GetReviewById(ctx, req.(*GetByIdRequest))
+		return srv.(ReviewServiceServer).GetReviewById(ctx, req.(*GetReviewByIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _ReviewService_CreateReview_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateRequest)
+	in := new(CreateReviewRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -176,13 +176,13 @@ func _ReviewService_CreateReview_Handler(srv interface{}, ctx context.Context, d
 		FullMethod: "/review.ReviewService/CreateReview",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ReviewServiceServer).CreateReview(ctx, req.(*CreateRequest))
+		return srv.(ReviewServiceServer).CreateReview(ctx, req.(*CreateReviewRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _ReviewService_UpdateReview_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateRequest)
+	in := new(UpdateReviewRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -194,7 +194,7 @@ func _ReviewService_UpdateReview_Handler(srv interface{}, ctx context.Context, d
 		FullMethod: "/review.ReviewService/UpdateReview",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ReviewServiceServer).UpdateReview(ctx, req.(*UpdateRequest))
+		return srv.(ReviewServiceServer).UpdateReview(ctx, req.(*UpdateReviewRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

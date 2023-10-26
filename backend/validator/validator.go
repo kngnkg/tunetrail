@@ -12,7 +12,7 @@ type Validator struct {
 
 func New() *Validator {
 	v := validator.New()
-	if err := v.RegisterValidation("display_id", isDisplayIdValid); err != nil {
+	if err := v.RegisterValidation("username", isDisplayIdValid); err != nil {
 		panic(err)
 	}
 

@@ -10,15 +10,14 @@ import (
 	"github.com/kngnkg/tunetrail/backend/config"
 	"github.com/kngnkg/tunetrail/backend/entity"
 	"github.com/kngnkg/tunetrail/backend/infra/repository"
-	"github.com/kngnkg/tunetrail/backend/infra/repository/postgres"
 	"github.com/kngnkg/tunetrail/backend/logger"
 	"github.com/kngnkg/tunetrail/backend/testutil/fixture"
 )
 
 type seeder struct {
 	db repository.DBAccesser
-	rr *postgres.ReviewRepository
-	ur *postgres.UserRepository
+	rr *repository.ReviewRepository
+	ur *repository.UserRepository
 }
 
 // DBの初期化
@@ -56,12 +55,12 @@ func (s *seeder) storeRandomUsers(ctx context.Context, tx repository.Transaction
 }
 
 // ランダムなレビューを100件登録する
-func (s *seeder) storeRandomReviews(ctx context.Context, tx repository.Transactioner, authorIds []entity.UserId, albumIds []string) ([]*entity.Review, error) {
+func (s *seeder) storeRandomReviews(ctx context.Context, tx repository.Transactioner, authorIds []entity.ImmutableId, albumIds []string) ([]*entity.Review, error) {
 	var reviews []*entity.Review
 	for i := 0; i < 100; i++ {
 		r := fixture.Review(&entity.Review{
-			Author: fixture.User(&entity.User{UserId: authorIds[i]}),
-			Album:  fixture.Album(&entity.Album{AlbumId: albumIds[i]}),
+			Author:  fixture.Author(&entity.Author{ImmutableId: authorIds[i]}),
+			AlbumId: albumIds[i],
 		})
 
 		reviews = append(reviews, r)
@@ -104,9 +103,9 @@ func (s *seeder) exec(ctx context.Context) error {
 		return err
 	}
 
-	var authorIds []entity.UserId
+	var authorIds []entity.ImmutableId
 	for _, user := range users {
-		authorIds = append(authorIds, user.UserId)
+		authorIds = append(authorIds, user.ImmutableId)
 	}
 
 	logger.FromContent(ctx).Info("storing random reviews...")
@@ -141,7 +140,7 @@ func main() {
 		l.Fatal("this command is only for development.", errors.New("invalid env"))
 	}
 
-	db, close, err := postgres.NewDB(&postgres.DBConfig{
+	db, close, err := repository.NewDB(&repository.DBConfig{
 		Host:     cfg.DBHost,
 		Port:     cfg.DBPort,
 		User:     cfg.DBUser,
@@ -154,8 +153,8 @@ func main() {
 	}
 	defer close()
 
-	ur := &postgres.UserRepository{}
-	rr := &postgres.ReviewRepository{}
+	ur := &repository.UserRepository{}
+	rr := &repository.ReviewRepository{}
 
 	seeder := &seeder{
 		db: db,

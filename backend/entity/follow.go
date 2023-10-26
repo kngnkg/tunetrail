@@ -3,10 +3,10 @@ package entity
 import "time"
 
 type UserFollow struct {
-	UserId     UserId
-	FolloweeId UserId
-	CreatedAt  time.Time
-	UpdatedAt  time.Time
+	UserImmutableId     ImmutableId
+	FolloweeImmutableId ImmutableId
+	CreatedAt           time.Time
+	UpdatedAt           time.Time
 }
 
 type RelationType string

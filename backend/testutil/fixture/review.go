@@ -12,8 +12,8 @@ func Review(r *entity.Review) *entity.Review {
 	result := &entity.Review{
 		ReviewId:        testutil.GenRandomUUID(),
 		PublishedStatus: genRandomPublishedStatus(),
-		Author:          User(nil),
-		Album:           Album(nil),
+		Author:          Author(nil),
+		AlbumId:         testutil.GenRamdomString(22),
 		Title:           "title",
 		Content:         "<h1>content</h1>",
 		LikesCount:      rand.Int(),
@@ -32,8 +32,8 @@ func Review(r *entity.Review) *entity.Review {
 	if r.Author != nil {
 		result.Author = r.Author
 	}
-	if r.Album != nil {
-		result.Album = r.Album
+	if r.AlbumId != "" {
+		result.AlbumId = r.AlbumId
 	}
 	if r.Title != "" {
 		result.Title = r.Title
