@@ -5,7 +5,7 @@ import { FollowButton } from "@/components/follow-button"
 import { UserAvatar } from "@/components/user-avatar"
 
 interface UserListProps {
-  users: User[]
+  users: Pick<User, "userId" | "displayId" | "name">[]
   isLoading?: boolean
   isError?: boolean
 }
@@ -30,7 +30,8 @@ export const UserList: React.FC<UserListProps> = ({
                   <Link href={`/${user.displayId}`}>{user.name}</Link>
                 </div>
               </div>
-              <FollowButton user={user} />
+              {/* TODO: フォローしているか確認するコードを書く */}
+              <FollowButton user={user} following={false} />
             </li>
           ))}
         </ul>

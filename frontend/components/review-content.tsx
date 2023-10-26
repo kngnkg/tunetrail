@@ -52,7 +52,8 @@ export const ReviewContent: React.FC<ReviewContentProps> = ({ review }) => {
             <TimeStamp date={review.createdAt} />
           </div>
         </div>
-        <FollowButton user={review.author} variant="link" />
+        {/* TODO: フォローしているか確認するコードを書く */}
+        <FollowButton user={review.author} following={false} variant="link" />
       </section>
       {/* 本文 */}
       <section>

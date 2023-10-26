@@ -16,7 +16,15 @@ import { UserList } from "@/components/user-list"
 
 interface UserListDialogProps {
   type: "followers" | "following"
-  user: User
+  user: Pick<
+    User,
+    | "userId"
+    | "displayId"
+    | "name"
+    | "avatarUrl"
+    | "followersCount"
+    | "followingCount"
+  >
 }
 
 export const UserListDialog: React.FC<UserListDialogProps> = ({

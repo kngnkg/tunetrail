@@ -6,30 +6,21 @@
     "avatar_url": "https://source.unsplash.com/random",
     "bio": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
     "followers_count": 100,
-    "following_count": 100,
-    "following_genres": ["rock", "pop", "classic", "jazz"],
-    "followed": false,
-    "following": false
+    "following_count": 100
   },
   "review_sample": {
     "review_id": "22244f61-48fe-491f-9a04-52d3d5ef99d1",
     "title": "タイトル1",
-    "published": true,
+    "published_status": "published",
     "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\nテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキスト",
     "likes_count": 100,
-    "liked": false,
     "created_at": "2023-10-11T12:34:56Z",
     "updated_at": "2023-10-11T12:34:56Z",
     "author": {
       "user_id": "e5822d84-9119-4caa-ad96-a4c6ebdaa8a7",
       "display_id": "@tarotanaka",
       "name": "タナカ タロウ",
-      "avatar_url": "https://source.unsplash.com/random",
-      "followers_count": 100,
-      "following_count": 100,
-      "followed": false,
-      "following": false,
-      "url": "ユーザー情報を取得するapiのurl"
+      "avatar_url": "https://source.unsplash.com/random"
     },
     "album": {
       "album_id": "2up3OPMp9Tb4dAKM2erWXQ",
@@ -62,10 +53,7 @@
         "name": "タナカ タロウ",
         "avatar_url": "https://source.unsplash.com/random",
         "followers_count": 100,
-        "following_count": 100,
-        "followed": false,
-        "following": false,
-        "url": "ユーザー情報を取得するapiのurl"
+        "following_count": 100
       },
       {
         "user_id": "e5822d84-9119-4caa-ad96-a4c6ebdaa8a7",
@@ -73,10 +61,7 @@
         "name": "タナカ タロウ",
         "avatar_url": "https://source.unsplash.com/random",
         "followers_count": 100,
-        "following_count": 100,
-        "followed": false,
-        "following": false,
-        "url": "ユーザー情報を取得するapiのurl"
+        "following_count": 100
       },
       {
         "user_id": "e5822d84-9119-4caa-ad96-a4c6ebdaa8a7",
@@ -84,10 +69,7 @@
         "name": "タナカ タロウ",
         "avatar_url": "https://source.unsplash.com/random",
         "followers_count": 100,
-        "following_count": 100,
-        "followed": false,
-        "following": false,
-        "url": "ユーザー情報を取得するapiのurl"
+        "following_count": 100
       },
       {
         "user_id": "e5822d84-9119-4caa-ad96-a4c6ebdaa8a7",
@@ -95,10 +77,7 @@
         "name": "タナカ タロウ",
         "avatar_url": "https://source.unsplash.com/random",
         "followers_count": 100,
-        "following_count": 100,
-        "followed": false,
-        "following": false,
-        "url": "ユーザー情報を取得するapiのurl"
+        "following_count": 100
       },
       {
         "user_id": "e5822d84-9119-4caa-ad96-a4c6ebdaa8a7",
@@ -106,10 +85,7 @@
         "name": "タナカ タロウ",
         "avatar_url": "https://source.unsplash.com/random",
         "followers_count": 100,
-        "following_count": 100,
-        "followed": false,
-        "following": false,
-        "url": "ユーザー情報を取得するapiのurl"
+        "following_count": 100
       },
       {
         "user_id": "e5822d84-9119-4caa-ad96-a4c6ebdaa8a7",
@@ -117,10 +93,7 @@
         "name": "タナカ タロウ",
         "avatar_url": "https://source.unsplash.com/random",
         "followers_count": 100,
-        "following_count": 100,
-        "followed": false,
-        "following": false,
-        "url": "ユーザー情報を取得するapiのurl"
+        "following_count": 100
       },
       {
         "user_id": "e5822d84-9119-4caa-ad96-a4c6ebdaa8a7",
@@ -128,10 +101,7 @@
         "name": "タナカ タロウ",
         "avatar_url": "https://source.unsplash.com/random",
         "followers_count": 100,
-        "following_count": 100,
-        "followed": false,
-        "following": false,
-        "url": "ユーザー情報を取得するapiのurl"
+        "following_count": 100
       },
       {
         "user_id": "e5822d84-9119-4caa-ad96-a4c6ebdaa8a7",
@@ -139,10 +109,7 @@
         "name": "タナカ タロウ",
         "avatar_url": "https://source.unsplash.com/random",
         "followers_count": 100,
-        "following_count": 100,
-        "followed": false,
-        "following": false,
-        "url": "ユーザー情報を取得するapiのurl"
+        "following_count": 100
       },
       {
         "user_id": "e5822d84-9119-4caa-ad96-a4c6ebdaa8a7",
@@ -150,10 +117,7 @@
         "name": "タナカ タロウ",
         "avatar_url": "https://source.unsplash.com/random",
         "followers_count": 100,
-        "following_count": 100,
-        "followed": false,
-        "following": false,
-        "url": "ユーザー情報を取得するapiのurl"
+        "following_count": 100
       },
       {
         "user_id": "e5822d84-9119-4caa-ad96-a4c6ebdaa8a7",
@@ -161,10 +125,7 @@
         "name": "タナカ タロウ",
         "avatar_url": "https://source.unsplash.com/random",
         "followers_count": 100,
-        "following_count": 100,
-        "followed": false,
-        "following": false,
-        "url": "ユーザー情報を取得するapiのurl"
+        "following_count": 100
       }
     ]
   },
@@ -173,763 +134,501 @@
       {
         "review_id": "22244f61-48fe-491f-9a04-52d3d5ef99d1",
         "title": "タイトル1",
-        "published": true,
+        "published_status": "published",
         "likes_count": 100,
-        "liked": false,
         "created_at": "2023-10-11T12:34:56Z",
         "updated_at": "2023-10-11T12:34:56Z",
-        "url": "レビュー情報を取得するapiのurl",
         "author": {
           "user_id": "e5822d84-9119-4caa-ad96-a4c6ebdaa8a7",
           "display_id": "@tarotanaka",
           "name": "タナカ タロウ",
-          "avatar_url": "https://source.unsplash.com/random",
-          "followers_count": 100,
-          "following_count": 100,
-          "followed": false,
-          "following": false,
-          "url": "ユーザー情報を取得するapiのurl"
+          "avatar_url": "https://source.unsplash.com/random"
         },
         "album": {
           "album_id": "2up3OPMp9Tb4dAKM2erWXQ",
-          "spotify_uri": "spotify:album:2up3OPMp9Tb4dAKM2erWXQ",
-          "spotify_url": "http://open.spotify.com/album/2up3OPMp9Tb4dAKM2erWXQ",
           "name": "string",
-          "disk_number": 1,
           "cover_url": "https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228",
-          "release_date": "1981-12",
           "artists": [
             {
               "artist_id": "string",
-              "spotify_uri": "string",
-              "name": "string",
-              "image_url": "https://source.unsplash.com/random",
-              "genres": ["rock", "pop"]
+              "name": "string"
             }
-          ],
-          "genres": ["rock", "pop"]
+          ]
         }
       },
       {
         "review_id": "22244f61-48fe-491f-9a04-52d3d5ef99d1",
-        "title": "タイトル2",
+        "title": "タイトル1",
+        "published_status": "published",
         "likes_count": 100,
-        "liked": false,
         "created_at": "2023-10-11T12:34:56Z",
-        "url": "レビュー情報を取得するapiのurl",
+        "updated_at": "2023-10-11T12:34:56Z",
         "author": {
           "user_id": "e5822d84-9119-4caa-ad96-a4c6ebdaa8a7",
           "display_id": "@tarotanaka",
           "name": "タナカ タロウ",
-          "avatar_url": "https://source.unsplash.com/random",
-          "followers_count": 100,
-          "following_count": 100,
-          "followed": false,
-          "following": false,
-          "url": "ユーザー情報を取得するapiのurl"
+          "avatar_url": "https://source.unsplash.com/random"
         },
         "album": {
           "album_id": "2up3OPMp9Tb4dAKM2erWXQ",
-          "spotify_uri": "spotify:album:2up3OPMp9Tb4dAKM2erWXQ",
-          "spotify_url": "http://open.spotify.com/album/2up3OPMp9Tb4dAKM2erWXQ",
           "name": "string",
-          "disk_number": 1,
           "cover_url": "https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228",
-          "release_date": "1981-12",
           "artists": [
             {
               "artist_id": "string",
-              "spotify_uri": "string",
-              "name": "string",
-              "image_url": "https://source.unsplash.com/random",
-              "genres": ["rock", "pop"]
+              "name": "string"
             }
-          ],
-          "genres": ["rock", "pop"]
+          ]
         }
       },
       {
         "review_id": "22244f61-48fe-491f-9a04-52d3d5ef99d1",
-        "title": "タイトル3",
+        "title": "タイトル1",
+        "published_status": "published",
         "likes_count": 100,
-        "liked": false,
         "created_at": "2023-10-11T12:34:56Z",
-        "url": "レビュー情報を取得するapiのurl",
+        "updated_at": "2023-10-11T12:34:56Z",
         "author": {
           "user_id": "e5822d84-9119-4caa-ad96-a4c6ebdaa8a7",
           "display_id": "@tarotanaka",
           "name": "タナカ タロウ",
-          "avatar_url": "https://source.unsplash.com/random",
-          "followers_count": 100,
-          "following_count": 100,
-          "followed": false,
-          "following": false,
-          "url": "ユーザー情報を取得するapiのurl"
+          "avatar_url": "https://source.unsplash.com/random"
         },
         "album": {
           "album_id": "2up3OPMp9Tb4dAKM2erWXQ",
-          "spotify_uri": "spotify:album:2up3OPMp9Tb4dAKM2erWXQ",
-          "spotify_url": "http://open.spotify.com/album/2up3OPMp9Tb4dAKM2erWXQ",
           "name": "string",
-          "disk_number": 1,
           "cover_url": "https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228",
-          "release_date": "1981-12",
           "artists": [
             {
               "artist_id": "string",
-              "spotify_uri": "string",
-              "name": "string",
-              "image_url": "https://source.unsplash.com/random",
-              "genres": ["rock", "pop"]
+              "name": "string"
             }
-          ],
-          "genres": ["rock", "pop"]
+          ]
         }
       },
       {
         "review_id": "22244f61-48fe-491f-9a04-52d3d5ef99d1",
-        "title": "タイトル4",
+        "title": "タイトル1",
+        "published_status": "published",
         "likes_count": 100,
-        "liked": false,
         "created_at": "2023-10-11T12:34:56Z",
-        "url": "レビュー情報を取得するapiのurl",
+        "updated_at": "2023-10-11T12:34:56Z",
         "author": {
           "user_id": "e5822d84-9119-4caa-ad96-a4c6ebdaa8a7",
           "display_id": "@tarotanaka",
           "name": "タナカ タロウ",
-          "avatar_url": "https://source.unsplash.com/random",
-          "followers_count": 100,
-          "following_count": 100,
-          "followed": false,
-          "following": false,
-          "url": "ユーザー情報を取得するapiのurl"
+          "avatar_url": "https://source.unsplash.com/random"
         },
         "album": {
           "album_id": "2up3OPMp9Tb4dAKM2erWXQ",
-          "spotify_uri": "spotify:album:2up3OPMp9Tb4dAKM2erWXQ",
-          "spotify_url": "http://open.spotify.com/album/2up3OPMp9Tb4dAKM2erWXQ",
           "name": "string",
-          "disk_number": 1,
           "cover_url": "https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228",
-          "release_date": "1981-12",
           "artists": [
             {
               "artist_id": "string",
-              "spotify_uri": "string",
-              "name": "string",
-              "image_url": "https://source.unsplash.com/random",
-              "genres": ["rock", "pop"]
+              "name": "string"
             }
-          ],
-          "genres": ["rock", "pop"]
+          ]
         }
       },
       {
         "review_id": "22244f61-48fe-491f-9a04-52d3d5ef99d1",
-        "title": "タイトル5",
+        "title": "タイトル1",
+        "published_status": "published",
         "likes_count": 100,
-        "liked": false,
         "created_at": "2023-10-11T12:34:56Z",
-        "url": "レビュー情報を取得するapiのurl",
+        "updated_at": "2023-10-11T12:34:56Z",
         "author": {
           "user_id": "e5822d84-9119-4caa-ad96-a4c6ebdaa8a7",
           "display_id": "@tarotanaka",
           "name": "タナカ タロウ",
-          "avatar_url": "https://source.unsplash.com/random",
-          "followers_count": 100,
-          "following_count": 100,
-          "followed": false,
-          "following": false,
-          "url": "ユーザー情報を取得するapiのurl"
+          "avatar_url": "https://source.unsplash.com/random"
         },
         "album": {
           "album_id": "2up3OPMp9Tb4dAKM2erWXQ",
-          "spotify_uri": "spotify:album:2up3OPMp9Tb4dAKM2erWXQ",
-          "spotify_url": "http://open.spotify.com/album/2up3OPMp9Tb4dAKM2erWXQ",
           "name": "string",
-          "disk_number": 1,
           "cover_url": "https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228",
-          "release_date": "1981-12",
           "artists": [
             {
               "artist_id": "string",
-              "spotify_uri": "string",
-              "name": "string",
-              "image_url": "https://source.unsplash.com/random",
-              "genres": ["rock", "pop"]
+              "name": "string"
             }
-          ],
-          "genres": ["rock", "pop"]
+          ]
         }
       },
       {
         "review_id": "22244f61-48fe-491f-9a04-52d3d5ef99d1",
-        "title": "タイトル6",
+        "title": "タイトル1",
+        "published_status": "published",
         "likes_count": 100,
-        "liked": false,
         "created_at": "2023-10-11T12:34:56Z",
-        "url": "レビュー情報を取得するapiのurl",
+        "updated_at": "2023-10-11T12:34:56Z",
         "author": {
           "user_id": "e5822d84-9119-4caa-ad96-a4c6ebdaa8a7",
           "display_id": "@tarotanaka",
           "name": "タナカ タロウ",
-          "avatar_url": "https://source.unsplash.com/random",
-          "followers_count": 100,
-          "following_count": 100,
-          "followed": false,
-          "following": false,
-          "url": "ユーザー情報を取得するapiのurl"
+          "avatar_url": "https://source.unsplash.com/random"
         },
         "album": {
           "album_id": "2up3OPMp9Tb4dAKM2erWXQ",
-          "spotify_uri": "spotify:album:2up3OPMp9Tb4dAKM2erWXQ",
-          "spotify_url": "http://open.spotify.com/album/2up3OPMp9Tb4dAKM2erWXQ",
           "name": "string",
-          "disk_number": 1,
           "cover_url": "https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228",
-          "release_date": "1981-12",
           "artists": [
             {
               "artist_id": "string",
-              "spotify_uri": "string",
-              "name": "string",
-              "image_url": "https://source.unsplash.com/random",
-              "genres": ["rock", "pop"]
+              "name": "string"
             }
-          ],
-          "genres": ["rock", "pop"]
+          ]
         }
       },
       {
         "review_id": "22244f61-48fe-491f-9a04-52d3d5ef99d1",
-        "title": "タイトル7",
+        "title": "タイトル1",
+        "published_status": "published",
         "likes_count": 100,
-        "liked": false,
         "created_at": "2023-10-11T12:34:56Z",
-        "url": "レビュー情報を取得するapiのurl",
+        "updated_at": "2023-10-11T12:34:56Z",
         "author": {
           "user_id": "e5822d84-9119-4caa-ad96-a4c6ebdaa8a7",
           "display_id": "@tarotanaka",
           "name": "タナカ タロウ",
-          "avatar_url": "https://source.unsplash.com/random",
-          "followers_count": 100,
-          "following_count": 100,
-          "followed": false,
-          "following": false,
-          "url": "ユーザー情報を取得するapiのurl"
+          "avatar_url": "https://source.unsplash.com/random"
         },
         "album": {
           "album_id": "2up3OPMp9Tb4dAKM2erWXQ",
-          "spotify_uri": "spotify:album:2up3OPMp9Tb4dAKM2erWXQ",
-          "spotify_url": "http://open.spotify.com/album/2up3OPMp9Tb4dAKM2erWXQ",
           "name": "string",
-          "disk_number": 1,
           "cover_url": "https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228",
-          "release_date": "1981-12",
           "artists": [
             {
               "artist_id": "string",
-              "spotify_uri": "string",
-              "name": "string",
-              "image_url": "https://source.unsplash.com/random",
-              "genres": ["rock", "pop"]
+              "name": "string"
             }
-          ],
-          "genres": ["rock", "pop"]
+          ]
         }
       },
       {
         "review_id": "22244f61-48fe-491f-9a04-52d3d5ef99d1",
-        "title": "タイトル8",
+        "title": "タイトル1",
+        "published_status": "published",
         "likes_count": 100,
-        "liked": false,
         "created_at": "2023-10-11T12:34:56Z",
-        "url": "レビュー情報を取得するapiのurl",
+        "updated_at": "2023-10-11T12:34:56Z",
         "author": {
           "user_id": "e5822d84-9119-4caa-ad96-a4c6ebdaa8a7",
           "display_id": "@tarotanaka",
           "name": "タナカ タロウ",
-          "avatar_url": "https://source.unsplash.com/random",
-          "followers_count": 100,
-          "following_count": 100,
-          "followed": false,
-          "following": false,
-          "url": "ユーザー情報を取得するapiのurl"
+          "avatar_url": "https://source.unsplash.com/random"
         },
         "album": {
           "album_id": "2up3OPMp9Tb4dAKM2erWXQ",
-          "spotify_uri": "spotify:album:2up3OPMp9Tb4dAKM2erWXQ",
-          "spotify_url": "http://open.spotify.com/album/2up3OPMp9Tb4dAKM2erWXQ",
           "name": "string",
-          "disk_number": 1,
           "cover_url": "https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228",
-          "release_date": "1981-12",
           "artists": [
             {
               "artist_id": "string",
-              "spotify_uri": "string",
-              "name": "string",
-              "image_url": "https://source.unsplash.com/random",
-              "genres": ["rock", "pop"]
+              "name": "string"
             }
-          ],
-          "genres": ["rock", "pop"]
+          ]
         }
       },
       {
         "review_id": "22244f61-48fe-491f-9a04-52d3d5ef99d1",
-        "title": "タイトル9",
+        "title": "タイトル1",
+        "published_status": "published",
         "likes_count": 100,
-        "liked": false,
         "created_at": "2023-10-11T12:34:56Z",
-        "url": "レビュー情報を取得するapiのurl",
+        "updated_at": "2023-10-11T12:34:56Z",
         "author": {
           "user_id": "e5822d84-9119-4caa-ad96-a4c6ebdaa8a7",
           "display_id": "@tarotanaka",
           "name": "タナカ タロウ",
-          "avatar_url": "https://source.unsplash.com/random",
-          "followers_count": 100,
-          "following_count": 100,
-          "followed": false,
-          "following": false,
-          "url": "ユーザー情報を取得するapiのurl"
+          "avatar_url": "https://source.unsplash.com/random"
         },
         "album": {
           "album_id": "2up3OPMp9Tb4dAKM2erWXQ",
-          "spotify_uri": "spotify:album:2up3OPMp9Tb4dAKM2erWXQ",
-          "spotify_url": "http://open.spotify.com/album/2up3OPMp9Tb4dAKM2erWXQ",
           "name": "string",
-          "disk_number": 1,
           "cover_url": "https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228",
-          "release_date": "1981-12",
           "artists": [
             {
               "artist_id": "string",
-              "spotify_uri": "string",
-              "name": "string",
-              "image_url": "https://source.unsplash.com/random",
-              "genres": ["rock", "pop"]
+              "name": "string"
             }
-          ],
-          "genres": ["rock", "pop"]
+          ]
         }
       },
       {
         "review_id": "22244f61-48fe-491f-9a04-52d3d5ef99d1",
-        "title": "タイトル10",
+        "title": "タイトル1",
+        "published_status": "published",
         "likes_count": 100,
-        "liked": false,
         "created_at": "2023-10-11T12:34:56Z",
-        "url": "レビュー情報を取得するapiのurl",
+        "updated_at": "2023-10-11T12:34:56Z",
         "author": {
           "user_id": "e5822d84-9119-4caa-ad96-a4c6ebdaa8a7",
           "display_id": "@tarotanaka",
           "name": "タナカ タロウ",
-          "avatar_url": "https://source.unsplash.com/random",
-          "followers_count": 100,
-          "following_count": 100,
-          "followed": false,
-          "following": false,
-          "url": "ユーザー情報を取得するapiのurl"
+          "avatar_url": "https://source.unsplash.com/random"
         },
         "album": {
           "album_id": "2up3OPMp9Tb4dAKM2erWXQ",
-          "spotify_uri": "spotify:album:2up3OPMp9Tb4dAKM2erWXQ",
-          "spotify_url": "http://open.spotify.com/album/2up3OPMp9Tb4dAKM2erWXQ",
           "name": "string",
-          "disk_number": 1,
           "cover_url": "https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228",
-          "release_date": "1981-12",
           "artists": [
             {
               "artist_id": "string",
-              "spotify_uri": "string",
-              "name": "string",
-              "image_url": "https://source.unsplash.com/random",
-              "genres": ["rock", "pop"]
+              "name": "string"
             }
-          ],
-          "genres": ["rock", "pop"]
+          ]
         }
       },
       {
         "review_id": "22244f61-48fe-491f-9a04-52d3d5ef99d1",
-        "title": "タイトル11",
+        "title": "タイトル1",
+        "published_status": "published",
         "likes_count": 100,
-        "liked": false,
         "created_at": "2023-10-11T12:34:56Z",
-        "url": "レビュー情報を取得するapiのurl",
+        "updated_at": "2023-10-11T12:34:56Z",
         "author": {
           "user_id": "e5822d84-9119-4caa-ad96-a4c6ebdaa8a7",
           "display_id": "@tarotanaka",
           "name": "タナカ タロウ",
-          "avatar_url": "https://source.unsplash.com/random",
-          "followers_count": 100,
-          "following_count": 100,
-          "followed": false,
-          "following": false,
-          "url": "ユーザー情報を取得するapiのurl"
+          "avatar_url": "https://source.unsplash.com/random"
         },
         "album": {
           "album_id": "2up3OPMp9Tb4dAKM2erWXQ",
-          "spotify_uri": "spotify:album:2up3OPMp9Tb4dAKM2erWXQ",
-          "spotify_url": "http://open.spotify.com/album/2up3OPMp9Tb4dAKM2erWXQ",
           "name": "string",
-          "disk_number": 1,
           "cover_url": "https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228",
-          "release_date": "1981-12",
           "artists": [
             {
               "artist_id": "string",
-              "spotify_uri": "string",
-              "name": "string",
-              "image_url": "https://source.unsplash.com/random",
-              "genres": ["rock", "pop"]
+              "name": "string"
             }
-          ],
-          "genres": ["rock", "pop"]
+          ]
         }
       },
       {
         "review_id": "22244f61-48fe-491f-9a04-52d3d5ef99d1",
-        "title": "タイトル12",
+        "title": "タイトル1",
+        "published_status": "published",
         "likes_count": 100,
-        "liked": false,
         "created_at": "2023-10-11T12:34:56Z",
-        "url": "レビュー情報を取得するapiのurl",
+        "updated_at": "2023-10-11T12:34:56Z",
         "author": {
           "user_id": "e5822d84-9119-4caa-ad96-a4c6ebdaa8a7",
           "display_id": "@tarotanaka",
           "name": "タナカ タロウ",
-          "avatar_url": "https://source.unsplash.com/random",
-          "followers_count": 100,
-          "following_count": 100,
-          "followed": false,
-          "following": false,
-          "url": "ユーザー情報を取得するapiのurl"
+          "avatar_url": "https://source.unsplash.com/random"
         },
         "album": {
           "album_id": "2up3OPMp9Tb4dAKM2erWXQ",
-          "spotify_uri": "spotify:album:2up3OPMp9Tb4dAKM2erWXQ",
-          "spotify_url": "http://open.spotify.com/album/2up3OPMp9Tb4dAKM2erWXQ",
           "name": "string",
-          "disk_number": 1,
           "cover_url": "https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228",
-          "release_date": "1981-12",
           "artists": [
             {
               "artist_id": "string",
-              "spotify_uri": "string",
-              "name": "string",
-              "image_url": "https://source.unsplash.com/random",
-              "genres": ["rock", "pop"]
+              "name": "string"
             }
-          ],
-          "genres": ["rock", "pop"]
+          ]
         }
       },
       {
         "review_id": "22244f61-48fe-491f-9a04-52d3d5ef99d1",
-        "title": "タイトル13",
+        "title": "タイトル1",
+        "published_status": "published",
         "likes_count": 100,
-        "liked": false,
         "created_at": "2023-10-11T12:34:56Z",
-        "url": "レビュー情報を取得するapiのurl",
+        "updated_at": "2023-10-11T12:34:56Z",
         "author": {
           "user_id": "e5822d84-9119-4caa-ad96-a4c6ebdaa8a7",
           "display_id": "@tarotanaka",
           "name": "タナカ タロウ",
-          "avatar_url": "https://source.unsplash.com/random",
-          "followers_count": 100,
-          "following_count": 100,
-          "followed": false,
-          "following": false,
-          "url": "ユーザー情報を取得するapiのurl"
+          "avatar_url": "https://source.unsplash.com/random"
         },
         "album": {
           "album_id": "2up3OPMp9Tb4dAKM2erWXQ",
-          "spotify_uri": "spotify:album:2up3OPMp9Tb4dAKM2erWXQ",
-          "spotify_url": "http://open.spotify.com/album/2up3OPMp9Tb4dAKM2erWXQ",
           "name": "string",
-          "disk_number": 1,
           "cover_url": "https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228",
-          "release_date": "1981-12",
           "artists": [
             {
               "artist_id": "string",
-              "spotify_uri": "string",
-              "name": "string",
-              "image_url": "https://source.unsplash.com/random",
-              "genres": ["rock", "pop"]
+              "name": "string"
             }
-          ],
-          "genres": ["rock", "pop"]
+          ]
         }
       },
       {
         "review_id": "22244f61-48fe-491f-9a04-52d3d5ef99d1",
-        "title": "タイトル14",
+        "title": "タイトル1",
+        "published_status": "published",
         "likes_count": 100,
-        "liked": false,
         "created_at": "2023-10-11T12:34:56Z",
-        "url": "レビュー情報を取得するapiのurl",
+        "updated_at": "2023-10-11T12:34:56Z",
         "author": {
           "user_id": "e5822d84-9119-4caa-ad96-a4c6ebdaa8a7",
           "display_id": "@tarotanaka",
           "name": "タナカ タロウ",
-          "avatar_url": "https://source.unsplash.com/random",
-          "followers_count": 100,
-          "following_count": 100,
-          "followed": false,
-          "following": false,
-          "url": "ユーザー情報を取得するapiのurl"
+          "avatar_url": "https://source.unsplash.com/random"
         },
         "album": {
           "album_id": "2up3OPMp9Tb4dAKM2erWXQ",
-          "spotify_uri": "spotify:album:2up3OPMp9Tb4dAKM2erWXQ",
-          "spotify_url": "http://open.spotify.com/album/2up3OPMp9Tb4dAKM2erWXQ",
           "name": "string",
-          "disk_number": 1,
           "cover_url": "https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228",
-          "release_date": "1981-12",
           "artists": [
             {
               "artist_id": "string",
-              "spotify_uri": "string",
-              "name": "string",
-              "image_url": "https://source.unsplash.com/random",
-              "genres": ["rock", "pop"]
+              "name": "string"
             }
-          ],
-          "genres": ["rock", "pop"]
+          ]
         }
       },
       {
         "review_id": "22244f61-48fe-491f-9a04-52d3d5ef99d1",
-        "title": "タイトル15",
+        "title": "タイトル1",
+        "published_status": "published",
         "likes_count": 100,
-        "liked": false,
         "created_at": "2023-10-11T12:34:56Z",
-        "url": "レビュー情報を取得するapiのurl",
+        "updated_at": "2023-10-11T12:34:56Z",
         "author": {
           "user_id": "e5822d84-9119-4caa-ad96-a4c6ebdaa8a7",
           "display_id": "@tarotanaka",
           "name": "タナカ タロウ",
-          "avatar_url": "https://source.unsplash.com/random",
-          "followers_count": 100,
-          "following_count": 100,
-          "followed": false,
-          "following": false,
-          "url": "ユーザー情報を取得するapiのurl"
+          "avatar_url": "https://source.unsplash.com/random"
         },
         "album": {
           "album_id": "2up3OPMp9Tb4dAKM2erWXQ",
-          "spotify_uri": "spotify:album:2up3OPMp9Tb4dAKM2erWXQ",
-          "spotify_url": "http://open.spotify.com/album/2up3OPMp9Tb4dAKM2erWXQ",
           "name": "string",
-          "disk_number": 1,
           "cover_url": "https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228",
-          "release_date": "1981-12",
           "artists": [
             {
               "artist_id": "string",
-              "spotify_uri": "string",
-              "name": "string",
-              "image_url": "https://source.unsplash.com/random",
-              "genres": ["rock", "pop"]
+              "name": "string"
             }
-          ],
-          "genres": ["rock", "pop"]
+          ]
         }
       },
       {
         "review_id": "22244f61-48fe-491f-9a04-52d3d5ef99d1",
-        "title": "タイトル16",
+        "title": "タイトル1",
+        "published_status": "published",
         "likes_count": 100,
-        "liked": false,
         "created_at": "2023-10-11T12:34:56Z",
-        "url": "レビュー情報を取得するapiのurl",
+        "updated_at": "2023-10-11T12:34:56Z",
         "author": {
           "user_id": "e5822d84-9119-4caa-ad96-a4c6ebdaa8a7",
           "display_id": "@tarotanaka",
           "name": "タナカ タロウ",
-          "avatar_url": "https://source.unsplash.com/random",
-          "followers_count": 100,
-          "following_count": 100,
-          "followed": false,
-          "following": false,
-          "url": "ユーザー情報を取得するapiのurl"
+          "avatar_url": "https://source.unsplash.com/random"
         },
         "album": {
           "album_id": "2up3OPMp9Tb4dAKM2erWXQ",
-          "spotify_uri": "spotify:album:2up3OPMp9Tb4dAKM2erWXQ",
-          "spotify_url": "http://open.spotify.com/album/2up3OPMp9Tb4dAKM2erWXQ",
           "name": "string",
-          "disk_number": 1,
           "cover_url": "https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228",
-          "release_date": "1981-12",
           "artists": [
             {
               "artist_id": "string",
-              "spotify_uri": "string",
-              "name": "string",
-              "image_url": "https://source.unsplash.com/random",
-              "genres": ["rock", "pop"]
+              "name": "string"
             }
-          ],
-          "genres": ["rock", "pop"]
+          ]
         }
       },
       {
         "review_id": "22244f61-48fe-491f-9a04-52d3d5ef99d1",
-        "title": "タイトル17",
+        "title": "タイトル1",
+        "published_status": "published",
         "likes_count": 100,
-        "liked": false,
         "created_at": "2023-10-11T12:34:56Z",
-        "url": "レビュー情報を取得するapiのurl",
+        "updated_at": "2023-10-11T12:34:56Z",
         "author": {
           "user_id": "e5822d84-9119-4caa-ad96-a4c6ebdaa8a7",
           "display_id": "@tarotanaka",
           "name": "タナカ タロウ",
-          "avatar_url": "https://source.unsplash.com/random",
-          "followers_count": 100,
-          "following_count": 100,
-          "followed": false,
-          "following": false,
-          "url": "ユーザー情報を取得するapiのurl"
+          "avatar_url": "https://source.unsplash.com/random"
         },
         "album": {
           "album_id": "2up3OPMp9Tb4dAKM2erWXQ",
-          "spotify_uri": "spotify:album:2up3OPMp9Tb4dAKM2erWXQ",
-          "spotify_url": "http://open.spotify.com/album/2up3OPMp9Tb4dAKM2erWXQ",
           "name": "string",
-          "disk_number": 1,
           "cover_url": "https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228",
-          "release_date": "1981-12",
           "artists": [
             {
               "artist_id": "string",
-              "spotify_uri": "string",
-              "name": "string",
-              "image_url": "https://source.unsplash.com/random",
-              "genres": ["rock", "pop"]
+              "name": "string"
             }
-          ],
-          "genres": ["rock", "pop"]
+          ]
         }
       },
       {
         "review_id": "22244f61-48fe-491f-9a04-52d3d5ef99d1",
-        "title": "タイトル18",
+        "title": "タイトル1",
+        "published_status": "published",
         "likes_count": 100,
-        "liked": false,
         "created_at": "2023-10-11T12:34:56Z",
-        "url": "レビュー情報を取得するapiのurl",
+        "updated_at": "2023-10-11T12:34:56Z",
         "author": {
           "user_id": "e5822d84-9119-4caa-ad96-a4c6ebdaa8a7",
           "display_id": "@tarotanaka",
           "name": "タナカ タロウ",
-          "avatar_url": "https://source.unsplash.com/random",
-          "followers_count": 100,
-          "following_count": 100,
-          "followed": false,
-          "following": false,
-          "url": "ユーザー情報を取得するapiのurl"
+          "avatar_url": "https://source.unsplash.com/random"
         },
         "album": {
           "album_id": "2up3OPMp9Tb4dAKM2erWXQ",
-          "spotify_uri": "spotify:album:2up3OPMp9Tb4dAKM2erWXQ",
-          "spotify_url": "http://open.spotify.com/album/2up3OPMp9Tb4dAKM2erWXQ",
           "name": "string",
-          "disk_number": 1,
           "cover_url": "https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228",
-          "release_date": "1981-12",
           "artists": [
             {
               "artist_id": "string",
-              "spotify_uri": "string",
-              "name": "string",
-              "image_url": "https://source.unsplash.com/random",
-              "genres": ["rock", "pop"]
+              "name": "string"
             }
-          ],
-          "genres": ["rock", "pop"]
+          ]
         }
       },
       {
         "review_id": "22244f61-48fe-491f-9a04-52d3d5ef99d1",
-        "title": "タイトル19",
+        "title": "タイトル1",
+        "published_status": "published",
         "likes_count": 100,
-        "liked": false,
         "created_at": "2023-10-11T12:34:56Z",
-        "url": "レビュー情報を取得するapiのurl",
+        "updated_at": "2023-10-11T12:34:56Z",
         "author": {
           "user_id": "e5822d84-9119-4caa-ad96-a4c6ebdaa8a7",
           "display_id": "@tarotanaka",
           "name": "タナカ タロウ",
-          "avatar_url": "https://source.unsplash.com/random",
-          "followers_count": 100,
-          "following_count": 100,
-          "followed": false,
-          "following": false,
-          "url": "ユーザー情報を取得するapiのurl"
+          "avatar_url": "https://source.unsplash.com/random"
         },
         "album": {
           "album_id": "2up3OPMp9Tb4dAKM2erWXQ",
-          "spotify_uri": "spotify:album:2up3OPMp9Tb4dAKM2erWXQ",
-          "spotify_url": "http://open.spotify.com/album/2up3OPMp9Tb4dAKM2erWXQ",
           "name": "string",
-          "disk_number": 1,
           "cover_url": "https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228",
-          "release_date": "1981-12",
           "artists": [
             {
               "artist_id": "string",
-              "spotify_uri": "string",
-              "name": "string",
-              "image_url": "https://source.unsplash.com/random",
-              "genres": ["rock", "pop"]
+              "name": "string"
             }
-          ],
-          "genres": ["rock", "pop"]
+          ]
         }
       },
       {
         "review_id": "22244f61-48fe-491f-9a04-52d3d5ef99d1",
-        "title": "タイトル20",
+        "title": "タイトル1",
+        "published_status": "published",
         "likes_count": 100,
-        "liked": false,
         "created_at": "2023-10-11T12:34:56Z",
-        "url": "レビュー情報を取得するapiのurl",
+        "updated_at": "2023-10-11T12:34:56Z",
         "author": {
           "user_id": "e5822d84-9119-4caa-ad96-a4c6ebdaa8a7",
           "display_id": "@tarotanaka",
           "name": "タナカ タロウ",
-          "avatar_url": "https://source.unsplash.com/random",
-          "followers_count": 100,
-          "following_count": 100,
-          "followed": false,
-          "following": false,
-          "url": "ユーザー情報を取得するapiのurl"
+          "avatar_url": "https://source.unsplash.com/random"
         },
         "album": {
           "album_id": "2up3OPMp9Tb4dAKM2erWXQ",
-          "spotify_uri": "spotify:album:2up3OPMp9Tb4dAKM2erWXQ",
-          "spotify_url": "http://open.spotify.com/album/2up3OPMp9Tb4dAKM2erWXQ",
           "name": "string",
-          "disk_number": 1,
           "cover_url": "https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228",
-          "release_date": "1981-12",
           "artists": [
             {
               "artist_id": "string",
-              "spotify_uri": "string",
-              "name": "string",
-              "image_url": "https://source.unsplash.com/random",
-              "genres": ["rock", "pop"]
+              "name": "string"
             }
-          ],
-          "genres": ["rock", "pop"]
+          ]
         }
       }
     ]

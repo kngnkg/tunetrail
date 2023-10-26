@@ -1,14 +1,15 @@
 import Image from "next/image"
 import Link from "next/link"
-import { Review } from "@/types"
+import { Review, ReviewPreview } from "@/types"
 
+import { Icon } from "./icon"
 import { LikeButton } from "./like-button"
 import { TimeStamp } from "./timestamp"
 import { Card, CardContent } from "./ui/card"
 import { UserAvatar } from "./user-avatar"
 
 export interface ReviewCardProps {
-  review: Review
+  review: ReviewPreview
   className?: string
 }
 
@@ -55,7 +56,10 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
               <Link href={pathToUser}>{review.author.name}</Link>
               {/* いいね・投稿時間 */}
               <div className="flex gap-2 items-center">
-                <LikeButton review={review} />
+                <div className="flex gap-0.5 items-center">
+                  <Icon type={"like"} className="h-6 w-6" />
+                  <span>{review.likesCount}</span>
+                </div>
                 <TimeStamp date={review.createdAt} />
               </div>
             </div>
