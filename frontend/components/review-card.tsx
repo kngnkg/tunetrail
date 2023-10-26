@@ -46,12 +46,6 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
               {review.title}
             </Link>
           </div>
-          {/* ジャンル */}
-          <div className="flex gap-1 mb-3 sm:mb-8 text-md sm:text-lg text-zinc-300 dark:text-zinc-300">
-            {review.album.genres.map((genre, idx) => {
-              return <p key={idx}>{genre}</p>
-            })}
-          </div>
           {/* ユーザー情報 */}
           <div className="flex gap-2 text-sm sm:text-md text-zinc-400 dark:text-zinc-400">
             <Link href={pathToUser}>

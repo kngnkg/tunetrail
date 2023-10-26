@@ -3,7 +3,6 @@ import { getUsers } from "@/service/user/get-users"
 
 import { env } from "@/env.mjs"
 import { FollowButton } from "@/components/follow-button"
-import { GenreList } from "@/components/genre-list"
 import { MainNav } from "@/components/main-nav"
 import { MenuTab, MenuTabs } from "@/components/menu-tabs"
 import { UserAvatar } from "@/components/user-avatar"
@@ -73,15 +72,6 @@ export default async function UserLayout({
               </div>
               <div>
                 <p className="text-zinc-500 dark:text-zinc-400">{user.bio}</p>
-              </div>
-              {/* ジャンル一覧 */}
-              <div className="flex flex-col gap-1">
-                <p>フォロー中のジャンル</p>
-                {user.followingGenres.length === 0 ? (
-                  <p>まだジャンルをフォローしていません。</p>
-                ) : (
-                  <GenreList genres={user.followingGenres} />
-                )}
               </div>
             </div>
           </div>
