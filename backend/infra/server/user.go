@@ -26,46 +26,44 @@ func NewUserServer(uc *usecase.UserUseCase, v *validator.Validator, l *logger.Lo
 	}
 }
 
-func (s *userServer) ListUsers(ctx context.Context, in *user.ListUsersRequest) (*user.UserListReply, error) {
+func (s *userServer) ListUsers(ctx context.Context, in *user.ListUsersRequest) (*user.UserList, error) {
 	ctx = logger.WithContent(ctx, s.logger)
 
 	var b struct {
-		UserIds    []string `validate:"omitempty,dive,uuid4"`
-		DisplayIds []string `validate:"omitempty,dive,display_id"`
+		Usernames []string `validate:"omitempty,dive,username"`
 	}
-	b.UserIds = in.UserIds
-	b.DisplayIds = in.DisplayIds
+	b.Usernames = in.Usernames
 
 	if err := s.validator.Validate(b); err != nil {
 		return nil, invalidArgument(ctx, err)
 	}
 
-	userIds := make([]entity.UserId, len(b.UserIds))
-	for i, id := range b.UserIds {
-		userIds[i] = entity.UserId(id)
+	names := make([]entity.Username, len(b.Usernames))
+	for i, n := range b.Usernames {
+		names[i] = entity.Username(n)
 	}
 
-	res, err := s.usecase.ListUsers(ctx, userIds, b.DisplayIds)
+	res, err := s.usecase.ListUsers(ctx, names)
 	if err != nil {
 		return nil, internal(ctx, err)
 	}
 
-	return toUserListReply(res), nil
+	return toUserList(res), nil
 }
 
-func (s *userServer) GetUserById(ctx context.Context, in *user.GetUserByIdRequest) (*user.UserReply, error) {
+func (s *userServer) GetUserByUsername(ctx context.Context, in *user.GetUserByUsernameRequest) (*user.User, error) {
 	ctx = logger.WithContent(ctx, s.logger)
 
 	var b struct {
-		UserId string `validate:"required,uuid4"`
+		Username string `validate:"required,username"`
 	}
-	b.UserId = in.UserId
+	b.Username = in.Username
 
 	if err := s.validator.Validate(b); err != nil {
 		return nil, invalidArgument(ctx, err)
 	}
 
-	res, err := s.usecase.GetById(ctx, entity.UserId(in.UserId))
+	res, err := s.usecase.GetByUsername(ctx, entity.Username(in.Username))
 	if err != nil {
 		return nil, internal(ctx, err)
 	}
@@ -73,18 +71,18 @@ func (s *userServer) GetUserById(ctx context.Context, in *user.GetUserByIdReques
 		return nil, notFound(ctx, err)
 	}
 
-	return toUserReply(res), nil
+	return toUser(res), nil
 }
 
-func (s *userServer) CreateUser(ctx context.Context, in *user.CreateUserRequest) (*user.UserReply, error) {
+func (s *userServer) CreateUser(ctx context.Context, in *user.CreateUserRequest) (*user.User, error) {
 	ctx = logger.WithContent(ctx, s.logger)
 
 	u := &entity.User{
-		UserId:    entity.UserId(in.UserId),
-		DisplayId: in.DisplayId,
-		Name:      in.Name,
-		AvatarUrl: in.AvatarUrl,
-		Bio:       in.Bio,
+		Username:    entity.Username(in.Username),
+		ImmutableId: entity.ImmutableId(in.ImmutableId),
+		DisplayName: in.DisplayName,
+		AvatarUrl:   in.AvatarUrl,
+		Bio:         in.Bio,
 	}
 
 	if err := s.validator.Validate(u); err != nil {
@@ -99,30 +97,30 @@ func (s *userServer) CreateUser(ctx context.Context, in *user.CreateUserRequest)
 		return nil, internal(ctx, err)
 	}
 
-	return toUserReply(res), nil
+	return toUser(res), nil
 }
 
-func toUserListReply(res *usecase.UserListResponse) *user.UserListReply {
-	var users []*user.UserReply
+func toUserList(res *usecase.UserListResponse) *user.UserList {
+	var users []*user.User
 	for _, user := range res.Users {
-		users = append(users, toUserReply(user))
+		users = append(users, toUser(user))
 	}
 
-	return &user.UserListReply{
+	return &user.UserList{
 		Users: users,
 	}
 }
 
-func toUserReply(res *usecase.UserResponse) *user.UserReply {
-	return &user.UserReply{
-		UserId:         string(res.UserId),
-		DisplayId:      res.DisplayId,
-		Name:           res.Name,
-		AvatarUrl:      res.AvatarUrl,
-		Bio:            res.Bio,
-		FollowersCount: int32(res.FollowersCount),
-		FollowingCount: int32(res.FollowingCount),
-		CreatedAt:      res.CreatedAt.String(),
-		UpdatedAt:      res.UpdatedAt.String(),
+func toUser(u *entity.User) *user.User {
+	return &user.User{
+		Username:       string(u.Username),
+		ImmutableId:    string(u.ImmutableId),
+		DisplayName:    u.DisplayName,
+		AvatarUrl:      u.AvatarUrl,
+		Bio:            u.Bio,
+		FollowersCount: int32(u.FollowersCount),
+		FollowingCount: int32(u.FollowingCount),
+		CreatedAt:      u.CreatedAt.String(),
+		UpdatedAt:      u.UpdatedAt.String(),
 	}
 }

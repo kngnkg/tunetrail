@@ -5,48 +5,36 @@ package user;
 option go_package = "github.com/kngnkg/tunetrail/backend/gen/user";
 
 service UserService {
-  rpc ListUsers(ListUsersRequest) returns (UserListReply) {}
-  rpc GetUserById(GetUserByIdRequest) returns (UserReply) {}
-  rpc CreateUser(CreateUserRequest) returns (UserReply) {}
+  rpc ListUsers(ListUsersRequest) returns (UserList) {}
+  rpc GetUserByUsername(GetUserByUsernameRequest) returns (User) {}
+  rpc CreateUser(CreateUserRequest) returns (User) {}
 }
 
-message ListUsersRequest {
-  repeated string userIds = 1;
-  repeated string displayIds = 2;
-}
+message ListUsersRequest { repeated string usernames = 1; }
 
 message CreateUserRequest {
-  string userId = 1;
-  string displayId = 2;
-  string name = 3;
+  string username = 1;
+  string immutableId = 2;
+  string displayName = 3;
   string avatarUrl = 4;
   string bio = 5;
 }
 
-message GetUserByIdRequest { string userId = 1; }
-
-message UserReply {
-  string userId = 1;
-  string displayId = 2;
-  string name = 3;
-  string avatarUrl = 4;
-  string bio = 5;
-  int32 followersCount = 6;
-  int32 followingCount = 7;
-  string createdAt = 8;
-  string updatedAt = 9;
-}
-
-message UserListReply { repeated UserReply users = 1; }
+message GetUserByUsernameRequest { string username = 1; }
 
 message User {
-  string userId = 1;
-  string displayId = 2;
-  string name = 3;
+  string username = 1;
+  string immutableId = 2;
+  string displayName = 3;
   string avatarUrl = 4;
   string bio = 5;
   int32 followersCount = 6;
   int32 followingCount = 7;
   string createdAt = 8;
   string updatedAt = 9;
+}
+
+message UserList {
+  repeated User users = 1;
+  string nextCursor = 2;
 }

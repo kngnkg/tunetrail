@@ -1,44 +1,41 @@
 package repository
 
 import (
-	"context"
-	"database/sql"
-	"errors"
+	"fmt"
 
 	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
 )
 
-type DBAccesser interface {
-	Beginner
-	Executor
-}
+const (
+	// 重複エラーコード
+	ErrCodePostgresDuplicate = "23505"
 
-type Transactioner interface {
-	Commit() error
-	Rollback() error
-	Executor
-}
-
-type Beginner interface {
-	BeginTxx(ctx context.Context, opts *sql.TxOptions) (Transactioner, error)
-}
-
-// Executor は sqlx.DB と sqlx.Tx の両方で実装されているメソッドを統一的に扱うためのインターフェース
-type Executor interface {
-	PreparexContext(ctx context.Context, query string) (*sqlx.Stmt, error)
-	QueryxContext(ctx context.Context, query string, args ...any) (*sqlx.Rows, error)
-	QueryRowxContext(ctx context.Context, query string, args ...any) *sqlx.Row
-	GetContext(ctx context.Context, dest interface{}, query string, args ...any) error
-	SelectContext(ctx context.Context, dest interface{}, query string, args ...any) error
-	ExecContext(ctx context.Context, query string, args ...any) (sql.Result, error)
-	NamedExecContext(ctx context.Context, query string, arg interface{}) (sql.Result, error)
-}
-
-var (
-	_ Executor = (*sqlx.DB)(nil)
-	_ Executor = (*sqlx.Tx)(nil)
+	// usersテーブルのユニーク制約
+	ConstraintUsersDisplayId = "users_display_id_key"
 )
 
-var (
-	ErrorDisplayIdAlreadyExists = errors.New("repository: display id already exists")
-)
+type DB struct {
+	*sqlx.DB
+}
+
+type DBConfig struct {
+	Host     string
+	Port     int
+	User     string
+	Password string
+	DBName   string
+	SSLMode  string
+}
+
+func NewDB(cfg *DBConfig) (*DB, func(), error) {
+	db, err := sqlx.Connect("postgres", fmt.Sprintf(
+		"host=%s port=%d user=%s password=%s dbname=%s sslmode=%s",
+		cfg.Host, cfg.Port, cfg.User, cfg.Password, cfg.DBName, cfg.SSLMode,
+	))
+	if err != nil {
+		return nil, func() {}, err
+	}
+
+	return &DB{db}, func() { _ = db.Close() }, nil
+}
