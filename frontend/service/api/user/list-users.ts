@@ -1,38 +1,29 @@
-import { UserServiceClient } from "@/generated/user/user_grpc_pb"
-import { ListUsersRequest, UserListReply } from "@/generated/user/user_pb"
-import * as grpc from "@grpc/grpc-js"
+import { ListUsersRequest, User } from "@/generated/user/user_pb"
+
+import { client } from "./client"
 
 interface listUsersParams {
-  userIds: string[]
-  displayIds: string[]
+  usernames: string[]
 }
-export const listUsers = (
-  apiRoot: string,
+
+export default function listUsers(
   params: listUsersParams
-): Promise<UserListReply | null> => {
-  const client = new UserServiceClient(
-    apiRoot,
-    grpc.credentials.createInsecure()
-  )
-  const { userIds, displayIds } = params
-
-  const req = new ListUsersRequest()
-
-  if (userIds.length > 0) {
-    req.setUseridsList(userIds)
-  }
-
-  if (displayIds.length > 0) {
-    req.setDisplayidsList(displayIds)
-  }
-
+): Promise<User[] | null> {
   return new Promise((resolve, reject) => {
+    const { usernames } = params
+
+    const req = new ListUsersRequest()
+
+    if (usernames.length > 0) {
+      req.setUsernamesList(usernames)
+    }
+
     client.listUsers(req, (err, response) => {
       if (err) reject(err)
+      if (!response) return resolve(null)
 
-      if (!response) return
-
-      resolve(response)
+      const users = response.getUsersList()
+      resolve(users)
     })
   })
 }
