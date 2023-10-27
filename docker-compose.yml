@@ -27,6 +27,8 @@ services:
       - 50051:50051
     env_file:
       - ./backend/.env
+    depends_on:
+      - db
   db:
     container_name: tunetrail-db
     hostname: tunetrail-db
