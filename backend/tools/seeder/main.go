@@ -35,7 +35,6 @@ func (s *seeder) initDB(ctx context.Context, tx repository.Transactioner) error 
 	return nil
 }
 
-// ランダムなユーザーを100人登録する
 func (s *seeder) storeRandomUsers(ctx context.Context, tx repository.Transactioner) ([]*entity.User, error) {
 	var users []*entity.User
 	for i := 0; i < 100; i++ {
@@ -54,7 +53,6 @@ func (s *seeder) storeRandomUsers(ctx context.Context, tx repository.Transaction
 	return users, nil
 }
 
-// ランダムなレビューを100件登録する
 func (s *seeder) storeRandomReviews(ctx context.Context, tx repository.Transactioner, authorIds []entity.ImmutableId, albumIds []string) ([]*entity.Review, error) {
 	var reviews []*entity.Review
 	for i := 0; i < 100; i++ {
@@ -109,10 +107,12 @@ func (s *seeder) exec(ctx context.Context) error {
 	}
 
 	logger.FromContent(ctx).Info("storing random reviews...")
-	_, err = s.storeRandomReviews(ctx, tx, authorIds, albumIds)
-	if err != nil {
-		tx.Rollback()
-		return err
+	for i := 0; i < 3; i++ {
+		_, err = s.storeRandomReviews(ctx, tx, authorIds, albumIds)
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
 	}
 
 	return tx.Commit()

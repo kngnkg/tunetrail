@@ -27,20 +27,20 @@ type ReviewRepository struct{}
 
 func (r *ReviewRepository) ListReviewsById(ctx context.Context, db Executor, reviewIds []string) ([]*entity.Review, error) {
 	query := `
-	SELECT review_id, user_id AS "author.user_id", album_id AS "album.album_id", title, content, published_status, created_at, updated_at
-	FROM reviews WHERE published_status = "published"`
+	SELECT review_id, user_id AS "author.user_id", album_id, title, content, published_status, created_at, updated_at
+	FROM reviews WHERE published_status = 'published'`
 
 	placeholderNum := 1
 	args := []interface{}{}
 
 	if len(reviewIds) > 0 {
-		query += " AND review_id IN( "
+		query += " AND review_id IN("
 		for _, id := range reviewIds {
 			query += fmt.Sprintf(" $%d,", placeholderNum)
 			args = append(args, id)
 			placeholderNum++
 		}
-		query += helper.RemoveLastComma(query) + ")"
+		query = helper.RemoveLastComma(query) + ")"
 	}
 
 	query += " ORDER BY created_at DESC"
@@ -57,7 +57,7 @@ func (r *ReviewRepository) ListReviewsById(ctx context.Context, db Executor, rev
 
 func (r *ReviewRepository) GetReviewById(ctx context.Context, db Executor, reviewId string) (*entity.Review, error) {
 	query := `
-		SELECT review_id, user_id AS "author.user_id", album_id AS "album.album_id", title, content, published_status, created_at, updated_at
+		SELECT review_id, user_id AS "author.user_id", album_id , title, content, published_status, created_at, updated_at
 		FROM reviews
 		WHERE review_id = $1;`
 
@@ -77,7 +77,7 @@ func (r *ReviewRepository) StoreReview(ctx context.Context, db Executor, review 
 	query := `
 		INSERT INTO reviews (user_id, album_id, title, content, published_status, created_at, updated_at)
 		VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
-		RETURNING review_id, user_id AS "author.user_id", album_id AS "album.album_id", title, content, published_status, created_at, updated_at;`
+		RETURNING review_id, user_id AS "author.user_id", album_id , title, content, published_status, created_at, updated_at;`
 
 	err := db.QueryRowxContext(ctx, query, review.Author.ImmutableId, review.AlbumId, review.Title, review.Content, review.PublishedStatus).
 		StructScan(review)
@@ -94,7 +94,7 @@ func (r *ReviewRepository) UpdateReview(ctx context.Context, db Executor, review
 		UPDATE reviews
 		SET title = $1, content = $2, published_status = $3, updated_at = NOW()
 		WHERE review_id = $4
-		RETURNING review_id, user_id AS "author.user_id", album_id AS "album.album_id", title, content, published_status, created_at, updated_at;`
+		RETURNING review_id, user_id AS "author.user_id", album_id , title, content, published_status, created_at, updated_at;`
 
 	err := db.QueryRowxContext(ctx, query, review.Title, review.Content, review.PublishedStatus, review.ReviewId).
 		StructScan(review)
