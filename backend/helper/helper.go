@@ -7,5 +7,5 @@ func RemoveLastComma(s string) string {
 	if lastIndex == -1 {
 		return s
 	}
-	return s[:lastIndex] + s[lastIndex+1:]
+	return s[:lastIndex]
 }

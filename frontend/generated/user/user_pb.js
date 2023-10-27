@@ -1077,8 +1077,7 @@ proto.user.UserList.prototype.toObject = function(opt_includeInstance) {
 proto.user.UserList.toObject = function(includeInstance, msg) {
   var f, obj = {
     usersList: jspb.Message.toObjectList(msg.getUsersList(),
-    proto.user.User.toObject, includeInstance),
-    nextcursor: jspb.Message.getFieldWithDefault(msg, 2, "")
+    proto.user.User.toObject, includeInstance)
   };
 
   if (includeInstance) {
@@ -1120,10 +1119,6 @@ proto.user.UserList.deserializeBinaryFromReader = function(msg, reader) {
       reader.readMessage(value,proto.user.User.deserializeBinaryFromReader);
       msg.addUsers(value);
       break;
-    case 2:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setNextcursor(value);
-      break;
     default:
       reader.skipField();
       break;
@@ -1159,13 +1154,6 @@ proto.user.UserList.serializeBinaryToWriter = function(message, writer) {
       1,
       f,
       proto.user.User.serializeBinaryToWriter
-    );
-  }
-  f = message.getNextcursor();
-  if (f.length > 0) {
-    writer.writeString(
-      2,
-      f
     );
   }
 };
@@ -1206,24 +1194,6 @@ proto.user.UserList.prototype.addUsers = function(opt_value, opt_index) {
  */
 proto.user.UserList.prototype.clearUsersList = function() {
   return this.setUsersList([]);
-};
-
-
-/**
- * optional string nextCursor = 2;
- * @return {string}
- */
-proto.user.UserList.prototype.getNextcursor = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.user.UserList} returns this
- */
-proto.user.UserList.prototype.setNextcursor = function(value) {
-  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 

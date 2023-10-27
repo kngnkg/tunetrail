@@ -139,9 +139,6 @@ export class UserList extends jspb.Message {
   setUsersList(value: Array<User>): void;
   addUsers(value?: User, index?: number): User;
 
-  getNextcursor(): string;
-  setNextcursor(value: string): void;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): UserList.AsObject;
   static toObject(includeInstance: boolean, msg: UserList): UserList.AsObject;
@@ -155,7 +152,6 @@ export class UserList extends jspb.Message {
 export namespace UserList {
   export type AsObject = {
     usersList: Array<User.AsObject>,
-    nextcursor: string,
   }
 }
 

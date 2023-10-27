@@ -34,7 +34,4 @@ message User {
   string updatedAt = 9;
 }
 
-message UserList {
-  repeated User users = 1;
-  string nextCursor = 2;
-}
+message UserList { repeated User users = 1; }

@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/kngnkg/tunetrail/backend/entity"
 	"github.com/kngnkg/tunetrail/backend/infra/repository"
@@ -74,12 +75,17 @@ func (uc *ReviewUseCase) GetReviewById(ctx context.Context, reviewId string) (*e
 		return nil, nil
 	}
 
-	user, err := uc.userRepo.GetUserByUsername(ctx, uc.DB, r.Author.Username)
+	var ids []entity.ImmutableId
+	ids = append(ids, r.Author.ImmutableId)
+	users, err := uc.userRepo.ListUsersById(ctx, uc.DB, ids)
 	if err != nil {
 		return nil, err
 	}
+	if len(users) != 1 {
+		return nil, fmt.Errorf("length of users is not 1, len(users)=%v", len(users))
+	}
 
-	r.Author = user.ToAuthor()
+	r.Author = users[0].ToAuthor()
 
 	return r, nil
 }
@@ -116,12 +122,17 @@ func (uc *ReviewUseCase) Store(ctx context.Context, authorId entity.ImmutableId,
 		return nil, err
 	}
 
-	author, err := uc.userRepo.GetUserByUsername(ctx, uc.DB, r.Author.Username)
+	var ids []entity.ImmutableId
+	ids = append(ids, r.Author.ImmutableId)
+	users, err := uc.userRepo.ListUsersById(ctx, uc.DB, ids)
 	if err != nil {
 		return nil, err
 	}
+	if len(users) != 1 {
+		return nil, fmt.Errorf("length of users is not 1, len(users)=%v", len(users))
+	}
 
-	review.Author = author.ToAuthor()
+	review.Author = users[0].ToAuthor()
 
 	return review, nil
 }
@@ -155,12 +166,17 @@ func (uc *ReviewUseCase) Update(ctx context.Context, reviewId string, title stri
 		return nil, err
 	}
 
-	user, err := uc.userRepo.GetUserByUsername(ctx, uc.DB, r.Author.Username)
+	var ids []entity.ImmutableId
+	ids = append(ids, r.Author.ImmutableId)
+	users, err := uc.userRepo.ListUsersById(ctx, uc.DB, ids)
 	if err != nil {
 		return nil, err
 	}
+	if len(users) != 1 {
+		return nil, fmt.Errorf("length of users is not 1, len(users)=%v", len(users))
+	}
 
-	r.Author = user.ToAuthor()
+	r.Author = users[0].ToAuthor()
 
 	return r, nil
 }

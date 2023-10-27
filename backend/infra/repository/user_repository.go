@@ -22,13 +22,13 @@ func (r *UserRepository) ListUsersByUsername(ctx context.Context, db Executor, u
 	args := []interface{}{}
 
 	if len(usernames) > 0 {
-		query += " AND username IN( "
+		query += " AND username IN("
 		for _, username := range usernames {
 			query += fmt.Sprintf(" $%d,", placeholderNum)
 			args = append(args, username)
 			placeholderNum++
 		}
-		query += helper.RemoveLastComma(query) + ")"
+		query = helper.RemoveLastComma(query) + ")"
 	}
 
 	query += " ORDER BY created_at DESC"
@@ -51,13 +51,13 @@ func (r *UserRepository) ListUsersById(ctx context.Context, db Executor, userIds
 	args := []interface{}{}
 
 	if len(userIds) > 0 {
-		query += " AND user_id IN( "
+		query += " AND user_id IN("
 		for _, id := range userIds {
 			query += fmt.Sprintf(" $%d,", placeholderNum)
 			args = append(args, id)
 			placeholderNum++
 		}
-		query += helper.RemoveLastComma(query) + ")"
+		query = helper.RemoveLastComma(query) + ")"
 	}
 
 	query += " ORDER BY created_at DESC"

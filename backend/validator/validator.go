@@ -27,6 +27,6 @@ func (v *Validator) Validate(i interface{}) error {
 }
 
 func isDisplayIdValid(fl validator.FieldLevel) bool {
-	re := regexp.MustCompile(`^@[a-zA-Z0-9_]{4,20}$`)
+	re := regexp.MustCompile(`^[a-zA-Z0-9_]{4,20}$`)
 	return re.MatchString(fl.Field().String())
 }
