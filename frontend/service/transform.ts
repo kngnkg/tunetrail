@@ -16,29 +16,28 @@ export function transformUser(apiUser: any): User {
 
 export function transformReview(apiReview: any): Review {
   return {
-    reviewId: apiReview.review_id,
+    reviewId: apiReview.reviewId,
     publishedStatus: apiReview.publishedStatus,
     title: apiReview.title,
     content: apiReview.content ?? "", // デフォルト値
-    likesCount: apiReview.likes_count,
-    createdAt: new Date(apiReview.created_at),
-    updatedAt: new Date(apiReview.updated_at),
+    likesCount: apiReview.likesCount,
+    createdAt: new Date(apiReview.createdAt),
+    updatedAt: new Date(apiReview.updatedAt),
     author: transformUser(apiReview.author),
     album: {
-      albumId: apiReview.album.album_id,
-      spotifyUri: apiReview.album.spotify_uri,
-      spotifyUrl: apiReview.album.spotify_url,
+      albumId: apiReview.album.albumId,
+      spotifyUri: apiReview.album.spotifyUri,
+      spotifyUrl: apiReview.album.spotifyUrl,
       name: apiReview.album.name,
-      diskNumber: apiReview.album.disk_number,
       artists: apiReview.album.artists.map((artist: any) => ({
-        artistId: artist.artist_id,
-        spotifyUri: artist.spotify_uri,
+        artistId: artist.artistId,
+        spotifyUri: artist.spotifyUri,
         name: artist.name,
-        imageUrl: artist.image_url,
+        imageUrl: artist.imageUrl,
       })),
       tracks: [], // デフォルト値
-      coverUrl: apiReview.album.cover_url,
-      releaseDate: new Date(apiReview.album.release_date),
+      coverUrl: apiReview.album.coverUrl,
+      releaseDate: new Date(apiReview.album.releaseDate),
     },
   }
 }
