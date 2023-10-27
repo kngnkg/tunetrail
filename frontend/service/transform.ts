@@ -2,15 +2,13 @@ import { Review, User } from "@/types"
 
 export function transformUser(apiUser: any): User {
   return {
-    userId: apiUser.userId,
-    displayId: apiUser.displayId,
-    name: apiUser.name,
+    username: apiUser.username,
+    immutableId: apiUser.immutableId,
+    displayName: apiUser.displayName,
     avatarUrl: apiUser.avatarUrl,
     bio: apiUser.bio ?? "", // デフォルト値
     followersCount: apiUser.followersCount,
     followingCount: apiUser.followingCount,
-    followed: apiUser.followed,
-    following: apiUser.following,
     createdAt: apiUser.createdAt ? new Date(apiUser.createdAt) : new Date(),
     updatedAt: apiUser.updatedAt ? new Date(apiUser.updatedAt) : new Date(),
   }
@@ -19,7 +17,7 @@ export function transformUser(apiUser: any): User {
 export function transformReview(apiReview: any): Review {
   return {
     reviewId: apiReview.review_id,
-    published: apiReview.published,
+    publishedStatus: apiReview.publishedStatus,
     title: apiReview.title,
     content: apiReview.content ?? "", // デフォルト値
     likesCount: apiReview.likes_count,

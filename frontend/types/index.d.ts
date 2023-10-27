@@ -1,9 +1,11 @@
-export type UserId = string
+export type Username = string
+
+export type ImmutableId = string
 
 export type User = {
-  userId: UserId
-  displayId: string
-  name: string
+  username: Username
+  immutableId: ImmutableId
+  displayName: string
   avatarUrl?: string
   bio?: string
   followersCount: number
@@ -14,7 +16,10 @@ export type User = {
 
 export type LoginUser = Omit<User, "followed" | "following">
 
-export type Author = Pick<User, "userId" | "displayId" | "name" | "avatarUrl">
+export type Author = Pick<
+  User,
+  "username" | "immutableId" | "displayName" | "avatarUrl"
+>
 
 export type PublishedStatus = "published" | "draft" | "unlisted"
 

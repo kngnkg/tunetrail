@@ -1,9 +1,8 @@
 import Image from "next/image"
 import Link from "next/link"
-import { Review, ReviewPreview } from "@/types"
+import { ReviewPreview } from "@/types"
 
 import { Icon } from "./icon"
-import { LikeButton } from "./like-button"
 import { TimeStamp } from "./timestamp"
 import { Card, CardContent } from "./ui/card"
 import { UserAvatar } from "./user-avatar"
@@ -17,7 +16,7 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
   review,
   className,
 }) => {
-  const pathToUser = `/${review.author.displayId}`
+  const pathToUser = `/${review.author.username}`
   const pathToReview = `/reviews/${review.reviewId}`
 
   return (
@@ -53,7 +52,7 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
               <UserAvatar user={review.author} />
             </Link>
             <div className="flex flex-col">
-              <Link href={pathToUser}>{review.author.name}</Link>
+              <Link href={pathToUser}>{review.author.displayName}</Link>
               {/* いいね・投稿時間 */}
               <div className="flex gap-2 items-center">
                 <div className="flex gap-0.5 items-center">
