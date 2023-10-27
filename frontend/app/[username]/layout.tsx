@@ -9,7 +9,7 @@ import { UserAvatar } from "@/components/user-avatar"
 import { UserListDialog } from "@/components/user-list-dialog"
 
 interface UserLayoutProps {
-  params: { displayId: string }
+  params: { username: string }
   children: React.ReactNode
 }
 
@@ -17,30 +17,30 @@ export default async function UserLayout({
   params,
   children,
 }: UserLayoutProps) {
-  const displayId = decodeURIComponent(params.displayId)
-  const users = await getUsers(`${env.API_ROOT}/users?display_id=${displayId}`)
+  const username = decodeURIComponent(params.username)
+  const users = await getUsers(`${env.API_ROOT}/users?username=${username}`)
 
   if (!users || users.length === 0) {
     notFound()
   }
 
   if (users.length > 1) {
-    throw new Error("displayIdが重複しています。")
+    throw new Error("ユーザーが重複しています。")
   }
 
   const user = users[0]
 
   const tabs: MenuTab[] = [
-    { label: "レビュー", value: "reviews", href: `/${displayId}` },
+    { label: "レビュー", value: "reviews", href: `/${username}` },
     {
       label: "いいね",
       value: "likes",
-      href: `/${displayId}/likes`,
+      href: `/${username}/likes`,
     },
     {
       label: "コメント",
       value: "comments",
-      href: `/${displayId}/comments`,
+      href: `/${username}/comments`,
     },
   ]
 
@@ -58,12 +58,12 @@ export default async function UserLayout({
             <div className="flex flex-col gap-6">
               <div className="flex gap-16 items-center">
                 <div>
-                  <h1 className="text-2xl font-bold">{user.name}</h1>
+                  <h1 className="text-2xl font-bold">{user.displayName}</h1>
                   <p className="text-zinc-500 dark:text-zinc-400">
-                    {user.displayId}
+                    {user.username}
                   </p>
                 </div>
-                <FollowButton user={user} />
+                <FollowButton user={user} following={false} />
               </div>
               {/* フォロー関連 */}
               <div className="flex gap-4 items-center">

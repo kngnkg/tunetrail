@@ -5,7 +5,7 @@ import { User } from "@/types"
 import { Button } from "./ui/button"
 
 interface FollowButtonProps {
-  user: Pick<User, "userId">
+  user: Pick<User, "username" | "immutableId">
   following: boolean
   variant?: "default" | "link"
 }

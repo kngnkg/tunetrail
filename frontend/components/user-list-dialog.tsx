@@ -18,9 +18,9 @@ interface UserListDialogProps {
   type: "followers" | "following"
   user: Pick<
     User,
-    | "userId"
-    | "displayId"
-    | "name"
+    | "username"
+    | "immutableId"
+    | "displayName"
     | "avatarUrl"
     | "followersCount"
     | "followingCount"
@@ -32,7 +32,7 @@ export const UserListDialog: React.FC<UserListDialogProps> = ({
   user,
 }) => {
   const { users, isError, isLoading } = useUsers({
-    endpoint: `${env.NEXT_PUBLIC_MOCK_API_ROOT}/users/${user.userId}/${type}`,
+    endpoint: `${env.NEXT_PUBLIC_MOCK_API_ROOT}/users/${user.username}/${type}`,
   })
 
   return (
