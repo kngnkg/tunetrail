@@ -50,7 +50,6 @@ export type Album = {
   spotifyUri: string
   spotifyUrl: string
   name: string
-  diskNumber: number
   artists: ArtistInfo[]
   tracks: Track[]
   coverUrl: string
@@ -76,5 +75,4 @@ export type Track = {
   title: string
   durationMs: number
   trackNumber: number
-  previewUrl: string
 }

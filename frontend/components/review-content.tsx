@@ -12,7 +12,7 @@ interface ReviewContentProps {
 }
 
 export const ReviewContent: React.FC<ReviewContentProps> = ({ review }) => {
-  const pathToUser = `/${review.author.displayId}`
+  const pathToUser = `/${review.author.username}`
 
   return (
     <article className="flex flex-col gap-8">
@@ -47,7 +47,7 @@ export const ReviewContent: React.FC<ReviewContentProps> = ({ review }) => {
           <UserAvatar user={review.author} />
         </Link>
         <div className="flex flex-col">
-          <Link href={pathToUser}>{review.author.name}</Link>
+          <Link href={pathToUser}>{review.author.displayName}</Link>
           <div className="flex gap-2 items-center">
             <TimeStamp date={review.createdAt} />
           </div>

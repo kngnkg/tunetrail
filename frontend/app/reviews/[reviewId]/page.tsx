@@ -13,15 +13,13 @@ interface ReviewPageProps {
 }
 
 export default async function ReviewPage({ params }: ReviewPageProps) {
-  const review = await getReview(
-    `${env.MOCK_API_ROOT}/reviews/${params.reviewId}`
-  )
+  const review = await getReview(`${env.API_ROOT}/reviews/${params.reviewId}`)
 
   if (!review) {
     notFound()
   }
 
-  const pathToUser = `/${review.author.displayId}`
+  const pathToUser = `/${review.author.username}`
 
   return (
     <div className="flex justify-center">
@@ -33,13 +31,13 @@ export default async function ReviewPage({ params }: ReviewPageProps) {
             <UserAvatar user={review.author} />
           </Link>
           <div className="flex flex-col">
-            <Link href={pathToUser}>{review.author.name}</Link>
+            <Link href={pathToUser}>{review.author.displayName}</Link>
             <div className="flex gap-2 items-center">
               <TimeStamp date={review.createdAt} />
             </div>
           </div>
           <div className="ml-4">
-            <FollowButton user={review.author} />
+            <FollowButton user={review.author} following={false} />
           </div>
         </section>
         <section>コメント欄(sheet)</section>
