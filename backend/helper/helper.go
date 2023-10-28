@@ -1,6 +1,9 @@
 package helper
 
-import "strings"
+import (
+	"encoding/base64"
+	"strings"
+)
 
 func RemoveLastComma(s string) string {
 	lastIndex := strings.LastIndex(s, ",")
@@ -8,4 +11,17 @@ func RemoveLastComma(s string) string {
 		return s
 	}
 	return s[:lastIndex]
+}
+
+func EncodeCursor(s string) string {
+	encoded := base64.StdEncoding.EncodeToString([]byte(s))
+	return encoded
+}
+
+func DecodeCursor(s string) (string, error) {
+	decoded, err := base64.StdEncoding.DecodeString(s)
+	if err != nil {
+		return "", err
+	}
+	return string(decoded), nil
 }

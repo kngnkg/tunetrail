@@ -6,26 +6,12 @@ import (
 	"fmt"
 
 	"github.com/kngnkg/tunetrail/backend/entity"
-	"github.com/kngnkg/tunetrail/backend/helper"
 	"github.com/kngnkg/tunetrail/backend/logger"
 )
 
 type ReviewRepository struct{}
 
-// // handleReviewsNextCursor は、limit を超えた要素がある場合に、次のページがあるかどうかを判定する
-// func handleReviewsNextCursor(ctx context.Context, reviews []*entity.Review, limit int) ([]*entity.Review, string, error) {
-// 	if len(reviews) <= limit {
-// 		return reviews, "", nil
-// 	}
-
-// 	// limit を超えた最初の要素を取得
-// 	firstExceedsReview := reviews[limit]
-
-// 	// limit までの要素と、次のページのカーソルを返す
-// 	return reviews[:limit], firstExceedsReview.ReviewId, nil
-// }
-
-func (r *ReviewRepository) ListReviewsById(ctx context.Context, db Executor, reviewIds []string) ([]*entity.Review, error) {
+func (r *ReviewRepository) ListReviews(ctx context.Context, db Executor, reviewId string, limit int) ([]*entity.Review, error) {
 	query := `
 	SELECT review_id, user_id AS "author.user_id", album_id, title, content, published_status, created_at, updated_at
 	FROM reviews WHERE published_status = 'published'`
@@ -33,17 +19,14 @@ func (r *ReviewRepository) ListReviewsById(ctx context.Context, db Executor, rev
 	placeholderNum := 1
 	args := []interface{}{}
 
-	if len(reviewIds) > 0 {
-		query += " AND review_id IN("
-		for _, id := range reviewIds {
-			query += fmt.Sprintf(" $%d,", placeholderNum)
-			args = append(args, id)
-			placeholderNum++
-		}
-		query = helper.RemoveLastComma(query) + ")"
+	if reviewId != "" {
+		query += fmt.Sprintf(" AND created_at <= (SELECT created_at FROM reviews WHERE review_id = $%d)", placeholderNum)
+		args = append(args, reviewId)
+		placeholderNum++
 	}
 
-	query += " ORDER BY created_at DESC"
+	query += fmt.Sprintf(" ORDER BY created_at DESC LIMIT $%d;", placeholderNum)
+	args = append(args, limit)
 
 	reviews := []*entity.Review{}
 	err := db.SelectContext(ctx, &reviews, query, args...)

@@ -42,7 +42,7 @@ goog.exportSymbol('proto.review.UpdateReviewRequest', null, global);
  * @constructor
  */
 proto.review.ListReviewsRequest = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, proto.review.ListReviewsRequest.repeatedFields_, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
 goog.inherits(proto.review.ListReviewsRequest, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
@@ -200,13 +200,6 @@ if (goog.DEBUG && !COMPILED) {
   proto.review.ReviewList.displayName = 'proto.review.ReviewList';
 }
 
-/**
- * List of repeated fields within this message type.
- * @private {!Array<number>}
- * @const
- */
-proto.review.ListReviewsRequest.repeatedFields_ = [1];
-
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
@@ -238,7 +231,8 @@ proto.review.ListReviewsRequest.prototype.toObject = function(opt_includeInstanc
  */
 proto.review.ListReviewsRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
-    reviewidsList: (f = jspb.Message.getRepeatedField(msg, 1)) == null ? undefined : f
+    cursor: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    limit: jspb.Message.getFieldWithDefault(msg, 2, 0)
   };
 
   if (includeInstance) {
@@ -277,7 +271,11 @@ proto.review.ListReviewsRequest.deserializeBinaryFromReader = function(msg, read
     switch (field) {
     case 1:
       var value = /** @type {string} */ (reader.readString());
-      msg.addReviewids(value);
+      msg.setCursor(value);
+      break;
+    case 2:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setLimit(value);
       break;
     default:
       reader.skipField();
@@ -308,10 +306,17 @@ proto.review.ListReviewsRequest.prototype.serializeBinary = function() {
  */
 proto.review.ListReviewsRequest.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getReviewidsList();
+  f = message.getCursor();
   if (f.length > 0) {
-    writer.writeRepeatedString(
+    writer.writeString(
       1,
+      f
+    );
+  }
+  f = message.getLimit();
+  if (f !== 0) {
+    writer.writeInt32(
+      2,
       f
     );
   }
@@ -319,39 +324,38 @@ proto.review.ListReviewsRequest.serializeBinaryToWriter = function(message, writ
 
 
 /**
- * repeated string reviewIds = 1;
- * @return {!Array<string>}
+ * optional string cursor = 1;
+ * @return {string}
  */
-proto.review.ListReviewsRequest.prototype.getReviewidsList = function() {
-  return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 1));
-};
-
-
-/**
- * @param {!Array<string>} value
- * @return {!proto.review.ListReviewsRequest} returns this
- */
-proto.review.ListReviewsRequest.prototype.setReviewidsList = function(value) {
-  return jspb.Message.setField(this, 1, value || []);
+proto.review.ListReviewsRequest.prototype.getCursor = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /**
  * @param {string} value
- * @param {number=} opt_index
  * @return {!proto.review.ListReviewsRequest} returns this
  */
-proto.review.ListReviewsRequest.prototype.addReviewids = function(value, opt_index) {
-  return jspb.Message.addToRepeatedField(this, 1, value, opt_index);
+proto.review.ListReviewsRequest.prototype.setCursor = function(value) {
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
 /**
- * Clears the list making it empty but non-null.
+ * optional int32 limit = 2;
+ * @return {number}
+ */
+proto.review.ListReviewsRequest.prototype.getLimit = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+};
+
+
+/**
+ * @param {number} value
  * @return {!proto.review.ListReviewsRequest} returns this
  */
-proto.review.ListReviewsRequest.prototype.clearReviewidsList = function() {
-  return this.setReviewidsList([]);
+proto.review.ListReviewsRequest.prototype.setLimit = function(value) {
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
@@ -1736,7 +1740,9 @@ proto.review.ReviewList.prototype.toObject = function(opt_includeInstance) {
 proto.review.ReviewList.toObject = function(includeInstance, msg) {
   var f, obj = {
     reviewsList: jspb.Message.toObjectList(msg.getReviewsList(),
-    proto.review.Review.toObject, includeInstance)
+    proto.review.Review.toObject, includeInstance),
+    nextcursor: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    total: jspb.Message.getFieldWithDefault(msg, 3, 0)
   };
 
   if (includeInstance) {
@@ -1778,6 +1784,14 @@ proto.review.ReviewList.deserializeBinaryFromReader = function(msg, reader) {
       reader.readMessage(value,proto.review.Review.deserializeBinaryFromReader);
       msg.addReviews(value);
       break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setNextcursor(value);
+      break;
+    case 3:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setTotal(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -1813,6 +1827,20 @@ proto.review.ReviewList.serializeBinaryToWriter = function(message, writer) {
       1,
       f,
       proto.review.Review.serializeBinaryToWriter
+    );
+  }
+  f = message.getNextcursor();
+  if (f.length > 0) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
+  f = message.getTotal();
+  if (f !== 0) {
+    writer.writeInt32(
+      3,
+      f
     );
   }
 };
@@ -1853,6 +1881,42 @@ proto.review.ReviewList.prototype.addReviews = function(opt_value, opt_index) {
  */
 proto.review.ReviewList.prototype.clearReviewsList = function() {
   return this.setReviewsList([]);
+};
+
+
+/**
+ * optional string nextCursor = 2;
+ * @return {string}
+ */
+proto.review.ReviewList.prototype.getNextcursor = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.review.ReviewList} returns this
+ */
+proto.review.ReviewList.prototype.setNextcursor = function(value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+
+/**
+ * optional int32 total = 3;
+ * @return {number}
+ */
+proto.review.ReviewList.prototype.getTotal = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.review.ReviewList} returns this
+ */
+proto.review.ReviewList.prototype.setTotal = function(value) {
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 

@@ -37,7 +37,7 @@ goog.exportSymbol('proto.user.UserList', null, global);
  * @constructor
  */
 proto.user.ListUsersRequest = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, proto.user.ListUsersRequest.repeatedFields_, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
 goog.inherits(proto.user.ListUsersRequest, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
@@ -132,13 +132,6 @@ if (goog.DEBUG && !COMPILED) {
   proto.user.UserList.displayName = 'proto.user.UserList';
 }
 
-/**
- * List of repeated fields within this message type.
- * @private {!Array<number>}
- * @const
- */
-proto.user.ListUsersRequest.repeatedFields_ = [1];
-
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
@@ -170,7 +163,8 @@ proto.user.ListUsersRequest.prototype.toObject = function(opt_includeInstance) {
  */
 proto.user.ListUsersRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
-    usernamesList: (f = jspb.Message.getRepeatedField(msg, 1)) == null ? undefined : f
+    cursor: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    limit: jspb.Message.getFieldWithDefault(msg, 2, 0)
   };
 
   if (includeInstance) {
@@ -209,7 +203,11 @@ proto.user.ListUsersRequest.deserializeBinaryFromReader = function(msg, reader) 
     switch (field) {
     case 1:
       var value = /** @type {string} */ (reader.readString());
-      msg.addUsernames(value);
+      msg.setCursor(value);
+      break;
+    case 2:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setLimit(value);
       break;
     default:
       reader.skipField();
@@ -240,10 +238,17 @@ proto.user.ListUsersRequest.prototype.serializeBinary = function() {
  */
 proto.user.ListUsersRequest.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getUsernamesList();
+  f = message.getCursor();
   if (f.length > 0) {
-    writer.writeRepeatedString(
+    writer.writeString(
       1,
+      f
+    );
+  }
+  f = message.getLimit();
+  if (f !== 0) {
+    writer.writeInt32(
+      2,
       f
     );
   }
@@ -251,39 +256,38 @@ proto.user.ListUsersRequest.serializeBinaryToWriter = function(message, writer) 
 
 
 /**
- * repeated string usernames = 1;
- * @return {!Array<string>}
+ * optional string cursor = 1;
+ * @return {string}
  */
-proto.user.ListUsersRequest.prototype.getUsernamesList = function() {
-  return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 1));
-};
-
-
-/**
- * @param {!Array<string>} value
- * @return {!proto.user.ListUsersRequest} returns this
- */
-proto.user.ListUsersRequest.prototype.setUsernamesList = function(value) {
-  return jspb.Message.setField(this, 1, value || []);
+proto.user.ListUsersRequest.prototype.getCursor = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /**
  * @param {string} value
- * @param {number=} opt_index
  * @return {!proto.user.ListUsersRequest} returns this
  */
-proto.user.ListUsersRequest.prototype.addUsernames = function(value, opt_index) {
-  return jspb.Message.addToRepeatedField(this, 1, value, opt_index);
+proto.user.ListUsersRequest.prototype.setCursor = function(value) {
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
 /**
- * Clears the list making it empty but non-null.
+ * optional int32 limit = 2;
+ * @return {number}
+ */
+proto.user.ListUsersRequest.prototype.getLimit = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+};
+
+
+/**
+ * @param {number} value
  * @return {!proto.user.ListUsersRequest} returns this
  */
-proto.user.ListUsersRequest.prototype.clearUsernamesList = function() {
-  return this.setUsernamesList([]);
+proto.user.ListUsersRequest.prototype.setLimit = function(value) {
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
@@ -1077,7 +1081,9 @@ proto.user.UserList.prototype.toObject = function(opt_includeInstance) {
 proto.user.UserList.toObject = function(includeInstance, msg) {
   var f, obj = {
     usersList: jspb.Message.toObjectList(msg.getUsersList(),
-    proto.user.User.toObject, includeInstance)
+    proto.user.User.toObject, includeInstance),
+    nextcursor: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    total: jspb.Message.getFieldWithDefault(msg, 3, 0)
   };
 
   if (includeInstance) {
@@ -1119,6 +1125,14 @@ proto.user.UserList.deserializeBinaryFromReader = function(msg, reader) {
       reader.readMessage(value,proto.user.User.deserializeBinaryFromReader);
       msg.addUsers(value);
       break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setNextcursor(value);
+      break;
+    case 3:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setTotal(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -1154,6 +1168,20 @@ proto.user.UserList.serializeBinaryToWriter = function(message, writer) {
       1,
       f,
       proto.user.User.serializeBinaryToWriter
+    );
+  }
+  f = message.getNextcursor();
+  if (f.length > 0) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
+  f = message.getTotal();
+  if (f !== 0) {
+    writer.writeInt32(
+      3,
+      f
     );
   }
 };
@@ -1194,6 +1222,42 @@ proto.user.UserList.prototype.addUsers = function(opt_value, opt_index) {
  */
 proto.user.UserList.prototype.clearUsersList = function() {
   return this.setUsersList([]);
+};
+
+
+/**
+ * optional string nextCursor = 2;
+ * @return {string}
+ */
+proto.user.UserList.prototype.getNextcursor = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.user.UserList} returns this
+ */
+proto.user.UserList.prototype.setNextcursor = function(value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+
+/**
+ * optional int32 total = 3;
+ * @return {number}
+ */
+proto.user.UserList.prototype.getTotal = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.user.UserList} returns this
+ */
+proto.user.UserList.prototype.setTotal = function(value) {
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 

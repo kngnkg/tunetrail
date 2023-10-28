@@ -6,6 +6,7 @@ import (
 
 	"github.com/kngnkg/tunetrail/backend/entity"
 	"github.com/kngnkg/tunetrail/backend/gen/user"
+	"github.com/kngnkg/tunetrail/backend/helper"
 	"github.com/kngnkg/tunetrail/backend/logger"
 	"github.com/kngnkg/tunetrail/backend/usecase"
 	"github.com/kngnkg/tunetrail/backend/validator"
@@ -29,26 +30,40 @@ func NewUserServer(uc *usecase.UserUseCase, v *validator.Validator, l *logger.Lo
 func (s *userServer) ListUsers(ctx context.Context, in *user.ListUsersRequest) (*user.UserList, error) {
 	ctx = logger.WithContent(ctx, s.logger)
 
-	var b struct {
-		Usernames []string `validate:"omitempty,dive,username"`
+	decoded, err := helper.DecodeCursor(in.Cursor)
+	if err != nil {
+		return nil, invalidArgument(ctx, err)
 	}
-	b.Usernames = in.Usernames
+
+	var b struct {
+		ImmutableId string `validate:"omitempty,uuid"`
+		Limit       int    `validate:"omitempty,max=50"`
+	}
+	b.ImmutableId = decoded
+	b.Limit = int(in.Limit)
 
 	if err := s.validator.Validate(b); err != nil {
 		return nil, invalidArgument(ctx, err)
 	}
 
-	names := make([]entity.Username, len(b.Usernames))
-	for i, n := range b.Usernames {
-		names[i] = entity.Username(n)
+	var limit int
+	if b.Limit == 0 {
+		limit = DefaultLimit
+	} else {
+		limit = b.Limit
 	}
 
-	res, err := s.usecase.ListUsers(ctx, names)
+	res, err := s.usecase.ListUsers(ctx, entity.ImmutableId(b.ImmutableId), limit)
 	if err != nil {
 		return nil, internal(ctx, err)
 	}
 
-	return toUserList(res), nil
+	nextCursor := ""
+	if res.NextCursor != "" {
+		nextCursor = helper.EncodeCursor(string(res.NextCursor))
+	}
+
+	return toUserList(res.Users, nextCursor), nil
 }
 
 func (s *userServer) GetUserByUsername(ctx context.Context, in *user.GetUserByUsernameRequest) (*user.User, error) {
@@ -100,14 +115,16 @@ func (s *userServer) CreateUser(ctx context.Context, in *user.CreateUserRequest)
 	return toUser(res), nil
 }
 
-func toUserList(res *usecase.UserListResponse) *user.UserList {
-	var users []*user.User
-	for _, user := range res.Users {
-		users = append(users, toUser(user))
+func toUserList(users []*entity.User, nextCursor string) *user.UserList {
+	var us []*user.User
+	for _, u := range users {
+		us = append(us, toUser(u))
 	}
 
 	return &user.UserList{
-		Users: users,
+		Users:      us,
+		NextCursor: nextCursor,
+		Total:      int32(len(us)),
 	}
 }
 

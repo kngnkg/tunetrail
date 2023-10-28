@@ -13,25 +13,22 @@ import (
 
 type UserRepository struct{}
 
-func (r *UserRepository) ListUsersByUsername(ctx context.Context, db Executor, usernames []entity.Username) ([]*entity.User, error) {
+func (r *UserRepository) ListUsers(ctx context.Context, db Executor, immutableId entity.ImmutableId, limit int) ([]*entity.User, error) {
 	query := `
-		SELECT user_id, username, display_name, avatar_url, bio, created_at, updated_at
-		FROM users WHERE 1 = 1`
+        SELECT user_id, username, display_name, avatar_url, bio, created_at, updated_at
+        FROM users WHERE 1 = 1`
 
 	placeholderNum := 1
 	args := []interface{}{}
 
-	if len(usernames) > 0 {
-		query += " AND username IN("
-		for _, username := range usernames {
-			query += fmt.Sprintf(" $%d,", placeholderNum)
-			args = append(args, username)
-			placeholderNum++
-		}
-		query = helper.RemoveLastComma(query) + ")"
+	if immutableId != "" {
+		query += fmt.Sprintf(" AND created_at <= (SELECT created_at FROM users WHERE user_id = $%d)", placeholderNum)
+		args = append(args, immutableId)
+		placeholderNum++
 	}
 
-	query += " ORDER BY created_at DESC"
+	query += fmt.Sprintf(" ORDER BY created_at DESC LIMIT $%d;", placeholderNum)
+	args = append(args, limit)
 
 	users := []*entity.User{}
 	err := db.SelectContext(ctx, &users, query, args...)

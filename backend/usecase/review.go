@@ -28,12 +28,20 @@ type ReviewListResponse struct {
 	NextCursor string
 }
 
-func (uc *ReviewUseCase) ListReviews(ctx context.Context, reviewIds []string) (*ReviewListResponse, error) {
-	// レビュー情報を取得する
-	rs, err := uc.reviewRepo.ListReviewsById(ctx, uc.DB, reviewIds)
+func (uc *ReviewUseCase) ListReviews(ctx context.Context, reviewId string, limit int) (*ReviewListResponse, error) {
+	// 次のページがあるかどうかを判定するために、limit+1件取得する
+	rs, err := uc.reviewRepo.ListReviews(ctx, uc.DB, reviewId, limit+1)
 	if err != nil {
 		return nil, err
 	}
+
+	nextCursor := ""
+	if len(rs) > limit {
+		// limit を超えた最初の要素を取得
+		nextCursor = rs[limit].ReviewId
+	}
+	// limit までの要素を取得
+	rs = rs[:limit]
 
 	// 取得するユーザーIdのスライスを作成する
 	uids := make([]entity.ImmutableId, len(rs))
@@ -60,8 +68,10 @@ func (uc *ReviewUseCase) ListReviews(ctx context.Context, reviewIds []string) (*
 		}
 	}
 
+	// limit を超えた要素がある場合に、その要素のIdを次のページのカーソルとして返す
 	resp := &ReviewListResponse{
-		Reviews: rs,
+		Reviews:    rs,
+		NextCursor: nextCursor,
 	}
 	return resp, nil
 }
