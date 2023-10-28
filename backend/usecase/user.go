@@ -26,17 +26,27 @@ func NewUserUseCase(db repository.DBAccesser, userRepo UserRepository) *UserUseC
 
 type UserListResponse struct {
 	Users      []*entity.User
-	NextCursor entity.Cursor
+	NextCursor entity.ImmutableId
 }
 
-func (uc *UserUseCase) ListUsers(ctx context.Context, usernames []entity.Username) (*UserListResponse, error) {
-	users, err := uc.userRepo.ListUsersByUsername(ctx, uc.DB, usernames)
+func (uc *UserUseCase) ListUsers(ctx context.Context, immutableId entity.ImmutableId, limit int) (*UserListResponse, error) {
+	// 次のページがあるかどうかを判定するために、limit+1件取得する
+	users, err := uc.userRepo.ListUsers(ctx, uc.DB, immutableId, limit+1)
 	if err != nil {
 		return nil, err
 	}
 
+	nextCursor := ""
+	if len(users) > limit {
+		// limit を超えた最初の要素を取得
+		nextCursor = string(users[limit].ImmutableId)
+	}
+	// limit までの要素を取得
+	users = users[:limit]
+
 	resp := &UserListResponse{
-		Users: users,
+		Users:      users,
+		NextCursor: entity.ImmutableId(nextCursor),
 	}
 	return resp, nil
 }

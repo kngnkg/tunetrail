@@ -9,7 +9,7 @@ import (
 
 //go:generate go run github.com/matryer/moq -out moq_test.go . UserRepository
 type ReviewRepository interface {
-	ListReviewsById(ctx context.Context, db repository.Executor, reviewIds []string) ([]*entity.Review, error)
+	ListReviews(ctx context.Context, db repository.Executor, reviewId string, limit int) ([]*entity.Review, error)
 	// ListReviewsByUsername(ctx context.Context, db repository.Executor, cursor string, limit int, usernames []*entity.Username) ([]*entity.Review, error)
 	// ListReviewsByAlbumId(ctx context.Context, db repository.Executor, cursor string, limit int, usernames []*entity.Username) ([]*entity.Review, error)
 	GetReviewById(ctx context.Context, db repository.Executor, reviewId string) (*entity.Review, error)
@@ -19,7 +19,7 @@ type ReviewRepository interface {
 }
 
 type UserRepository interface {
-	ListUsersByUsername(ctx context.Context, db repository.Executor, usernames []entity.Username) ([]*entity.User, error)
+	ListUsers(ctx context.Context, db repository.Executor, immutableId entity.ImmutableId, limit int) ([]*entity.User, error)
 	ListUsersById(ctx context.Context, db repository.Executor, userIds []entity.ImmutableId) ([]*entity.User, error)
 	GetUserByUsername(ctx context.Context, db repository.Executor, username entity.Username) (*entity.User, error)
 	StoreUser(ctx context.Context, db repository.Executor, user *entity.User) (*entity.User, error)

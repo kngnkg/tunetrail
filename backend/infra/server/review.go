@@ -5,6 +5,7 @@ import (
 
 	"github.com/kngnkg/tunetrail/backend/entity"
 	"github.com/kngnkg/tunetrail/backend/gen/review"
+	"github.com/kngnkg/tunetrail/backend/helper"
 	"github.com/kngnkg/tunetrail/backend/logger"
 	"github.com/kngnkg/tunetrail/backend/usecase"
 	"github.com/kngnkg/tunetrail/backend/validator"
@@ -26,34 +27,57 @@ func NewReviewServer(uc *usecase.ReviewUseCase, v *validator.Validator, l *logge
 	}
 }
 
+const DefaultLimit = 20
+
 func (s *reviewServer) ListReviews(ctx context.Context, in *review.ListReviewsRequest) (*review.ReviewList, error) {
 	ctx = logger.WithContent(ctx, s.logger)
 
-	var b struct {
-		ReviewIds []string `validate:"omitempty,max=50,dive,uuid4"`
+	decoded, err := helper.DecodeCursor(in.Cursor)
+	if err != nil {
+		return nil, invalidArgument(ctx, err)
 	}
-	b.ReviewIds = in.ReviewIds
+
+	var b struct {
+		ReviewId string `validate:"omitempty,uuid4"`
+		Limit    int    `validate:"omitempty,max=50"`
+	}
+	b.ReviewId = decoded
+	b.Limit = int(in.Limit)
 
 	if err := s.validator.Validate(b); err != nil {
 		return nil, invalidArgument(ctx, err)
 	}
 
-	res, err := s.uc.ListReviews(ctx, b.ReviewIds)
+	var limit int
+	if b.Limit == 0 {
+		limit = DefaultLimit
+	} else {
+		limit = b.Limit
+	}
+
+	res, err := s.uc.ListReviews(ctx, b.ReviewId, limit)
 	if err != nil {
 		return nil, internal(ctx, err)
 	}
 
-	return toReviewListReply(res), nil
+	nextCursor := ""
+	if res.NextCursor != "" {
+		nextCursor = helper.EncodeCursor(res.NextCursor)
+	}
+
+	return toReviewList(res.Reviews, nextCursor), nil
 }
 
-func toReviewListReply(res *usecase.ReviewListResponse) *review.ReviewList {
+func toReviewList(reviews []*entity.Review, nextCursor string) *review.ReviewList {
 	var rs []*review.Review
-	for _, r := range res.Reviews {
+	for _, r := range reviews {
 		rs = append(rs, toReview(r))
 	}
 
 	return &review.ReviewList{
-		Reviews: rs,
+		Reviews:    rs,
+		NextCursor: nextCursor,
+		Total:      int32(len(rs)),
 	}
 }
 

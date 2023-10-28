@@ -5,10 +5,11 @@ import * as jspb from "google-protobuf";
 import * as google_protobuf_empty_pb from "google-protobuf/google/protobuf/empty_pb";
 
 export class ListReviewsRequest extends jspb.Message {
-  clearReviewidsList(): void;
-  getReviewidsList(): Array<string>;
-  setReviewidsList(value: Array<string>): void;
-  addReviewids(value: string, index?: number): string;
+  getCursor(): string;
+  setCursor(value: string): void;
+
+  getLimit(): number;
+  setLimit(value: number): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ListReviewsRequest.AsObject;
@@ -22,7 +23,8 @@ export class ListReviewsRequest extends jspb.Message {
 
 export namespace ListReviewsRequest {
   export type AsObject = {
-    reviewidsList: Array<string>,
+    cursor: string,
+    limit: number,
   }
 }
 
@@ -226,6 +228,12 @@ export class ReviewList extends jspb.Message {
   setReviewsList(value: Array<Review>): void;
   addReviews(value?: Review, index?: number): Review;
 
+  getNextcursor(): string;
+  setNextcursor(value: string): void;
+
+  getTotal(): number;
+  setTotal(value: number): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ReviewList.AsObject;
   static toObject(includeInstance: boolean, msg: ReviewList): ReviewList.AsObject;
@@ -239,6 +247,8 @@ export class ReviewList extends jspb.Message {
 export namespace ReviewList {
   export type AsObject = {
     reviewsList: Array<Review.AsObject>,
+    nextcursor: string,
+    total: number,
   }
 }
 

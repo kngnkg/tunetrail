@@ -4,10 +4,11 @@
 import * as jspb from "google-protobuf";
 
 export class ListUsersRequest extends jspb.Message {
-  clearUsernamesList(): void;
-  getUsernamesList(): Array<string>;
-  setUsernamesList(value: Array<string>): void;
-  addUsernames(value: string, index?: number): string;
+  getCursor(): string;
+  setCursor(value: string): void;
+
+  getLimit(): number;
+  setLimit(value: number): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ListUsersRequest.AsObject;
@@ -21,7 +22,8 @@ export class ListUsersRequest extends jspb.Message {
 
 export namespace ListUsersRequest {
   export type AsObject = {
-    usernamesList: Array<string>,
+    cursor: string,
+    limit: number,
   }
 }
 
@@ -139,6 +141,12 @@ export class UserList extends jspb.Message {
   setUsersList(value: Array<User>): void;
   addUsers(value?: User, index?: number): User;
 
+  getNextcursor(): string;
+  setNextcursor(value: string): void;
+
+  getTotal(): number;
+  setTotal(value: number): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): UserList.AsObject;
   static toObject(includeInstance: boolean, msg: UserList): UserList.AsObject;
@@ -152,6 +160,8 @@ export class UserList extends jspb.Message {
 export namespace UserList {
   export type AsObject = {
     usersList: Array<User.AsObject>,
+    nextcursor: string,
+    total: number,
   }
 }
 
