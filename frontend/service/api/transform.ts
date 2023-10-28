@@ -1,6 +1,15 @@
 import * as PBReview from "@/generated/review/review_pb"
 import * as PBUser from "@/generated/user/user_pb"
-import { Album, ArtistInfo, Author, Review, Track, User } from "@/types"
+import {
+  Album,
+  AlbumInfo,
+  ArtistInfo,
+  Author,
+  Review,
+  ReviewPreview,
+  Track,
+  User,
+} from "@/types"
 
 import { isPublishedStatus } from "@/types/type-guard"
 
@@ -50,6 +59,44 @@ export const toReview = (
     updatedAt: pbReview.getUpdatedat()
       ? new Date(pbReview.getUpdatedat())
       : new Date(),
+  }
+}
+
+export const toReviewPreview = (
+  pbReview: PBReview.Review,
+  album: SpotifyApi.AlbumObjectSimplified
+): ReviewPreview => {
+  const publishedStatus = pbReview.getPublishedstatus()
+  if (!isPublishedStatus(publishedStatus)) {
+    throw new Error("invalid published status")
+  }
+
+  const author = pbReview.getUser()
+  if (!author) {
+    throw new Error("invalid author")
+  }
+
+  return {
+    reviewId: pbReview.getReviewid(),
+    publishedStatus: publishedStatus,
+    author: toAuthor(author),
+    album: toAlbumInfo(album),
+    title: pbReview.getTitle(),
+    likesCount: pbReview.getLikescount(),
+    createdAt: pbReview.getCreatedat()
+      ? new Date(pbReview.getCreatedat())
+      : new Date(),
+  }
+}
+
+export const toAlbumInfo = (
+  album: SpotifyApi.AlbumObjectSimplified
+): AlbumInfo => {
+  return {
+    albumId: album.id,
+    name: album.name,
+    artists: album.artists.map((artist) => toArtistInfo(artist)),
+    coverUrl: album.images[0].url,
   }
 }
 

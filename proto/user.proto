@@ -10,7 +10,10 @@ service UserService {
   rpc CreateUser(CreateUserRequest) returns (User) {}
 }
 
-message ListUsersRequest { repeated string usernames = 1; }
+message ListUsersRequest {
+  string cursor = 1;
+  int32 limit = 2;
+}
 
 message CreateUserRequest {
   string username = 1;
@@ -34,4 +37,8 @@ message User {
   string updatedAt = 9;
 }
 
-message UserList { repeated User users = 1; }
+message UserList {
+  repeated User users = 1;
+  string nextCursor = 2;
+  int32 total = 3;
+}
