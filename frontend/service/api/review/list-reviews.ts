@@ -1,19 +1,23 @@
-import { ListUsersRequest, UserList } from "@/generated/user/user_pb"
+import {
+  ListReviewsRequest,
+  Review,
+  ReviewList,
+} from "@/generated/review/review_pb"
 
 import { client } from "./client"
 
-export interface ListUsersParams {
+export interface ListReviewsParams {
   cursor: string | null
   limit: number | null
 }
 
-export default function listUsers(
-  params: ListUsersParams
-): Promise<UserList | null> {
+export default function listReviews(
+  params: ListReviewsParams
+): Promise<ReviewList | null> {
   return new Promise((resolve, reject) => {
     const { cursor, limit } = params
 
-    const req = new ListUsersRequest()
+    const req = new ListReviewsRequest()
 
     if (cursor && cursor !== "") {
       req.setCursor(cursor)
@@ -23,7 +27,7 @@ export default function listUsers(
       req.setLimit(limit)
     }
 
-    client.listUsers(req, (err, response) => {
+    client.listReviews(req, (err, response) => {
       if (err) reject(err)
       if (!response) return resolve(null)
 

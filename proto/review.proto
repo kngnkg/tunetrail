@@ -14,7 +14,10 @@ service ReviewService {
   rpc DeleteReview(DeleteReviewRequest) returns (google.protobuf.Empty) {}
 }
 
-message ListReviewsRequest { repeated string reviewIds = 1; }
+message ListReviewsRequest {
+  string cursor = 1;
+  int32 limit = 2;
+}
 
 message GetReviewByIdRequest { string reviewId = 1; }
 
@@ -54,4 +57,8 @@ message Author {
   string avatarUrl = 4;
 }
 
-message ReviewList { repeated Review reviews = 1; }
+message ReviewList {
+  repeated Review reviews = 1;
+  string nextCursor = 2;
+  int32 total = 3;
+}

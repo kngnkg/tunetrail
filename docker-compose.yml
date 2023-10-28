@@ -13,22 +13,6 @@ services:
       - ./frontend:/app
     ports:
       - 3000:3000
-  grpc:
-    container_name: tunetrail-grpc
-    hostname: tunetrail-grpc
-    build:
-      context: .
-      target: dev
-      dockerfile: ./docker/grpc/Dockerfile
-    tty: true
-    volumes:
-      - ./backend:/app
-    ports:
-      - 50051:50051
-    env_file:
-      - ./backend/.env
-    depends_on:
-      - db
   db:
     container_name: tunetrail-db
     hostname: tunetrail-db
@@ -47,5 +31,21 @@ services:
       - "5555:5432"
     # 設定ファイルを読み込む
     command: -c 'config_file=/etc/postgresql/postgresql.conf'
+  grpc:
+    container_name: tunetrail-grpc
+    hostname: tunetrail-grpc
+    build:
+      context: .
+      target: dev
+      dockerfile: ./docker/grpc/Dockerfile
+    tty: true
+    volumes:
+      - ./backend:/app
+    ports:
+      - 50051:50051
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - db
 volumes:
   postgres-data:

@@ -1,28 +1,39 @@
 import { NextRequest, NextResponse } from "next/server"
 import { toUser } from "@/service/api/transform"
-import listUsers from "@/service/api/user/list-users"
+import listUsers, { ListUsersParams } from "@/service/api/user/list-users"
+
+import { errBadRequest, errInternal, errNotFound } from "../response"
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
 
   // カンマ区切りの文字列を配列に変換
-  const usernamesString = searchParams.get("username")
-  const usernames = usernamesString ? usernamesString.split(",") : []
-
-  // TODO: クエリパラメータのバリデーション
+  const cursor = searchParams.get("cursor")
+  const limitStr = searchParams.get("limit")
 
   try {
-    const resp = await listUsers({ usernames })
-
-    if (!resp) {
-      return NextResponse.json(null, { status: 404 })
+    const params: ListUsersParams = {
+      cursor: cursor,
+      limit: limitStr ? parseInt(limitStr) : null,
     }
 
-    const users = resp.map((user) => toUser(user))
+    const resp = await listUsers(params)
 
-    return NextResponse.json({ users: users })
+    if (!resp) {
+      return errNotFound("user not found")
+    }
+
+    const userList = resp.getUsersList()
+
+    const users = userList.map((user) => toUser(user))
+
+    return NextResponse.json({
+      users: users,
+      nextCursor: resp.getNextcursor(),
+      total: resp.getTotal(),
+    })
   } catch (e) {
     console.error(e)
-    return NextResponse.json(null, { status: 500 })
+    return errInternal("internal error")
   }
 }
