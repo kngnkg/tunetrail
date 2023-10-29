@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation"
-import { getUsers } from "@/service/user/get-users"
+import { getUser } from "@/service/user/get-user"
 
 import { env } from "@/env.mjs"
 import { FollowButton } from "@/components/follow-button"
@@ -18,17 +18,11 @@ export default async function UserLayout({
   children,
 }: UserLayoutProps) {
   const username = decodeURIComponent(params.username)
-  const users = await getUsers(`${env.API_ROOT}/users?username=${username}`)
+  const user = await getUser(`${env.API_ROOT}/users/${username}`)
 
-  if (!users || users.length === 0) {
+  if (!user) {
     notFound()
   }
-
-  if (users.length > 1) {
-    throw new Error("ユーザーが重複しています。")
-  }
-
-  const user = users[0]
 
   const tabs: MenuTab[] = [
     { label: "レビュー", value: "reviews", href: `/${username}` },
