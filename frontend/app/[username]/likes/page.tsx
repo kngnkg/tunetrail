@@ -1,40 +1,26 @@
 import { notFound } from "next/navigation"
-import { getReviews } from "@/service/review/get-reviews"
-import { getUsers } from "@/service/user/get-users"
+import { getUser } from "@/service/user/get-user"
 
 import { env } from "@/env.mjs"
 import { ReviewList } from "@/components/review-list"
 
 interface LikesPageProps {
-  params: { displayId: string }
+  params: { username: string }
 }
 
 export default async function LikesPage({ params }: LikesPageProps) {
-  const displayId = decodeURIComponent(params.displayId)
-  const users = await getUsers(`${env.API_ROOT}/users?display_id=${displayId}`)
+  const username = decodeURIComponent(params.username)
+  const user = await getUser(`${env.API_ROOT}/users/${username}`)
 
-  if (!users || users.length === 0) {
+  if (!user) {
     notFound()
-  }
-
-  if (users.length > 1) {
-    throw new Error("displayIdが重複しています。")
-  }
-
-  const user = users[0]
-
-  const reviews = await getReviews(
-    `${env.MOCK_API_ROOT}/users/${user.userId}/likes`
-  )
-
-  if (!reviews) {
-    return <p>まだレビューをいいねしていません。</p>
   }
 
   return (
     <>
       <section>
-        <ReviewList reviews={reviews} />
+        {/* TODO: いいねしたレビューを取得する */}
+        <ReviewList endpoint={`${env.NEXT_PUBLIC_API_ROOT}/reviews`} />
       </section>
     </>
   )
