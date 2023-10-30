@@ -9,9 +9,7 @@ interface EditorPageProps {
 }
 
 export default async function EditorPage({ params }: EditorPageProps) {
-  const review = await getReview(
-    `${env.MOCK_API_ROOT}/reviews/${params.reviewId}`
-  )
+  const review = await getReview(`${env.API_ROOT}/reviews/${params.reviewId}`)
 
   if (!review) {
     notFound()

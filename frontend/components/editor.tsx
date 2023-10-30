@@ -8,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
 
+import "@/styles/editor.css"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { EDITOR_TOOLS } from "@/components/editor-tools"
@@ -53,9 +54,10 @@ export const Editor: React.FC<EditorProps> = ({ review }: EditorProps) => {
     setSaving(true)
     const blocks = await ref.current?.save()
 
-    // TODO: ここでAPIを叩く
     alert(
       JSON.stringify({
+        reviewId: review.reviewId,
+        userId: review.author.immutableId,
         publish: publish,
         title: data.title,
         content: blocks,
@@ -87,7 +89,7 @@ export const Editor: React.FC<EditorProps> = ({ review }: EditorProps) => {
               {...register("title")}
             />
           </div>
-          <div id="editor" />
+          <div id="editor" className="prose prose-zinc dark:prose-invert" />
         </div>
       </form>
     </>

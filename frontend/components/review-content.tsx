@@ -2,6 +2,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { Review } from "@/types"
 
+import { Content } from "./content"
 import { FollowButton } from "./follow-button"
 import { TimeStamp } from "./timestamp"
 import { Button } from "./ui/button"
@@ -57,7 +58,7 @@ export const ReviewContent: React.FC<ReviewContentProps> = ({ review }) => {
       </section>
       {/* 本文 */}
       <section>
-        <p>{review.content}</p>
+        <Content data={review.content} />
       </section>
     </article>
   )
