@@ -1,6 +1,9 @@
 package entity
 
-import "time"
+import (
+	"encoding/json"
+	"time"
+)
 
 type PublishedStatus string
 
@@ -16,7 +19,7 @@ type Review struct {
 	Author          *Author         `db:"author" validate:"required"`
 	AlbumId         string          `db:"album_id" validate:"required"`
 	Title           string          `db:"title" validate:"required"`
-	Content         string          `db:"content" validate:"required"`
+	Content         json.RawMessage `db:"content" validate:"required"`
 	LikesCount      int
 	CreatedAt       time.Time `db:"created_at"`
 	UpdatedAt       time.Time `db:"updated_at"`

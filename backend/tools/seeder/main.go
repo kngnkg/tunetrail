@@ -12,16 +12,18 @@ import (
 	"github.com/kngnkg/tunetrail/backend/infra/repository"
 	"github.com/kngnkg/tunetrail/backend/logger"
 	"github.com/kngnkg/tunetrail/backend/testutil/fixture"
+	"github.com/kngnkg/tunetrail/backend/validator"
 )
 
 type seeder struct {
+	v  *validator.Validator
 	db repository.DBAccesser
 	rr *repository.ReviewRepository
 	ur *repository.UserRepository
 }
 
 // DBの初期化
-func (s *seeder) initDB(ctx context.Context, tx repository.Transactioner) error {
+func (s *seeder) initDB(ctx context.Context, tx repository.DBAccesser) error {
 	_, err := tx.ExecContext(ctx, "DELETE FROM reviews")
 	if err != nil {
 		return err
@@ -35,7 +37,7 @@ func (s *seeder) initDB(ctx context.Context, tx repository.Transactioner) error 
 	return nil
 }
 
-func (s *seeder) storeRandomUsers(ctx context.Context, tx repository.Transactioner) ([]*entity.User, error) {
+func (s *seeder) storeRandomUsers(ctx context.Context, tx repository.DBAccesser) ([]*entity.User, error) {
 	var users []*entity.User
 	for i := 0; i < 100; i++ {
 		users = append(users, fixture.User(nil))
@@ -53,7 +55,7 @@ func (s *seeder) storeRandomUsers(ctx context.Context, tx repository.Transaction
 	return users, nil
 }
 
-func (s *seeder) storeRandomReviews(ctx context.Context, tx repository.Transactioner, authorIds []entity.ImmutableId, albumIds []string) ([]*entity.Review, error) {
+func (s *seeder) storeRandomReviews(ctx context.Context, tx repository.DBAccesser, authorIds []entity.ImmutableId, albumIds []string) ([]*entity.Review, error) {
 	var reviews []*entity.Review
 	for i := 0; i < 100; i++ {
 		r := fixture.Review(&entity.Review{
@@ -65,6 +67,16 @@ func (s *seeder) storeRandomReviews(ctx context.Context, tx repository.Transacti
 	}
 
 	for _, review := range reviews {
+		b := struct {
+			Content string `valdator:"required,json"`
+		}{
+			Content: string(review.Content),
+		}
+
+		if err := s.v.Validate(b); err != nil {
+			return nil, err
+		}
+
 		r, err := s.rr.StoreReview(ctx, tx, review)
 		if err != nil {
 			return nil, err
@@ -83,21 +95,21 @@ func (s *seeder) exec(ctx context.Context) error {
 		albumIds = append(albumIds, "6dVIqQ8qmQ5GBnJ9shOYGE")
 	}
 
-	tx, err := s.db.BeginTxx(ctx, nil)
-	if err != nil {
-		return err
-	}
+	// tx, err := s.db.BeginTxx(ctx, nil)
+	// if err != nil {
+	// 	return err
+	// }
 
 	logger.FromContent(ctx).Info("initializing db...")
-	if err := s.initDB(ctx, tx); err != nil {
-		tx.Rollback()
+	if err := s.initDB(ctx, s.db); err != nil {
+		// tx.Rollback()
 		return err
 	}
 
 	logger.FromContent(ctx).Info("storeing random users...")
-	users, err := s.storeRandomUsers(ctx, tx)
+	users, err := s.storeRandomUsers(ctx, s.db)
 	if err != nil {
-		tx.Rollback()
+		// tx.Rollback()
 		return err
 	}
 
@@ -108,14 +120,15 @@ func (s *seeder) exec(ctx context.Context) error {
 
 	logger.FromContent(ctx).Info("storing random reviews...")
 	for i := 0; i < 3; i++ {
-		_, err = s.storeRandomReviews(ctx, tx, authorIds, albumIds)
+		_, err = s.storeRandomReviews(ctx, s.db, authorIds, albumIds)
 		if err != nil {
-			tx.Rollback()
+			// tx.Rollback()
 			return err
 		}
 	}
 
-	return tx.Commit()
+	// return tx.Commit()
+	return nil
 }
 
 // 開発環境用のデータを生成する
@@ -156,7 +169,10 @@ func main() {
 	ur := &repository.UserRepository{}
 	rr := &repository.ReviewRepository{}
 
+	v := validator.New()
+
 	seeder := &seeder{
+		v:  v,
 		db: db,
 		ur: ur,
 		rr: rr,

@@ -26,7 +26,7 @@ CREATE TABLE reviews (
     user_id UUID NOT NULL,
     album_id VARCHAR(100) NOT NULL,
     title VARCHAR(100) NOT NULL,
-    content TEXT NOT NULL,
+    content JSONB NOT NULL,
     published_status VARCHAR(100) NOT NULL,
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP NOT NULL,

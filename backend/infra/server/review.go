@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"encoding/json"
 
 	"github.com/kngnkg/tunetrail/backend/entity"
 	"github.com/kngnkg/tunetrail/backend/gen/review"
@@ -37,25 +38,26 @@ func (s *reviewServer) ListReviews(ctx context.Context, in *review.ListReviewsRe
 		return nil, invalidArgument(ctx, err)
 	}
 
-	var b struct {
+	req := struct {
 		ReviewId string `validate:"omitempty,uuid4"`
 		Limit    int    `validate:"omitempty,max=50"`
+	}{
+		ReviewId: decoded,
+		Limit:    int(in.Limit),
 	}
-	b.ReviewId = decoded
-	b.Limit = int(in.Limit)
 
-	if err := s.validator.Validate(b); err != nil {
+	if err := s.validator.Validate(req); err != nil {
 		return nil, invalidArgument(ctx, err)
 	}
 
 	var limit int
-	if b.Limit == 0 {
+	if req.Limit == 0 {
 		limit = DefaultLimit
 	} else {
-		limit = b.Limit
+		limit = req.Limit
 	}
 
-	res, err := s.uc.ListReviews(ctx, b.ReviewId, limit)
+	res, err := s.uc.ListReviews(ctx, req.ReviewId, limit)
 	if err != nil {
 		return nil, internal(ctx, err)
 	}
@@ -84,16 +86,17 @@ func toReviewList(reviews []*entity.Review, nextCursor string) *review.ReviewLis
 func (s *reviewServer) GetReviewById(ctx context.Context, in *review.GetReviewByIdRequest) (*review.Review, error) {
 	ctx = logger.WithContent(ctx, s.logger)
 
-	var b struct {
+	req := struct {
 		ReviewId string `validate:"required,uuid4"`
+	}{
+		ReviewId: in.ReviewId,
 	}
-	b.ReviewId = in.ReviewId
 
-	if err := s.validator.Validate(b); err != nil {
+	if err := s.validator.Validate(req); err != nil {
 		return nil, invalidArgument(ctx, err)
 	}
 
-	res, err := s.uc.GetReviewById(ctx, b.ReviewId)
+	res, err := s.uc.GetReviewById(ctx, req.ReviewId)
 	if err != nil {
 		return nil, internal(ctx, err)
 	}
@@ -108,24 +111,25 @@ func (s *reviewServer) CreateReview(ctx context.Context, in *review.CreateReview
 	ctx = logger.WithContent(ctx, s.logger)
 
 	// TODO: ここでのバリデーションはどうするか
-	var r struct {
+	req := struct {
 		AuthorId        entity.ImmutableId     `validate:"required"`
 		AlbumId         string                 `validate:"required"`
 		Title           string                 `validate:"required"`
-		Content         string                 `validate:"required"`
+		Content         string                 `validate:"required,json"`
 		PublishedStatus entity.PublishedStatus `validate:"required"`
+	}{
+		AuthorId:        entity.ImmutableId(in.UserId),
+		AlbumId:         in.AlbumId,
+		Title:           in.Title,
+		Content:         in.Content,
+		PublishedStatus: entity.PublishedStatus(in.PublishedStatus),
 	}
-	r.AuthorId = entity.ImmutableId(in.UserId)
-	r.AlbumId = in.AlbumId
-	r.Title = in.Title
-	r.Content = in.Content
-	r.PublishedStatus = entity.PublishedStatus(in.PublishedStatus)
 
-	if err := s.validator.Validate(r); err != nil {
+	if err := s.validator.Validate(req); err != nil {
 		return nil, invalidArgument(ctx, err)
 	}
 
-	res, err := s.uc.Store(ctx, r.AuthorId, r.AlbumId, r.Title, r.Content, r.PublishedStatus)
+	res, err := s.uc.Store(ctx, req.AuthorId, req.AlbumId, req.Title, json.RawMessage(req.Content), req.PublishedStatus)
 	if err != nil {
 		return nil, internal(ctx, err)
 	}
@@ -136,22 +140,23 @@ func (s *reviewServer) CreateReview(ctx context.Context, in *review.CreateReview
 func (s *reviewServer) UpdateReview(ctx context.Context, in *review.UpdateReviewRequest) (*review.Review, error) {
 	ctx = logger.WithContent(ctx, s.logger)
 
-	var r struct {
+	req := struct {
 		ReviewId        string                 `validate:"required,uuid4"`
 		Title           string                 `validate:"required"`
-		Content         string                 `validate:"required"`
+		Content         string                 `validate:"required,json"`
 		PublishedStatus entity.PublishedStatus `validate:"required"`
+	}{
+		ReviewId:        in.ReviewId,
+		Title:           in.Title,
+		Content:         in.Content,
+		PublishedStatus: entity.PublishedStatus(in.PublishedStatus),
 	}
-	r.ReviewId = in.ReviewId
-	r.Title = in.Title
-	r.Content = in.Content
-	r.PublishedStatus = entity.PublishedStatus(in.PublishedStatus)
 
-	if err := s.validator.Validate(r); err != nil {
+	if err := s.validator.Validate(req); err != nil {
 		return nil, invalidArgument(ctx, err)
 	}
 
-	res, err := s.uc.Update(ctx, r.ReviewId, r.Title, r.Content, r.PublishedStatus)
+	res, err := s.uc.Update(ctx, req.ReviewId, req.Title, json.RawMessage(req.Content), req.PublishedStatus)
 	if err != nil {
 		return nil, internal(ctx, err)
 	}
@@ -162,16 +167,17 @@ func (s *reviewServer) UpdateReview(ctx context.Context, in *review.UpdateReview
 func (s *reviewServer) DeleteReview(ctx context.Context, in *review.DeleteReviewRequest) (*emptypb.Empty, error) {
 	ctx = logger.WithContent(ctx, s.logger)
 
-	var b struct {
+	req := struct {
 		ReviewId string `validate:"required,uuid4"`
+	}{
+		ReviewId: in.ReviewId,
 	}
-	b.ReviewId = in.ReviewId
 
-	if err := s.validator.Validate(b); err != nil {
+	if err := s.validator.Validate(req); err != nil {
 		return nil, invalidArgument(ctx, err)
 	}
 
-	err := s.uc.DeleteReview(ctx, b.ReviewId)
+	err := s.uc.DeleteReview(ctx, req.ReviewId)
 	if err != nil {
 		return nil, internal(ctx, err)
 	}
@@ -185,7 +191,7 @@ func toReview(r *entity.Review) *review.Review {
 		User:            toAuthor(r.Author),
 		AlbumId:         r.AlbumId,
 		Title:           r.Title,
-		Content:         r.Content,
+		Content:         string(r.Content),
 		LikesCount:      int32(r.LikesCount),
 		CreatedAt:       r.CreatedAt.String(),
 		UpdatedAt:       r.UpdatedAt.String(),

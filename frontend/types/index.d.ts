@@ -29,10 +29,20 @@ export type Review = {
   author: Author
   album: Album
   title: string
-  content: string
+  content: Content
   likesCount: number
   createdAt: Date
   updatedAt: Date
+}
+
+export type Content = {
+  blocks: ContentBlock[]
+}
+
+export type ContentBlock = {
+  id?: string
+  type: "paragraph" | "header" | "list" | "quote"
+  data: any
 }
 
 export type ReviewPreview = Pick<

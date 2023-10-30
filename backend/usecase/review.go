@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 
 	"github.com/kngnkg/tunetrail/backend/entity"
@@ -100,7 +101,7 @@ func (uc *ReviewUseCase) GetReviewById(ctx context.Context, reviewId string) (*e
 	return r, nil
 }
 
-func (uc *ReviewUseCase) Store(ctx context.Context, authorId entity.ImmutableId, albumId, title, content string, status entity.PublishedStatus) (*entity.Review, error) {
+func (uc *ReviewUseCase) Store(ctx context.Context, authorId entity.ImmutableId, albumId, title string, content json.RawMessage, status entity.PublishedStatus) (*entity.Review, error) {
 	review := &entity.Review{
 		PublishedStatus: status,
 		Author: &entity.Author{
@@ -147,7 +148,7 @@ func (uc *ReviewUseCase) Store(ctx context.Context, authorId entity.ImmutableId,
 	return review, nil
 }
 
-func (uc *ReviewUseCase) Update(ctx context.Context, reviewId string, title string, content string, publishedStatus entity.PublishedStatus) (*entity.Review, error) {
+func (uc *ReviewUseCase) Update(ctx context.Context, reviewId, title string, content json.RawMessage, publishedStatus entity.PublishedStatus) (*entity.Review, error) {
 	r := &entity.Review{
 		ReviewId:        reviewId,
 		Title:           title,

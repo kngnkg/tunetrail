@@ -12,7 +12,7 @@ func User(u *entity.User) *entity.User {
 	result := &entity.User{
 		Username:       entity.Username("user_name" + testutil.GenRamdomString(10)),
 		ImmutableId:    entity.ImmutableId(testutil.GenRandomUUID()),
-		DisplayName:    "display name",
+		DisplayName:    "display name" + testutil.GenRamdomString(10),
 		AvatarUrl:      "https://example.com/avatar.png",
 		Bio:            "bio",
 		FollowersCount: rand.Int(),
