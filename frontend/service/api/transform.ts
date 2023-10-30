@@ -51,7 +51,7 @@ export const toReview = (
     author: toAuthor(author),
     album: toAlbum(album),
     title: pbReview.getTitle(),
-    content: pbReview.getContent(),
+    content: JSON.parse(pbReview.getContent()),
     likesCount: pbReview.getLikescount(),
     createdAt: pbReview.getCreatedat()
       ? new Date(pbReview.getCreatedat())
