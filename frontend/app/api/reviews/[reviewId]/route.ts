@@ -18,8 +18,6 @@ export async function GET(request: NextRequest, { params }: ReviewRouteProps) {
       return NextResponse.json(null, { status: 404 })
     }
 
-    console.log(reviewResp)
-
     // SpotifyのAPIを叩いてアルバム情報を取得する
     const albumResp = await getAlbum(reviewResp.getAlbumid())
 
