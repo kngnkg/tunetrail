@@ -5,17 +5,20 @@ import { User } from "@/types"
 import { Button } from "./ui/button"
 
 interface FollowButtonProps {
-  user: User
+  user: Pick<User, "username" | "immutableId">
+  following: boolean
   variant?: "default" | "link"
 }
 
 export const FollowButton: React.FC<FollowButtonProps> = ({
   user,
+  following,
   variant = "default",
 }) => {
+  // TODO: フォロー・フォロー解除の処理を書く
   return (
     <>
-      {user.followed ? (
+      {following ? (
         <Button
           variant={variant}
           size="sm"

@@ -2,6 +2,8 @@ package usecase
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 
 	"github.com/kngnkg/tunetrail/backend/entity"
 	"github.com/kngnkg/tunetrail/backend/infra/repository"
@@ -11,22 +13,15 @@ import (
 type ReviewUseCase struct {
 	DB         repository.DBAccesser
 	reviewRepo ReviewRepository
-	albumRepo  AlbumRepository
 	userRepo   UserRepository
 }
 
-func NewReviewUseCase(db repository.DBAccesser, rr ReviewRepository, ar AlbumRepository, ur UserRepository) *ReviewUseCase {
+func NewReviewUseCase(db repository.DBAccesser, rr ReviewRepository, ur UserRepository) *ReviewUseCase {
 	return &ReviewUseCase{
 		DB:         db,
 		reviewRepo: rr,
-		albumRepo:  ar,
 		userRepo:   ur,
 	}
-}
-
-type ReviewResponse struct {
-	Review    *entity.Review
-	TrackPage *entity.TrackPage
 }
 
 type ReviewListResponse struct {
@@ -34,73 +29,55 @@ type ReviewListResponse struct {
 	NextCursor string
 }
 
-func (uc *ReviewUseCase) ListReviews(ctx context.Context, reviewIds []string, userIds []entity.UserId, albumIds []string, cursor string, limit int) (*ReviewListResponse, error) {
-	// レビュー情報を取得する
-	rf := entity.NewReviewFilter(cursor, limit, true, reviewIds, userIds, albumIds)
-	rs, nc, err := uc.reviewRepo.ListReviews(ctx, uc.DB, rf)
+func (uc *ReviewUseCase) ListReviews(ctx context.Context, reviewId string, limit int) (*ReviewListResponse, error) {
+	// 次のページがあるかどうかを判定するために、limit+1件取得する
+	rs, err := uc.reviewRepo.ListReviews(ctx, uc.DB, reviewId, limit+1)
 	if err != nil {
 		return nil, err
 	}
 
-	// TODO: 並行処理にする
+	nextCursor := ""
+	if len(rs) > limit {
+		// limit を超えた最初の要素を取得
+		nextCursor = rs[limit].ReviewId
+	}
+	// limit までの要素を取得
+	rs = rs[:limit]
 
-	// 取得するユーザーIDのスライスを作成する
-	uids := make([]entity.UserId, len(rs))
+	// 取得するユーザーIdのスライスを作成する
+	uids := make([]entity.ImmutableId, len(rs))
 	for i, r := range rs {
-		uids[i] = r.Author.UserId
+		uids[i] = r.Author.ImmutableId
 	}
 
 	// ユーザー情報を取得する
-	uf := entity.NewUserFilter("", len(rs), uids, nil)
-	us, _, err := uc.userRepo.ListUsers(ctx, uc.DB, uf)
+	us, err := uc.userRepo.ListUsersById(ctx, uc.DB, uids)
 	if err != nil {
 		return nil, err
 	}
 
-	// ユーザー情報を一旦マップに格納する
-	userMap := make(map[entity.UserId]*entity.User)
+	// ユーザー情報を著者情報としてマップに格納する
+	am := make(map[entity.ImmutableId]*entity.Author)
 	for _, u := range us {
-		userMap[u.UserId] = u
+		am[u.ImmutableId] = u.ToAuthor()
 	}
 
-	// 取得するアルバムIDのスライスを作成する
-	aids := make([]string, len(rs))
-	for i, r := range rs {
-		aids[i] = r.Album.AlbumId
-	}
-
-	// アルバム情報を取得する
-	as, _, err := uc.albumRepo.ListAlbums(ctx, aids)
-	if err != nil {
-		return nil, err
-	}
-
-	// アルバム情報を一旦マップに格納する
-	albumMap := make(map[string]*entity.Album)
-	for _, a := range as {
-		albumMap[a.AlbumId] = a
-	}
-
+	// レビュー情報に著者情報を埋め込む
 	for _, r := range rs {
-		// ユーザー情報を埋め込む
-		if u, ok := userMap[r.Author.UserId]; ok {
-			r.Author = u
-		}
-
-		// アルバム情報を埋め込む
-		if album, ok := albumMap[r.Album.AlbumId]; ok {
-			r.Album = album
+		if author, ok := am[r.Author.ImmutableId]; ok {
+			r.Author = author
 		}
 	}
 
+	// limit を超えた要素がある場合に、その要素のIdを次のページのカーソルとして返す
 	resp := &ReviewListResponse{
 		Reviews:    rs,
-		NextCursor: nc,
+		NextCursor: nextCursor,
 	}
 	return resp, nil
 }
 
-func (uc *ReviewUseCase) GetById(ctx context.Context, reviewId string) (*ReviewResponse, error) {
+func (uc *ReviewUseCase) GetReviewById(ctx context.Context, reviewId string) (*entity.Review, error) {
 	r, err := uc.reviewRepo.GetReviewById(ctx, uc.DB, reviewId)
 	if err != nil {
 		return nil, err
@@ -109,45 +86,28 @@ func (uc *ReviewUseCase) GetById(ctx context.Context, reviewId string) (*ReviewR
 		return nil, nil
 	}
 
-	author, err := uc.userRepo.GetUserById(ctx, uc.DB, r.Author.UserId)
+	var ids []entity.ImmutableId
+	ids = append(ids, r.Author.ImmutableId)
+	users, err := uc.userRepo.ListUsersById(ctx, uc.DB, ids)
 	if err != nil {
 		return nil, err
 	}
-
-	album, tp, err := uc.albumRepo.GetAlbumInfoById(ctx, r.Album.AlbumId)
-	if err != nil {
-		return nil, err
+	if len(users) != 1 {
+		return nil, fmt.Errorf("length of users is not 1, len(users)=%v", len(users))
 	}
 
-	return toReviewResponse(r, author, album, tp), nil
+	r.Author = users[0].ToAuthor()
+
+	return r, nil
 }
 
-func toReviewResponse(r *entity.Review, author *entity.User, album *entity.Album, tp *entity.TrackPage) *ReviewResponse {
-	return &ReviewResponse{
-		Review: &entity.Review{
-			ReviewId:        r.ReviewId,
-			PublishedStatus: r.PublishedStatus,
-			Author:          author,
-			Album:           album,
-			Title:           r.Title,
-			Content:         r.Content,
-			LikesCount:      r.LikesCount,
-			CreatedAt:       r.CreatedAt,
-			UpdatedAt:       r.UpdatedAt,
-		},
-		TrackPage: tp,
-	}
-}
-
-func (uc *ReviewUseCase) Store(ctx context.Context, authorId entity.UserId, albumId, title, content string, status entity.PublishedStatus) (*ReviewResponse, error) {
+func (uc *ReviewUseCase) Store(ctx context.Context, authorId entity.ImmutableId, albumId, title string, content json.RawMessage, status entity.PublishedStatus) (*entity.Review, error) {
 	review := &entity.Review{
 		PublishedStatus: status,
-		Author: &entity.User{
-			UserId: authorId,
+		Author: &entity.Author{
+			ImmutableId: authorId,
 		},
-		Album: &entity.Album{
-			AlbumId: albumId,
-		},
+		AlbumId: albumId,
 		Title:   title,
 		Content: content,
 	}
@@ -173,21 +133,22 @@ func (uc *ReviewUseCase) Store(ctx context.Context, authorId entity.UserId, albu
 		return nil, err
 	}
 
-	author, err := uc.userRepo.GetUserById(ctx, uc.DB, r.Author.UserId)
+	var ids []entity.ImmutableId
+	ids = append(ids, r.Author.ImmutableId)
+	users, err := uc.userRepo.ListUsersById(ctx, uc.DB, ids)
 	if err != nil {
 		return nil, err
 	}
-
-	// TODO: トラック情報を取得する
-	album, tp, err := uc.albumRepo.GetAlbumInfoById(ctx, r.Album.AlbumId)
-	if err != nil {
-		return nil, err
+	if len(users) != 1 {
+		return nil, fmt.Errorf("length of users is not 1, len(users)=%v", len(users))
 	}
 
-	return toReviewResponse(r, author, album, tp), nil
+	review.Author = users[0].ToAuthor()
+
+	return review, nil
 }
 
-func (uc *ReviewUseCase) Update(ctx context.Context, reviewId string, title string, content string, publishedStatus entity.PublishedStatus) (*ReviewResponse, error) {
+func (uc *ReviewUseCase) Update(ctx context.Context, reviewId, title string, content json.RawMessage, publishedStatus entity.PublishedStatus) (*entity.Review, error) {
 	r := &entity.Review{
 		ReviewId:        reviewId,
 		Title:           title,
@@ -216,18 +177,19 @@ func (uc *ReviewUseCase) Update(ctx context.Context, reviewId string, title stri
 		return nil, err
 	}
 
-	author, err := uc.userRepo.GetUserById(ctx, uc.DB, r.Author.UserId)
+	var ids []entity.ImmutableId
+	ids = append(ids, r.Author.ImmutableId)
+	users, err := uc.userRepo.ListUsersById(ctx, uc.DB, ids)
 	if err != nil {
 		return nil, err
 	}
-
-	// TODO: トラック情報を取得する
-	album, tp, err := uc.albumRepo.GetAlbumInfoById(ctx, r.Album.AlbumId)
-	if err != nil {
-		return nil, err
+	if len(users) != 1 {
+		return nil, fmt.Errorf("length of users is not 1, len(users)=%v", len(users))
 	}
 
-	return toReviewResponse(r, author, album, tp), nil
+	r.Author = users[0].ToAuthor()
+
+	return r, nil
 }
 
 func (uc *ReviewUseCase) DeleteReview(ctx context.Context, reviewId string) error {

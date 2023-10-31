@@ -1,18 +1,12 @@
 import { env } from "@/env.mjs"
-import { getReviews } from "@/lib/get-reviews"
-import { ReviewList } from "@/components/review-list"
+import { ReviewList } from "@/components/reviews/review-list"
 
 export default async function Timeline() {
-  const reviews = await getReviews(`${env.API_ROOT}/timeline`)
-
-  if (!reviews) {
-    return <p>Something went wrong.</p>
-  }
-
   return (
     <>
       <section>
-        <ReviewList reviews={reviews} />
+        {/* TODO: フォローユーザーのレビューを取得する */}
+        <ReviewList endpoint={`${env.NEXT_PUBLIC_API_ROOT}/reviews`} />
       </section>
     </>
   )

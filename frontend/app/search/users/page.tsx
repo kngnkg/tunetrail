@@ -1,7 +1,7 @@
+import { transformUser } from "@/service/transform"
 import { User } from "@/types"
 
 import { env } from "@/env.mjs"
-import { transformUser } from "@/lib/transform"
 import { UserList } from "@/components/user-list"
 
 async function getUsers(
@@ -36,7 +36,7 @@ export default async function UserSearchPage({
   const query = searchParams.q || ""
 
   const users = await getUsers(
-    `${env.API_ROOT}/users?name=${query}&display_id=${query}`
+    `${env.MOCK_API_ROOT}/users?name=${query}&display_id=${query}`
   )
 
   if (!users) {

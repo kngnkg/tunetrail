@@ -3,7 +3,7 @@
 import { User } from "@/types"
 
 import { env } from "@/env.mjs"
-import { useUsers } from "@/lib/use-users"
+import { useUsers } from "@/hooks/use-users"
 import {
   Dialog,
   DialogContent,
@@ -16,7 +16,15 @@ import { UserList } from "@/components/user-list"
 
 interface UserListDialogProps {
   type: "followers" | "following"
-  user: User
+  user: Pick<
+    User,
+    | "username"
+    | "immutableId"
+    | "displayName"
+    | "avatarUrl"
+    | "followersCount"
+    | "followingCount"
+  >
 }
 
 export const UserListDialog: React.FC<UserListDialogProps> = ({
@@ -24,7 +32,7 @@ export const UserListDialog: React.FC<UserListDialogProps> = ({
   user,
 }) => {
   const { users, isError, isLoading } = useUsers({
-    endpoint: `${env.NEXT_PUBLIC_API_ROOT}/users/${user.userId}/${type}`,
+    endpoint: `${env.NEXT_PUBLIC_MOCK_API_ROOT}/users/${user.username}/${type}`,
   })
 
   return (
