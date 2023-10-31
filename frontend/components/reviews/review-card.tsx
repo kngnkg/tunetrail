@@ -2,10 +2,10 @@ import Image from "next/image"
 import Link from "next/link"
 import { ReviewPreview } from "@/types"
 
-import { Icon } from "./icon"
-import { TimeStamp } from "./timestamp"
-import { Card, CardContent } from "./ui/card"
-import { UserAvatar } from "./user-avatar"
+import { Icon } from "../icon"
+import { TimeStamp } from "../timestamp"
+import { Card, CardContent } from "../ui/card"
+import { UserAvatar } from "../user-avatar"
 
 export interface ReviewCardProps {
   review: ReviewPreview

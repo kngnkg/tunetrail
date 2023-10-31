@@ -5,9 +5,9 @@ import { ReviewPreview } from "@/types"
 
 import { useReviews } from "@/hooks/reviews/use-reviews"
 
+import { Button } from "../ui/button"
 import { ReviewCard } from "./review-card"
 import { ReviewCardSkeleton } from "./review-card-skeleton"
-import { Button } from "./ui/button"
 
 interface ReviewListProps {
   endpoint: string
