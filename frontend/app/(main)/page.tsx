@@ -1,5 +1,5 @@
 import { env } from "@/env.mjs"
-import { ReviewList } from "@/components/review-list"
+import { ReviewList } from "@/components/reviews/review-list"
 
 export default async function IndexPage() {
   return (
