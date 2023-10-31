@@ -21,7 +21,7 @@ export const MainNav: React.FC<MainNavProps> = ({ className }) => {
         <Link href="/userpage">
           <Icon type="user" className="w-8 h-8" />
         </Link>
-        <Link href="/editor/abcdefg">
+        <Link href="/editor/new">
           <Icon
             type="new-post"
             className="text-primary dark:text-primary w-8 h-8"

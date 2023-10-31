@@ -2,7 +2,7 @@ import { notFound } from "next/navigation"
 import { getUser } from "@/service/user/get-user"
 
 import { env } from "@/env.mjs"
-import { ReviewList } from "@/components/review-list"
+import { ReviewList } from "@/components/reviews/review-list"
 
 interface UserPageProps {
   params: { username: string }

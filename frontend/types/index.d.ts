@@ -1,3 +1,5 @@
+import { PublishedStatusType } from "./type-guard"
+
 export type Username = string
 
 export type ImmutableId = string
@@ -21,7 +23,10 @@ export type Author = Pick<
   "username" | "immutableId" | "displayName" | "avatarUrl"
 >
 
-export type PublishedStatus = "published" | "draft" | "unlisted"
+export type PublishedStatus =
+  | PublishedStatusType.Draft
+  | PublishedStatusType.Published
+  | PublishedStatusType.Unlisted
 
 export type Review = {
   reviewId: string

@@ -7,6 +7,8 @@ process.env.GRPC_API_ROOT = "grpc://api.example.com"
 process.env.NEXT_PUBLIC_API_ROOT = "http://api.example.com"
 process.env.NEXT_PUBLIC_MOCK_API_ROOT = "http://api.example.com"
 process.env.NEXT_PUBLIC_SPOTIFY_CDN_HOST = "http://cdn.example.com"
+process.env.SPOTIFY_CLIENT_ID = "client_id"
+process.env.SPOTIFY_CLIENT_SECRET = "client_secret"
 
 const createJestConfig = nextJest({
   // Provide the path to your Next.js app to load next.config.js and .env files in your test environment

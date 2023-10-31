@@ -4,7 +4,7 @@ import { getReview } from "@/service/review/get-review"
 
 import { env } from "@/env.mjs"
 import { FollowButton } from "@/components/follow-button"
-import { ReviewContent } from "@/components/review-content"
+import { ReviewContent } from "@/components/reviews/review-content"
 import { TimeStamp } from "@/components/timestamp"
 import { UserAvatar } from "@/components/user-avatar"
 
