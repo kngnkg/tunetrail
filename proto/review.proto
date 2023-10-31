@@ -4,29 +4,24 @@ package review;
 
 option go_package = "github.com/kngnkg/tunetrail/backend/gen/review";
 
-import "user.proto";
-import "album.proto";
 import "google/protobuf/empty.proto";
 
 service ReviewService {
-  rpc ListReviews(ListReviewsRequest) returns (ReviewListReply) {}
-  rpc GetReviewById(GetByIdRequest) returns (ReviewReply) {}
-  rpc CreateReview(CreateRequest) returns (ReviewReply) {}
-  rpc UpdateReview(UpdateRequest) returns (ReviewReply) {}
+  rpc ListReviews(ListReviewsRequest) returns (ReviewList) {}
+  rpc GetReviewById(GetReviewByIdRequest) returns (Review) {}
+  rpc CreateReview(CreateReviewRequest) returns (Review) {}
+  rpc UpdateReview(UpdateReviewRequest) returns (Review) {}
   rpc DeleteReview(DeleteReviewRequest) returns (google.protobuf.Empty) {}
 }
 
 message ListReviewsRequest {
-  repeated string reviewIds = 1;
-  repeated string userIds = 2;
-  repeated string albumIds = 3;
-  string cursor = 4;
-  int32 limit = 5;
+  string cursor = 1;
+  int32 limit = 2;
 }
 
-message GetByIdRequest { string reviewId = 1; }
+message GetReviewByIdRequest { string reviewId = 1; }
 
-message CreateRequest {
+message CreateReviewRequest {
   string userId = 1;
   string albumId = 2;
   string title = 3;
@@ -34,7 +29,7 @@ message CreateRequest {
   string publishedStatus = 5;
 }
 
-message UpdateRequest {
+message UpdateReviewRequest {
   string reviewId = 1;
   string title = 2;
   string content = 3;
@@ -43,10 +38,10 @@ message UpdateRequest {
 
 message DeleteReviewRequest { string reviewId = 1; }
 
-message ReviewReply {
+message Review {
   string reviewId = 1;
-  user.User user = 2;
-  album.Album album = 3;
+  Author user = 2;
+  string albumId = 3;
   string title = 4;
   string content = 5;
   string publishedStatus = 6;
@@ -55,20 +50,15 @@ message ReviewReply {
   string updatedAt = 9;
 }
 
-message ReviewListReply {
+message Author {
+  string username = 1;
+  string immutableId = 2;
+  string displayName = 3;
+  string avatarUrl = 4;
+}
+
+message ReviewList {
   repeated Review reviews = 1;
   string nextCursor = 2;
   int32 total = 3;
-}
-
-message Review {
-  string reviewId = 1;
-  user.User user = 2;
-  album.SimpleAlbum album = 3;
-  string title = 4;
-  string content = 5;
-  string publishedStatus = 6;
-  int32 likesCount = 7;
-  string createdAt = 8;
-  string updatedAt = 9;
 }

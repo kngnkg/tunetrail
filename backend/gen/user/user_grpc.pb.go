@@ -22,8 +22,9 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserServiceClient interface {
-	GetUserById(ctx context.Context, in *GetByIdRequest, opts ...grpc.CallOption) (*UserReply, error)
-	CreateUser(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*UserReply, error)
+	ListUsers(ctx context.Context, in *ListUsersRequest, opts ...grpc.CallOption) (*UserList, error)
+	GetUserByUsername(ctx context.Context, in *GetUserByUsernameRequest, opts ...grpc.CallOption) (*User, error)
+	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*User, error)
 }
 
 type userServiceClient struct {
@@ -34,17 +35,26 @@ func NewUserServiceClient(cc grpc.ClientConnInterface) UserServiceClient {
 	return &userServiceClient{cc}
 }
 
-func (c *userServiceClient) GetUserById(ctx context.Context, in *GetByIdRequest, opts ...grpc.CallOption) (*UserReply, error) {
-	out := new(UserReply)
-	err := c.cc.Invoke(ctx, "/user.UserService/GetUserById", in, out, opts...)
+func (c *userServiceClient) ListUsers(ctx context.Context, in *ListUsersRequest, opts ...grpc.CallOption) (*UserList, error) {
+	out := new(UserList)
+	err := c.cc.Invoke(ctx, "/user.UserService/ListUsers", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *userServiceClient) CreateUser(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*UserReply, error) {
-	out := new(UserReply)
+func (c *userServiceClient) GetUserByUsername(ctx context.Context, in *GetUserByUsernameRequest, opts ...grpc.CallOption) (*User, error) {
+	out := new(User)
+	err := c.cc.Invoke(ctx, "/user.UserService/GetUserByUsername", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*User, error) {
+	out := new(User)
 	err := c.cc.Invoke(ctx, "/user.UserService/CreateUser", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -56,8 +66,9 @@ func (c *userServiceClient) CreateUser(ctx context.Context, in *CreateRequest, o
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
 type UserServiceServer interface {
-	GetUserById(context.Context, *GetByIdRequest) (*UserReply, error)
-	CreateUser(context.Context, *CreateRequest) (*UserReply, error)
+	ListUsers(context.Context, *ListUsersRequest) (*UserList, error)
+	GetUserByUsername(context.Context, *GetUserByUsernameRequest) (*User, error)
+	CreateUser(context.Context, *CreateUserRequest) (*User, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -65,10 +76,13 @@ type UserServiceServer interface {
 type UnimplementedUserServiceServer struct {
 }
 
-func (UnimplementedUserServiceServer) GetUserById(context.Context, *GetByIdRequest) (*UserReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetUserById not implemented")
+func (UnimplementedUserServiceServer) ListUsers(context.Context, *ListUsersRequest) (*UserList, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListUsers not implemented")
 }
-func (UnimplementedUserServiceServer) CreateUser(context.Context, *CreateRequest) (*UserReply, error) {
+func (UnimplementedUserServiceServer) GetUserByUsername(context.Context, *GetUserByUsernameRequest) (*User, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserByUsername not implemented")
+}
+func (UnimplementedUserServiceServer) CreateUser(context.Context, *CreateUserRequest) (*User, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateUser not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
@@ -84,26 +98,44 @@ func RegisterUserServiceServer(s grpc.ServiceRegistrar, srv UserServiceServer) {
 	s.RegisterService(&UserService_ServiceDesc, srv)
 }
 
-func _UserService_GetUserById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetByIdRequest)
+func _UserService_ListUsers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListUsersRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserServiceServer).GetUserById(ctx, in)
+		return srv.(UserServiceServer).ListUsers(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/user.UserService/GetUserById",
+		FullMethod: "/user.UserService/ListUsers",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).GetUserById(ctx, req.(*GetByIdRequest))
+		return srv.(UserServiceServer).ListUsers(ctx, req.(*ListUsersRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_GetUserByUsername_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserByUsernameRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetUserByUsername(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.UserService/GetUserByUsername",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetUserByUsername(ctx, req.(*GetUserByUsernameRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _UserService_CreateUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateRequest)
+	in := new(CreateUserRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -115,7 +147,7 @@ func _UserService_CreateUser_Handler(srv interface{}, ctx context.Context, dec f
 		FullMethod: "/user.UserService/CreateUser",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).CreateUser(ctx, req.(*CreateRequest))
+		return srv.(UserServiceServer).CreateUser(ctx, req.(*CreateUserRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -128,8 +160,12 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*UserServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "GetUserById",
-			Handler:    _UserService_GetUserById_Handler,
+			MethodName: "ListUsers",
+			Handler:    _UserService_ListUsers_Handler,
+		},
+		{
+			MethodName: "GetUserByUsername",
+			Handler:    _UserService_GetUserByUsername_Handler,
 		},
 		{
 			MethodName: "CreateUser",

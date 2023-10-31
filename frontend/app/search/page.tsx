@@ -1,6 +1,5 @@
 import { env } from "@/env.mjs"
-import { getReviews } from "@/lib/get-reviews"
-import { ReviewList } from "@/components/review-list"
+import { ReviewList } from "@/components/reviews/review-list"
 
 interface SearchPageProps {
   searchParams: { [key: string]: string | string[] | undefined }
@@ -13,18 +12,17 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     return null
   }
 
-  const reviews = await getReviews(
-    `${env.API_ROOT}/reviews?title=${query}&genre=${query}`
-  )
-
-  if (!reviews) {
-    return <p>レビューは見つかりませんでした。</p>
-  }
+  // const reviews = await getReviews(
+  //   `${env.MOCK_API_ROOT}/reviews?title=${query}&genre=${query}`
+  // )
 
   return (
     <>
       <section>
-        <ReviewList reviews={reviews} />
+        {/* TODO: レビューの検索結果を取得する */}
+        {query ? (
+          <ReviewList endpoint={`${env.NEXT_PUBLIC_API_ROOT}/reviews`} />
+        ) : null}
       </section>
     </>
   )

@@ -2,11 +2,11 @@ package server
 
 import (
 	"context"
+	"encoding/json"
 
 	"github.com/kngnkg/tunetrail/backend/entity"
-	"github.com/kngnkg/tunetrail/backend/gen/album"
 	"github.com/kngnkg/tunetrail/backend/gen/review"
-	"github.com/kngnkg/tunetrail/backend/gen/user"
+	"github.com/kngnkg/tunetrail/backend/helper"
 	"github.com/kngnkg/tunetrail/backend/logger"
 	"github.com/kngnkg/tunetrail/backend/usecase"
 	"github.com/kngnkg/tunetrail/backend/validator"
@@ -28,65 +28,75 @@ func NewReviewServer(uc *usecase.ReviewUseCase, v *validator.Validator, l *logge
 	}
 }
 
-func (s *reviewServer) ListReviews(ctx context.Context, in *review.ListReviewsRequest) (*review.ReviewListReply, error) {
+const DefaultLimit = 20
+
+func (s *reviewServer) ListReviews(ctx context.Context, in *review.ListReviewsRequest) (*review.ReviewList, error) {
 	ctx = logger.WithContent(ctx, s.logger)
 
-	var b struct {
-		ReviewIds []string `validate:"omitempty,max=50,dive,uuid4"`
-		UserIds   []string `validate:"omitempty,max=50,dive,uuid4"`
-		AlbumIds  []string `validate:"omitempty,max=50"`
-		Cursor    string   `validate:"omitempty,uuid4"`
-		Limit     int      `validate:"omitempty,min=1,max=50"`
-	}
-	b.ReviewIds = in.ReviewIds
-	b.UserIds = in.UserIds
-	b.AlbumIds = in.AlbumIds
-	b.Cursor = in.Cursor
-	b.Limit = int(in.Limit)
-
-	if err := s.validator.Validate(b); err != nil {
+	decoded, err := helper.DecodeCursor(in.Cursor)
+	if err != nil {
 		return nil, invalidArgument(ctx, err)
 	}
 
-	userIds := make([]entity.UserId, len(b.UserIds))
-	for i, id := range b.UserIds {
-		userIds[i] = entity.UserId(id)
+	req := struct {
+		ReviewId string `validate:"omitempty,uuid4"`
+		Limit    int    `validate:"omitempty,max=50"`
+	}{
+		ReviewId: decoded,
+		Limit:    int(in.Limit),
 	}
 
-	res, err := s.uc.ListReviews(ctx, b.ReviewIds, userIds, b.AlbumIds, b.Cursor, b.Limit)
+	if err := s.validator.Validate(req); err != nil {
+		return nil, invalidArgument(ctx, err)
+	}
+
+	var limit int
+	if req.Limit == 0 {
+		limit = DefaultLimit
+	} else {
+		limit = req.Limit
+	}
+
+	res, err := s.uc.ListReviews(ctx, req.ReviewId, limit)
 	if err != nil {
 		return nil, internal(ctx, err)
 	}
 
-	return toReviewListReply(res), nil
+	nextCursor := ""
+	if res.NextCursor != "" {
+		nextCursor = helper.EncodeCursor(res.NextCursor)
+	}
+
+	return toReviewList(res.Reviews, nextCursor), nil
 }
 
-func toReviewListReply(res *usecase.ReviewListResponse) *review.ReviewListReply {
+func toReviewList(reviews []*entity.Review, nextCursor string) *review.ReviewList {
 	var rs []*review.Review
-	for _, r := range res.Reviews {
+	for _, r := range reviews {
 		rs = append(rs, toReview(r))
 	}
 
-	return &review.ReviewListReply{
+	return &review.ReviewList{
 		Reviews:    rs,
-		NextCursor: res.NextCursor,
+		NextCursor: nextCursor,
 		Total:      int32(len(rs)),
 	}
 }
 
-func (s *reviewServer) GetReviewById(ctx context.Context, in *review.GetByIdRequest) (*review.ReviewReply, error) {
+func (s *reviewServer) GetReviewById(ctx context.Context, in *review.GetReviewByIdRequest) (*review.Review, error) {
 	ctx = logger.WithContent(ctx, s.logger)
 
-	var b struct {
+	req := struct {
 		ReviewId string `validate:"required,uuid4"`
+	}{
+		ReviewId: in.ReviewId,
 	}
-	b.ReviewId = in.ReviewId
 
-	if err := s.validator.Validate(b); err != nil {
+	if err := s.validator.Validate(req); err != nil {
 		return nil, invalidArgument(ctx, err)
 	}
 
-	res, err := s.uc.GetById(ctx, b.ReviewId)
+	res, err := s.uc.GetReviewById(ctx, req.ReviewId)
 	if err != nil {
 		return nil, internal(ctx, err)
 	}
@@ -94,77 +104,80 @@ func (s *reviewServer) GetReviewById(ctx context.Context, in *review.GetByIdRequ
 		return nil, notFound(ctx, err)
 	}
 
-	return toReviewReply(res), nil
+	return toReview(res), nil
 }
 
-func (s *reviewServer) CreateReview(ctx context.Context, in *review.CreateRequest) (*review.ReviewReply, error) {
+func (s *reviewServer) CreateReview(ctx context.Context, in *review.CreateReviewRequest) (*review.Review, error) {
 	ctx = logger.WithContent(ctx, s.logger)
 
 	// TODO: ここでのバリデーションはどうするか
-	var r struct {
-		AuthorId        entity.UserId          `validate:"required"`
+	req := struct {
+		AuthorId        entity.ImmutableId     `validate:"required"`
 		AlbumId         string                 `validate:"required"`
 		Title           string                 `validate:"required"`
-		Content         string                 `validate:"required"`
+		Content         string                 `validate:"required,json"`
 		PublishedStatus entity.PublishedStatus `validate:"required"`
+	}{
+		AuthorId:        entity.ImmutableId(in.UserId),
+		AlbumId:         in.AlbumId,
+		Title:           in.Title,
+		Content:         in.Content,
+		PublishedStatus: entity.PublishedStatus(in.PublishedStatus),
 	}
-	r.AuthorId = entity.UserId(in.UserId)
-	r.AlbumId = in.AlbumId
-	r.Title = in.Title
-	r.Content = in.Content
-	r.PublishedStatus = entity.PublishedStatus(in.PublishedStatus)
 
-	if err := s.validator.Validate(r); err != nil {
+	if err := s.validator.Validate(req); err != nil {
 		return nil, invalidArgument(ctx, err)
 	}
 
-	res, err := s.uc.Store(ctx, r.AuthorId, r.AlbumId, r.Title, r.Content, r.PublishedStatus)
+	res, err := s.uc.Store(ctx, req.AuthorId, req.AlbumId, req.Title, json.RawMessage(req.Content), req.PublishedStatus)
 	if err != nil {
 		return nil, internal(ctx, err)
 	}
 
-	return toReviewReply(res), nil
+	return toReview(res), nil
 }
 
-func (s *reviewServer) UpdateReview(ctx context.Context, in *review.UpdateRequest) (*review.ReviewReply, error) {
+func (s *reviewServer) UpdateReview(ctx context.Context, in *review.UpdateReviewRequest) (*review.Review, error) {
 	ctx = logger.WithContent(ctx, s.logger)
 
-	var r struct {
+	req := struct {
 		ReviewId        string                 `validate:"required,uuid4"`
 		Title           string                 `validate:"required"`
-		Content         string                 `validate:"required"`
+		Content         string                 `validate:"required,json"`
 		PublishedStatus entity.PublishedStatus `validate:"required"`
+	}{
+		ReviewId:        in.ReviewId,
+		Title:           in.Title,
+		Content:         in.Content,
+		PublishedStatus: entity.PublishedStatus(in.PublishedStatus),
 	}
-	r.ReviewId = in.ReviewId
-	r.Title = in.Title
-	r.Content = in.Content
-	r.PublishedStatus = entity.PublishedStatus(in.PublishedStatus)
 
-	if err := s.validator.Validate(r); err != nil {
+	if err := s.validator.Validate(req); err != nil {
 		return nil, invalidArgument(ctx, err)
 	}
 
-	res, err := s.uc.Update(ctx, r.ReviewId, r.Title, r.Content, r.PublishedStatus)
+	res, err := s.uc.Update(ctx, req.ReviewId, req.Title, json.RawMessage(req.Content), req.PublishedStatus)
 	if err != nil {
 		return nil, internal(ctx, err)
 	}
 
-	return toReviewReply(res), nil
+	return toReview(res), nil
 }
 
 func (s *reviewServer) DeleteReview(ctx context.Context, in *review.DeleteReviewRequest) (*emptypb.Empty, error) {
 	ctx = logger.WithContent(ctx, s.logger)
 
-	var b struct {
+	req := struct {
 		ReviewId string `validate:"required,uuid4"`
+	}{
+		ReviewId: in.ReviewId,
 	}
-	b.ReviewId = in.ReviewId
 
-	if err := s.validator.Validate(b); err != nil {
+	if err := s.validator.Validate(req); err != nil {
 		return nil, invalidArgument(ctx, err)
 	}
 
-	err := s.uc.DeleteReview(ctx, b.ReviewId)
+	err := s.uc.DeleteReview(ctx, req.ReviewId)
 	if err != nil {
 		return nil, internal(ctx, err)
 	}
@@ -172,27 +185,13 @@ func (s *reviewServer) DeleteReview(ctx context.Context, in *review.DeleteReview
 	return &emptypb.Empty{}, nil
 }
 
-func toReviewReply(res *usecase.ReviewResponse) *review.ReviewReply {
-	return &review.ReviewReply{
-		ReviewId:        res.Review.ReviewId,
-		User:            toUser(res.Review.Author),
-		Album:           toAlbum(res.Review.Album, res.TrackPage),
-		Title:           res.Review.Title,
-		Content:         res.Review.Content,
-		LikesCount:      int32(res.Review.LikesCount),
-		CreatedAt:       res.Review.CreatedAt.String(),
-		UpdatedAt:       res.Review.UpdatedAt.String(),
-		PublishedStatus: string(res.Review.PublishedStatus),
-	}
-}
-
 func toReview(r *entity.Review) *review.Review {
 	return &review.Review{
 		ReviewId:        r.ReviewId,
-		User:            toUser(r.Author),
-		Album:           toSimpleAlbum(r.Album),
+		User:            toAuthor(r.Author),
+		AlbumId:         r.AlbumId,
 		Title:           r.Title,
-		Content:         r.Content,
+		Content:         string(r.Content),
 		LikesCount:      int32(r.LikesCount),
 		CreatedAt:       r.CreatedAt.String(),
 		UpdatedAt:       r.UpdatedAt.String(),
@@ -200,80 +199,11 @@ func toReview(r *entity.Review) *review.Review {
 	}
 }
 
-func toSimpleAlbum(a *entity.Album) *album.SimpleAlbum {
-	return &album.SimpleAlbum{
-		AlbumId:    a.AlbumId,
-		SpotifyUri: a.SpotifyUri,
-		SpotifyUrl: a.SpotifyUrl,
-		Name:       a.Name,
-		Artists:    toSimpleArtists(a.Artists),
-		CoverUrl:   a.CoverUrl,
-		Genres:     a.Genres,
+func toAuthor(r *entity.Author) *review.Author {
+	return &review.Author{
+		Username:    string(r.Username),
+		ImmutableId: string(r.ImmutableId),
+		DisplayName: r.DisplayName,
+		AvatarUrl:   r.AvatarUrl,
 	}
-}
-
-func toUser(u *entity.User) *user.User {
-	return &user.User{
-		UserId:         string(u.UserId),
-		DisplayId:      u.DisplayId,
-		Name:           u.Name,
-		AvatarUrl:      u.AvatarUrl,
-		Bio:            u.Bio,
-		FollowersCount: int32(u.FollowersCount),
-		FollowingCount: int32(u.FollowingCount),
-		CreatedAt:      u.CreatedAt.String(),
-		UpdatedAt:      u.UpdatedAt.String(),
-	}
-}
-
-func toTrackPage(tp *entity.TrackPage) *album.TrackPage {
-	var ts []*album.Track
-	for _, t := range tp.Tracks {
-		ts = append(ts, &album.Track{
-			TrackId:     t.TrackId,
-			SpotifyUri:  t.SpotifyUri,
-			SpotifyUrl:  t.SpotifyUrl,
-			Title:       t.Title,
-			DurationMs:  int32(t.DurationMs),
-			TrackNumber: int32(t.TrackNumber),
-			PreviewUrl:  t.PreviewUrl,
-		})
-	}
-
-	return &album.TrackPage{
-		Tracks:   ts,
-		Limit:    int32(tp.Limit),
-		Offset:   int32(tp.Offset),
-		Total:    int32(tp.Total),
-		Next:     tp.Next,
-		Previous: tp.Previous,
-	}
-}
-
-func toAlbum(a *entity.Album, tp *entity.TrackPage) *album.Album {
-	return &album.Album{
-		AlbumId:     a.AlbumId,
-		SpotifyUri:  a.SpotifyUri,
-		SpotifyUrl:  a.SpotifyUrl,
-		Name:        a.Name,
-		Artists:     toSimpleArtists(a.Artists),
-		Tracks:      toTrackPage(tp),
-		CoverUrl:    a.CoverUrl,
-		ReleaseDate: a.ReleaseDate.String(),
-		Genres:      a.Genres,
-	}
-}
-
-func toSimpleArtists(artists []*entity.SimpleArtist) []*album.SimpleArtist {
-	var as []*album.SimpleArtist
-
-	for _, a := range artists {
-		as = append(as, &album.SimpleArtist{
-			ArtistId:   a.ArtistId,
-			SpotifyUri: a.SpotifyUri,
-			SpotifyUrl: a.SpotifyUrl,
-			Name:       a.Name,
-		})
-	}
-	return as
 }

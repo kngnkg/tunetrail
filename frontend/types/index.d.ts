@@ -1,56 +1,87 @@
-export type UserId = string
+import { PublishedStatusType } from "./type-guard"
+
+export type Username = string
+
+export type ImmutableId = string
 
 export type User = {
-  userId: UserId
-  displayId: string
-  name: string
+  username: Username
+  immutableId: ImmutableId
+  displayName: string
   avatarUrl?: string
   bio?: string
   followersCount: number
   followingCount: number
-  followingGenres: string[]
-  followed: boolean
-  following: boolean
   createdAt: Date
   updatedAt: Date
 }
 
 export type LoginUser = Omit<User, "followed" | "following">
 
+export type Author = Pick<
+  User,
+  "username" | "immutableId" | "displayName" | "avatarUrl"
+>
+
+export type PublishedStatus =
+  | PublishedStatusType.Draft
+  | PublishedStatusType.Published
+  | PublishedStatusType.Unlisted
+
 export type Review = {
   reviewId: string
-  published: boolean
-  author: User
+  publishedStatus: PublishedStatus
+  author: Author
   album: Album
   title: string
-  content: string
+  content: Content
   likesCount: number
-  liked: boolean
   createdAt: Date
   updatedAt: Date
 }
+
+export type Content = {
+  blocks: ContentBlock[]
+}
+
+export type ContentBlock = {
+  id?: string
+  type: "paragraph" | "header" | "list" | "quote"
+  data: any
+}
+
+export type ReviewPreview = Pick<
+  Review,
+  | "reviewId"
+  | "publishedStatus"
+  | "author"
+  | "title"
+  | "likesCount"
+  | "createdAt"
+> & { album: AlbumInfo }
 
 export type Album = {
   albumId: string // Spotify ID
   spotifyUri: string
   spotifyUrl: string
   name: string
-  diskNumber: number
-  artists: Artist[]
+  artists: ArtistInfo[]
   tracks: Track[]
   coverUrl: string
   releaseDate: Date
-  genres: string[]
 }
+
+export type AlbumInfo = Pick<Album, "albumId" | "name" | "artists" | "coverUrl">
 
 export type Artist = {
   artistId: string // Spotify ID
   spotifyUri: string
-  //   spotifyUrl: string
+  spotifyUrl: string
   name: string
   imageUrl: string
-  genres: string[]
 }
+
+export type ArtistInfo = Pick<Artist, "artistId" | "name">
 
 export type Track = {
   trackId: string // Spotify ID
@@ -59,5 +90,4 @@ export type Track = {
   title: string
   durationMs: number
   trackNumber: number
-  previewUrl: string
 }

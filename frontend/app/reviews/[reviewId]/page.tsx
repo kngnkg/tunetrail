@@ -1,10 +1,10 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
+import { getReview } from "@/service/review/get-review"
 
 import { env } from "@/env.mjs"
-import { getReview } from "@/lib/get-review"
 import { FollowButton } from "@/components/follow-button"
-import { ReviewContent } from "@/components/review-content"
+import { ReviewContent } from "@/components/reviews/review-content"
 import { TimeStamp } from "@/components/timestamp"
 import { UserAvatar } from "@/components/user-avatar"
 
@@ -19,7 +19,7 @@ export default async function ReviewPage({ params }: ReviewPageProps) {
     notFound()
   }
 
-  const pathToUser = `/${review.author.displayId}`
+  const pathToUser = `/${review.author.username}`
 
   return (
     <div className="flex justify-center">
@@ -31,13 +31,13 @@ export default async function ReviewPage({ params }: ReviewPageProps) {
             <UserAvatar user={review.author} />
           </Link>
           <div className="flex flex-col">
-            <Link href={pathToUser}>{review.author.name}</Link>
+            <Link href={pathToUser}>{review.author.displayName}</Link>
             <div className="flex gap-2 items-center">
               <TimeStamp date={review.createdAt} />
             </div>
           </div>
           <div className="ml-4">
-            <FollowButton user={review.author} />
+            <FollowButton user={review.author} following={false} />
           </div>
         </section>
         <section>コメント欄(sheet)</section>

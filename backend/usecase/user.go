@@ -4,56 +4,67 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"time"
 
 	"github.com/kngnkg/tunetrail/backend/entity"
 	"github.com/kngnkg/tunetrail/backend/infra/repository"
 	"github.com/kngnkg/tunetrail/backend/logger"
 )
 
+var ErrorDisplayIdAlreadyExists = errors.New("usecase: display id already exists")
+
 type UserUseCase struct {
 	DB       repository.DBAccesser
 	userRepo UserRepository
-	// userFollowRepo UserFollowRepository
 }
 
 func NewUserUseCase(db repository.DBAccesser, userRepo UserRepository) *UserUseCase {
 	return &UserUseCase{
 		DB:       db,
 		userRepo: userRepo,
-		// userFollowRepo: userFollowRepo,
 	}
 }
 
-type UserResponse struct {
-	UserId         entity.UserId
-	DisplayId      string
-	Name           string
-	AvatarUrl      string
-	Bio            string
-	FollowersCount int
-	FollowingCount int
-	CreatedAt      time.Time
-	UpdatedAt      time.Time
+type UserListResponse struct {
+	Users      []*entity.User
+	NextCursor entity.ImmutableId
 }
 
-func NewUserResponse(user *entity.User) *UserResponse {
-	return &UserResponse{
-		UserId:         user.UserId,
-		DisplayId:      user.DisplayId,
-		Name:           user.Name,
-		AvatarUrl:      user.AvatarUrl,
-		Bio:            user.Bio,
-		FollowersCount: user.FollowersCount,
-		FollowingCount: user.FollowingCount,
-		CreatedAt:      user.CreatedAt,
-		UpdatedAt:      user.UpdatedAt,
+func (uc *UserUseCase) ListUsers(ctx context.Context, immutableId entity.ImmutableId, limit int) (*UserListResponse, error) {
+	// 次のページがあるかどうかを判定するために、limit+1件取得する
+	users, err := uc.userRepo.ListUsers(ctx, uc.DB, immutableId, limit+1)
+	if err != nil {
+		return nil, err
 	}
+
+	nextCursor := ""
+	if len(users) > limit {
+		// limit を超えた最初の要素を取得
+		nextCursor = string(users[limit].ImmutableId)
+	}
+	// limit までの要素を取得
+	users = users[:limit]
+
+	resp := &UserListResponse{
+		Users:      users,
+		NextCursor: entity.ImmutableId(nextCursor),
+	}
+	return resp, nil
 }
 
-var ErrorDisplayIdAlreadyExists = errors.New("usecase: display id already exists")
+func (uc *UserUseCase) GetByUsername(ctx context.Context, username entity.Username) (*entity.User, error) {
+	user, err := uc.userRepo.GetUserByUsername(ctx, uc.DB, username)
+	if err != nil {
+		return nil, err
+	}
+	if user == nil {
+		return nil, nil
+	}
 
-func (uc *UserUseCase) Store(ctx context.Context, user *entity.User) (*UserResponse, error) {
+	// TODO: フォロー数等の情報を取得する
+	return user, nil
+}
+
+func (uc *UserUseCase) Store(ctx context.Context, user *entity.User) (*entity.User, error) {
 	tx, err := uc.DB.BeginTxx(ctx, nil)
 	if err != nil {
 		return nil, err
@@ -78,44 +89,5 @@ func (uc *UserUseCase) Store(ctx context.Context, user *entity.User) (*UserRespo
 		return nil, err
 	}
 
-	resp := NewUserResponse(user)
-	return resp, nil
+	return user, nil
 }
-
-func (uc *UserUseCase) GetById(ctx context.Context, userId entity.UserId) (*UserResponse, error) {
-	user, err := uc.userRepo.GetUserById(ctx, uc.DB, userId)
-	if err != nil {
-		return nil, err
-	}
-	if user == nil {
-		return nil, nil
-	}
-
-	// TODO: フォロー数等の情報を取得する
-	resp := NewUserResponse(user)
-	return resp, nil
-}
-
-// func (uc *UserUseCase) GetFollowersById(ctx context.Context, sourceId, targetId entity.UserId, nextCursor string, limit int) ([]*UserResponse, error) {
-// 	ufs, err := uc.userFollowRepo.GetUserFollowByUserIds(ctx, uc.DB, sourceId, targetId)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	var followerIds []entity.UserId
-// 	for _, uf := range ufs {
-// 		followerIds = append(followerIds, uf.UserId)
-// 	}
-
-// 	users, err := uc.userRepo.GetUserByIds(ctx, uc.DB, followerIds)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	var resps []*UserResponse
-// 	for _, user := range users {
-// 		resps = append(resps, NewUserResponse(user))
-// 	}
-
-// 	return resps, nil
-// }
