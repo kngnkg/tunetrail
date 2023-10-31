@@ -2,11 +2,11 @@ import Image from "next/image"
 import Link from "next/link"
 import { Review } from "@/types"
 
+import { FollowButton } from "../follow-button"
+import { TimeStamp } from "../timestamp"
+import { Button } from "../ui/button"
+import { UserAvatar } from "../user-avatar"
 import { Content } from "./content"
-import { FollowButton } from "./follow-button"
-import { TimeStamp } from "./timestamp"
-import { Button } from "./ui/button"
-import { UserAvatar } from "./user-avatar"
 
 interface ReviewContentProps {
   review: Review
