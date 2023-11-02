@@ -4,7 +4,7 @@ import useSWRInfinite from "swr/infinite"
 
 import { clientFetcher } from "@/lib/fetcher"
 
-import { transformUser } from "../service/transform"
+import { transformUser } from "./transform"
 
 interface UseUsersProps {
   endpoint: string

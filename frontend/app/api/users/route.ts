@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
-import { toUser } from "@/service/api/transform"
-import listUsers, { ListUsersParams } from "@/service/api/user/list-users"
+import { toUser } from "@/service/transform"
+import listUsers, { ListUsersParams } from "@/service/user/list-users"
 
 import { errBadRequest, errInternal, errNotFound } from "../response"
 
