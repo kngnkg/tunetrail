@@ -1,16 +1,37 @@
 import { notFound } from "next/navigation"
-import { getReview } from "@/service/review/get-review"
+import getAlbum from "@/service/album/get-album"
+import getReviewById from "@/service/review/get-review"
+import { toReview } from "@/service/transform"
+import { Review } from "@/types"
 
-import { env } from "@/env.mjs"
 import { ReviewForm } from "@/components/reviews/review-form"
 
 interface EditorPageProps {
   params: { reviewId: string }
 }
 
+// TODO: 認証済みユーザー専用のエンドポイントを作る
+const getLoginUserReview = async (reviewId: string): Promise<Review | null> => {
+  try {
+    const reviewResp = await getReviewById(reviewId)
+
+    if (!reviewResp) {
+      return null
+    }
+
+    const albumResp = await getAlbum(reviewResp.getAlbumid())
+
+    const review = toReview(reviewResp, albumResp)
+
+    return review
+  } catch (e) {
+    console.error(e)
+    return null
+  }
+}
+
 export default async function EditorPage({ params }: EditorPageProps) {
-  // TODO: 認証済みユーザー専用のエンドポイントを作る
-  const review = await getReview(`${env.API_ROOT}/reviews/${params.reviewId}`)
+  const review = await getLoginUserReview(params.reviewId)
 
   if (!review) {
     notFound()

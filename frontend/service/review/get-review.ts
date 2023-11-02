@@ -1,24 +1,18 @@
-import { transformReview } from "@/service/transform"
-import { Review } from "@/types"
+import { GetReviewByIdRequest, Review } from "@/generated/review/review_pb"
 
-export async function getReview(
-  resource: RequestInfo,
-  init?: RequestInit
+import { client } from "./client"
+
+export default function getReviewById(
+  reviewId: string
 ): Promise<Review | null> {
-  try {
-    const res = await fetch(resource, init)
+  return new Promise((resolve, reject) => {
+    const req = new GetReviewByIdRequest()
+    req.setReviewid(reviewId)
 
-    if (!res.ok) {
-      throw new Error(res.statusText)
-    }
-
-    const data = await res.json()
-
-    const review = transformReview(data)
-
-    return review
-  } catch (error) {
-    console.error(error)
-    return null
-  }
+    client.getReviewById(req, (err, response) => {
+      if (err) reject(err)
+      if (!response) return resolve(null)
+      resolve(response)
+    })
+  })
 }
