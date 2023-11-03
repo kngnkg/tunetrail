@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 
+	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/auth"
 	"github.com/kngnkg/tunetrail/backend/entity"
 	"github.com/kngnkg/tunetrail/backend/gen/review"
 	"github.com/kngnkg/tunetrail/backend/helper"
@@ -14,18 +15,40 @@ import (
 
 type reviewServer struct {
 	review.UnimplementedReviewServiceServer
-	uc        *usecase.ReviewUseCase
+	auth      *Auth
 	validator *validator.Validator
+	uc        *usecase.ReviewUseCase
 }
 
-func NewReviewServer(uc *usecase.ReviewUseCase, v *validator.Validator) review.ReviewServiceServer {
+func NewReviewServer(a *Auth, v *validator.Validator, uc *usecase.ReviewUseCase) review.ReviewServiceServer {
 	return &reviewServer{
-		uc:        uc,
+		auth:      a,
 		validator: v,
+		uc:        uc,
 	}
 }
 
 const DefaultLimit = 20
+
+// 認証を必要とするメソッドを定義
+var authRequiredMethodsReview = map[string]bool{
+	"/review.ReviewService/ListReviews":   false,
+	"/review.ReviewService/GetReviewById": false,
+	"/review.ReviewService/CreateReview":  true,
+	"/review.ReviewService/UpdateReview":  true,
+	"/review.ReviewService/DeleteReview":  true,
+}
+
+var _ grpc_auth.ServiceAuthFuncOverride = (*reviewServer)(nil)
+
+func (s *reviewServer) AuthFuncOverride(ctx context.Context, fullMethodName string) (context.Context, error) {
+	// 認証を必要とするメソッドであるかどうかを判定
+	if authRequiredMethodsReview[fullMethodName] {
+		return s.auth.AuthFunc(ctx)
+	}
+
+	return ctx, nil
+}
 
 func (s *reviewServer) ListReviews(ctx context.Context, in *review.ListReviewsRequest) (*review.ReviewList, error) {
 	decoded, err := helper.DecodeCursor(in.Cursor)
