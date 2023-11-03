@@ -31,7 +31,7 @@ func (r *ReviewRepository) ListReviews(ctx context.Context, db Executor, reviewI
 	reviews := []*entity.Review{}
 	err := db.SelectContext(ctx, &reviews, query, args...)
 	if err != nil {
-		logger.FromContent(ctx).Error("failed to get reviews.", err)
+		logger.FromContext(ctx).Error("failed to get reviews.", err)
 		return nil, err
 	}
 
@@ -65,7 +65,7 @@ func (r *ReviewRepository) StoreReview(ctx context.Context, db Executor, review 
 	err := db.QueryRowxContext(ctx, query, review.Author.ImmutableId, review.AlbumId, review.Title, review.Content, review.PublishedStatus).
 		StructScan(review)
 	if err != nil {
-		logger.FromContent(ctx).Error("failed to store review.", err)
+		logger.FromContext(ctx).Error("failed to store review.", err)
 		return nil, err
 	}
 
@@ -82,7 +82,7 @@ func (r *ReviewRepository) UpdateReview(ctx context.Context, db Executor, review
 	err := db.QueryRowxContext(ctx, query, review.Title, review.Content, review.PublishedStatus, review.ReviewId).
 		StructScan(review)
 	if err != nil {
-		logger.FromContent(ctx).Error("failed to update review.", err)
+		logger.FromContext(ctx).Error("failed to update review.", err)
 		return nil, err
 	}
 
@@ -94,7 +94,7 @@ func (r *ReviewRepository) DeleteReview(ctx context.Context, db Executor, review
 
 	_, err := db.ExecContext(ctx, query, reviewId)
 	if err != nil {
-		logger.FromContent(ctx).Error("failed to delete review.", err)
+		logger.FromContext(ctx).Error("failed to delete review.", err)
 		return err
 	}
 

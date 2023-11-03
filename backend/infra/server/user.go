@@ -7,7 +7,6 @@ import (
 	"github.com/kngnkg/tunetrail/backend/entity"
 	"github.com/kngnkg/tunetrail/backend/gen/user"
 	"github.com/kngnkg/tunetrail/backend/helper"
-	"github.com/kngnkg/tunetrail/backend/logger"
 	"github.com/kngnkg/tunetrail/backend/usecase"
 	"github.com/kngnkg/tunetrail/backend/validator"
 )
@@ -16,20 +15,16 @@ type userServer struct {
 	user.UnimplementedUserServiceServer
 	usecase   *usecase.UserUseCase
 	validator *validator.Validator
-	logger    *logger.Logger
 }
 
-func NewUserServer(uc *usecase.UserUseCase, v *validator.Validator, l *logger.Logger) user.UserServiceServer {
+func NewUserServer(uc *usecase.UserUseCase, v *validator.Validator) user.UserServiceServer {
 	return &userServer{
 		usecase:   uc,
 		validator: v,
-		logger:    l,
 	}
 }
 
 func (s *userServer) ListUsers(ctx context.Context, in *user.ListUsersRequest) (*user.UserList, error) {
-	ctx = logger.WithContent(ctx, s.logger)
-
 	decoded, err := helper.DecodeCursor(in.Cursor)
 	if err != nil {
 		return nil, invalidArgument(ctx, err)
@@ -67,8 +62,6 @@ func (s *userServer) ListUsers(ctx context.Context, in *user.ListUsersRequest) (
 }
 
 func (s *userServer) GetUserByUsername(ctx context.Context, in *user.GetUserByUsernameRequest) (*user.User, error) {
-	ctx = logger.WithContent(ctx, s.logger)
-
 	var b struct {
 		Username string `validate:"required,username"`
 	}
@@ -90,8 +83,6 @@ func (s *userServer) GetUserByUsername(ctx context.Context, in *user.GetUserByUs
 }
 
 func (s *userServer) CreateUser(ctx context.Context, in *user.CreateUserRequest) (*user.User, error) {
-	ctx = logger.WithContent(ctx, s.logger)
-
 	u := &entity.User{
 		Username:    entity.Username(in.Username),
 		ImmutableId: entity.ImmutableId(in.ImmutableId),

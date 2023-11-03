@@ -74,7 +74,7 @@ func (uc *UserUseCase) Store(ctx context.Context, user *entity.User) (*entity.Us
 	if err != nil {
 		defer func() {
 			if err := tx.Rollback(); err != nil {
-				logger.FromContent(ctx).Error("failed to rollback transaction: %v", err)
+				logger.FromContext(ctx).Error("failed to rollback transaction: %v", err)
 			}
 		}()
 

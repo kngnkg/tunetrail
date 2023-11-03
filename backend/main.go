@@ -52,17 +52,21 @@ func main() {
 	userUc := usecase.NewUserUseCase(db, ur)
 	reviewUc := usecase.NewReviewUseCase(db, rr, ur)
 
-	s := grpc.NewServer()
+	li := server.NewLoggingInterceptor(l)
+
+	s := grpc.NewServer(
+		grpc.UnaryInterceptor(li.UnaryLoggingInterceptor),
+	)
 
 	v := validator.New()
 
-	helloworldServer := server.NewHelloworldServer(l)
+	helloworldServer := server.NewHelloworldServer()
 	helloworld.RegisterGreeterServer(s, helloworldServer)
 
-	userServer := server.NewUserServer(userUc, v, l)
+	userServer := server.NewUserServer(userUc, v)
 	user.RegisterUserServiceServer(s, userServer)
 
-	reviewServer := server.NewReviewServer(reviewUc, v, l)
+	reviewServer := server.NewReviewServer(reviewUc, v)
 	review.RegisterReviewServiceServer(s, reviewServer)
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%v", cfg.Port))

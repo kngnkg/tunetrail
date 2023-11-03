@@ -7,7 +7,6 @@ import (
 	"github.com/kngnkg/tunetrail/backend/entity"
 	"github.com/kngnkg/tunetrail/backend/gen/review"
 	"github.com/kngnkg/tunetrail/backend/helper"
-	"github.com/kngnkg/tunetrail/backend/logger"
 	"github.com/kngnkg/tunetrail/backend/usecase"
 	"github.com/kngnkg/tunetrail/backend/validator"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -17,22 +16,18 @@ type reviewServer struct {
 	review.UnimplementedReviewServiceServer
 	uc        *usecase.ReviewUseCase
 	validator *validator.Validator
-	logger    *logger.Logger
 }
 
-func NewReviewServer(uc *usecase.ReviewUseCase, v *validator.Validator, l *logger.Logger) review.ReviewServiceServer {
+func NewReviewServer(uc *usecase.ReviewUseCase, v *validator.Validator) review.ReviewServiceServer {
 	return &reviewServer{
 		uc:        uc,
 		validator: v,
-		logger:    l,
 	}
 }
 
 const DefaultLimit = 20
 
 func (s *reviewServer) ListReviews(ctx context.Context, in *review.ListReviewsRequest) (*review.ReviewList, error) {
-	ctx = logger.WithContent(ctx, s.logger)
-
 	decoded, err := helper.DecodeCursor(in.Cursor)
 	if err != nil {
 		return nil, invalidArgument(ctx, err)
@@ -84,8 +79,6 @@ func toReviewList(reviews []*entity.Review, nextCursor string) *review.ReviewLis
 }
 
 func (s *reviewServer) GetReviewById(ctx context.Context, in *review.GetReviewByIdRequest) (*review.Review, error) {
-	ctx = logger.WithContent(ctx, s.logger)
-
 	req := struct {
 		ReviewId string `validate:"required,uuid4"`
 	}{
@@ -108,8 +101,6 @@ func (s *reviewServer) GetReviewById(ctx context.Context, in *review.GetReviewBy
 }
 
 func (s *reviewServer) CreateReview(ctx context.Context, in *review.CreateReviewRequest) (*review.Review, error) {
-	ctx = logger.WithContent(ctx, s.logger)
-
 	// TODO: ここでのバリデーションはどうするか
 	req := struct {
 		AuthorId        entity.ImmutableId     `validate:"required"`
@@ -138,8 +129,6 @@ func (s *reviewServer) CreateReview(ctx context.Context, in *review.CreateReview
 }
 
 func (s *reviewServer) UpdateReview(ctx context.Context, in *review.UpdateReviewRequest) (*review.Review, error) {
-	ctx = logger.WithContent(ctx, s.logger)
-
 	req := struct {
 		ReviewId        string                 `validate:"required,uuid4"`
 		Title           string                 `validate:"required"`
@@ -165,8 +154,6 @@ func (s *reviewServer) UpdateReview(ctx context.Context, in *review.UpdateReview
 }
 
 func (s *reviewServer) DeleteReview(ctx context.Context, in *review.DeleteReviewRequest) (*emptypb.Empty, error) {
-	ctx = logger.WithContent(ctx, s.logger)
-
 	req := struct {
 		ReviewId string `validate:"required,uuid4"`
 	}{
