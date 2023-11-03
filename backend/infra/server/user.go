@@ -10,6 +10,7 @@ import (
 	"github.com/kngnkg/tunetrail/backend/helper"
 	"github.com/kngnkg/tunetrail/backend/usecase"
 	"github.com/kngnkg/tunetrail/backend/validator"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 type userServer struct {
@@ -31,6 +32,7 @@ func NewUserServer(a *Auth, v *validator.Validator, uc *usecase.UserUseCase) use
 var authRequiredMethodsUser = map[string]bool{
 	"/user.UserService/ListUsers":         false,
 	"/user.UserService/GetUserByUsername": false,
+	"/user.UserService/GetMe":             true,
 	"/user.UserService/CreateUser":        true,
 }
 
@@ -103,17 +105,19 @@ func (s *userServer) GetUserByUsername(ctx context.Context, in *user.GetUserByUs
 	return toUser(res), nil
 }
 
-// func (s *userServer) GetMe(ctx context.Context, in *emptypb.Empty) (*user.User, error) {
-// 	res, err := s.usecase.GetMe(ctx, entity.ImmutableId("TODO"))
-// 	if err != nil {
-// 		return nil, internal(ctx, err)
-// 	}
-// 	if res == nil {
-// 		return nil, notFound(ctx, err)
-// 	}
+func (s *userServer) GetMe(ctx context.Context, in *emptypb.Empty) (*user.User, error) {
+	immutableId := GetImmutableIdFromCtx(ctx)
 
-// 	return toUser(res), nil
-// }
+	res, err := s.usecase.GetMe(ctx, entity.ImmutableId(immutableId))
+	if err != nil {
+		return nil, internal(ctx, err)
+	}
+	if res == nil {
+		return nil, notFound(ctx, err)
+	}
+
+	return toUser(res), nil
+}
 
 func (s *userServer) CreateUser(ctx context.Context, in *user.CreateUserRequest) (*user.User, error) {
 	u := &entity.User{

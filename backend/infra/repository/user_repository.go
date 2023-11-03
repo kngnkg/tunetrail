@@ -68,6 +68,42 @@ func (r *UserRepository) ListUsersById(ctx context.Context, db Executor, userIds
 	return users, nil
 }
 
+func (r *UserRepository) GetUserByUsername(ctx context.Context, db Executor, username entity.Username) (*entity.User, error) {
+	query := `
+		SELECT user_id, username, display_name, avatar_url, bio, created_at, updated_at
+		FROM users
+		WHERE username = $1`
+
+	u := &entity.User{}
+	err := db.GetContext(ctx, u, query, username)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return u, nil
+}
+
+func (r *UserRepository) GetUserByImmutableId(ctx context.Context, db Executor, immutableId entity.ImmutableId) (*entity.User, error) {
+	query := `
+		SELECT user_id, username, display_name, avatar_url, bio, created_at, updated_at
+		FROM users
+		WHERE user_id = $1`
+
+	u := &entity.User{}
+	err := db.GetContext(ctx, u, query, immutableId)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return u, nil
+}
+
 func (r *UserRepository) StoreUser(ctx context.Context, db Executor, user *entity.User) (*entity.User, error) {
 	query := `
 		INSERT INTO users (user_id, username, display_name, avatar_url, bio, created_at, updated_at)
@@ -87,22 +123,4 @@ func (r *UserRepository) StoreUser(ctx context.Context, db Executor, user *entit
 	}
 
 	return user, nil
-}
-
-func (r *UserRepository) GetUserByUsername(ctx context.Context, db Executor, username entity.Username) (*entity.User, error) {
-	query := `
-		SELECT user_id, username, display_name, avatar_url, bio, created_at, updated_at
-		FROM users
-		WHERE username = $1`
-
-	u := &entity.User{}
-	err := db.GetContext(ctx, u, query, username)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, nil
-		}
-		return nil, err
-	}
-
-	return u, nil
 }

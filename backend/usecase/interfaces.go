@@ -22,6 +22,7 @@ type UserRepository interface {
 	ListUsers(ctx context.Context, db repository.Executor, immutableId entity.ImmutableId, limit int) ([]*entity.User, error)
 	ListUsersById(ctx context.Context, db repository.Executor, userIds []entity.ImmutableId) ([]*entity.User, error)
 	GetUserByUsername(ctx context.Context, db repository.Executor, username entity.Username) (*entity.User, error)
+	GetUserByImmutableId(ctx context.Context, db repository.Executor, immutableId entity.ImmutableId) (*entity.User, error)
 	StoreUser(ctx context.Context, db repository.Executor, user *entity.User) (*entity.User, error)
 }
 
