@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 
+	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/auth"
 	"github.com/kngnkg/tunetrail/backend/entity"
 	"github.com/kngnkg/tunetrail/backend/gen/user"
 	"github.com/kngnkg/tunetrail/backend/helper"
@@ -13,15 +14,35 @@ import (
 
 type userServer struct {
 	user.UnimplementedUserServiceServer
-	usecase   *usecase.UserUseCase
+	auth      *Auth
 	validator *validator.Validator
+	usecase   *usecase.UserUseCase
 }
 
-func NewUserServer(uc *usecase.UserUseCase, v *validator.Validator) user.UserServiceServer {
+func NewUserServer(a *Auth, v *validator.Validator, uc *usecase.UserUseCase) user.UserServiceServer {
 	return &userServer{
-		usecase:   uc,
+		auth:      a,
 		validator: v,
+		usecase:   uc,
 	}
+}
+
+// 認証を必要とするメソッドを定義
+var authRequiredMethodsUser = map[string]bool{
+	"/user.UserService/ListUsers":         false,
+	"/user.UserService/GetUserByUsername": false,
+	"/user.UserService/CreateUser":        true,
+}
+
+var _ grpc_auth.ServiceAuthFuncOverride = (*userServer)(nil)
+
+func (s *userServer) AuthFuncOverride(ctx context.Context, fullMethodName string) (context.Context, error) {
+	// 認証を必要とするメソッドであるかどうかを判定
+	if authRequiredMethodsUser[fullMethodName] {
+		return s.auth.AuthFunc(ctx)
+	}
+
+	return ctx, nil
 }
 
 func (s *userServer) ListUsers(ctx context.Context, in *user.ListUsersRequest) (*user.UserList, error) {
@@ -81,6 +102,18 @@ func (s *userServer) GetUserByUsername(ctx context.Context, in *user.GetUserByUs
 
 	return toUser(res), nil
 }
+
+// func (s *userServer) GetMe(ctx context.Context, in *emptypb.Empty) (*user.User, error) {
+// 	res, err := s.usecase.GetMe(ctx, entity.ImmutableId("TODO"))
+// 	if err != nil {
+// 		return nil, internal(ctx, err)
+// 	}
+// 	if res == nil {
+// 		return nil, notFound(ctx, err)
+// 	}
+
+// 	return toUser(res), nil
+// }
 
 func (s *userServer) CreateUser(ctx context.Context, in *user.CreateUserRequest) (*user.User, error) {
 	u := &entity.User{
