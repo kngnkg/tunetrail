@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
 
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/auth"
@@ -10,7 +9,9 @@ import (
 	"github.com/kngnkg/tunetrail/backend/logger"
 )
 
-var tokenInfoKey struct{}
+type contextKeyTokenInfo string
+
+const contextKey contextKeyTokenInfo = "tokenInfo"
 
 type JWTer interface {
 	Parse(ctx context.Context, token string) (*entity.IDToken, error)
@@ -27,18 +28,13 @@ func NewAuth(j JWTer) *Auth {
 }
 
 func (i *Auth) AuthFunc(ctx context.Context) (context.Context, error) {
-	logger.FromContext(ctx).Debug("AuthFunc")
-
 	tokenString, err := grpc_auth.AuthFromMD(ctx, "bearer")
 	if err != nil {
 		return nil, err
 	}
 
-	logger.FromContext(ctx).Debug(fmt.Sprintf("tokenString: %s", tokenString))
-
 	token, err := i.j.Parse(ctx, tokenString)
 	if err != nil {
-		logger.FromContext(ctx).Debug(fmt.Sprintf("unauthorized. token: %s", token))
 		return nil, unauthenticated(ctx, err)
 	}
 
@@ -48,8 +44,13 @@ func (i *Auth) AuthFunc(ctx context.Context) (context.Context, error) {
 		),
 	)
 
-	logger.FromContext(ctx).Debug(fmt.Sprintf("authorized. token: %s", token))
+	return context.WithValue(ctx, contextKey, token), nil
+}
 
-	// WARNING: In production define your own type to avoid context collisions.
-	return context.WithValue(ctx, tokenInfoKey, token), nil
+func GetImmutableIdFromCtx(ctx context.Context) string {
+	tokenInfo, ok := ctx.Value(contextKey).(*entity.IDToken)
+	if !ok {
+		panic("tokenInfo not found in context")
+	}
+	return tokenInfo.Sub
 }

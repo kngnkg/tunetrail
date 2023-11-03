@@ -21,6 +21,8 @@ var global = (function() {
   return Function('return this')();
 }.call(null));
 
+var google_protobuf_empty_pb = require('google-protobuf/google/protobuf/empty_pb.js');
+goog.object.extend(proto, google_protobuf_empty_pb);
 goog.exportSymbol('proto.user.CreateUserRequest', null, global);
 goog.exportSymbol('proto.user.GetUserByUsernameRequest', null, global);
 goog.exportSymbol('proto.user.ListUsersRequest', null, global);

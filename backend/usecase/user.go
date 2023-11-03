@@ -64,6 +64,19 @@ func (uc *UserUseCase) GetByUsername(ctx context.Context, username entity.Userna
 	return user, nil
 }
 
+func (uc *UserUseCase) GetMe(ctx context.Context, immutableId entity.ImmutableId) (*entity.User, error) {
+	user, err := uc.userRepo.GetUserByImmutableId(ctx, uc.DB, immutableId)
+	if err != nil {
+		return nil, err
+	}
+	if user == nil {
+		return nil, nil
+	}
+
+	// TODO: フォロー数等の情報を取得する
+	return user, nil
+}
+
 func (uc *UserUseCase) Store(ctx context.Context, user *entity.User) (*entity.User, error) {
 	tx, err := uc.DB.BeginTxx(ctx, nil)
 	if err != nil {

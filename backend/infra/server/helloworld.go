@@ -21,7 +21,7 @@ func NewHelloworldServer(a *Auth) helloworld.GreeterServer {
 
 // 認証を必要とするメソッドを定義
 var authRequiredMethodsHW = map[string]bool{
-	"/helloworld.Greeter/SayHello": false,
+	"/helloworld.Greeter/SayHello": true,
 }
 
 var _ grpc_auth.ServiceAuthFuncOverride = (*helloworldServer)(nil)

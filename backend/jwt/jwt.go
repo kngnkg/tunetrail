@@ -2,7 +2,6 @@ package jwt
 
 import (
 	"context"
-	"log/slog"
 
 	"github.com/kngnkg/tunetrail/backend/entity"
 	"github.com/kngnkg/tunetrail/backend/logger"
@@ -21,10 +20,7 @@ func NewJWTer(ctx context.Context, jwkUrl string) (*JWTer, error) {
 		return nil, err
 	}
 
-	logger.FromContext(ctx).Debug(
-		"fetched jwk set",
-		slog.Any("keySet", keySet),
-	)
+	logger.FromContext(ctx).Info("fetched jwk set")
 
 	j := &JWTer{
 		keySet: keySet,
