@@ -34,12 +34,19 @@ type contextKeyLogger string
 const contextKey contextKeyLogger = "logger"
 
 // loggerをcontextに埋め込む
-func WithContent(content context.Context, logger *Logger) context.Context {
+func WithContext(content context.Context, logger *Logger) context.Context {
 	return context.WithValue(content, contextKey, logger)
 }
 
+// 子loggerを作成し、contextに埋め込む
+func WithFields(ctx context.Context, keyvals ...any) context.Context {
+	return WithContext(ctx, &Logger{
+		logger: FromContext(ctx).logger.With(keyvals...),
+	})
+}
+
 // contextからloggerを取り出す
-func FromContent(content context.Context) *Logger {
+func FromContext(content context.Context) *Logger {
 	logger, ok := content.Value(contextKey).(*Logger)
 	if !ok {
 		panic("logger not found in context")

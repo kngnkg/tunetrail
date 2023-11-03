@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"log/slog"
 
 	helloworld "github.com/kngnkg/tunetrail/backend/gen/helloworld"
 	"github.com/kngnkg/tunetrail/backend/logger"
@@ -10,15 +11,13 @@ import (
 // helloworldServerはhelloworld.GreeterServerインターフェースを満たす必要がある
 type helloworldServer struct {
 	helloworld.UnimplementedGreeterServer
-	logger *logger.Logger
 }
 
-func NewHelloworldServer(l *logger.Logger) helloworld.GreeterServer {
-	return &helloworldServer{logger: l}
+func NewHelloworldServer() helloworld.GreeterServer {
+	return &helloworldServer{}
 }
 
 func (s *helloworldServer) SayHello(ctx context.Context, in *helloworld.HelloRequest) (*helloworld.HelloReply, error) {
-	ctx = logger.WithContent(ctx, s.logger)
-	logger.FromContent(ctx).Info("SayHello", in)
+	logger.FromContext(ctx).Info("SayHello", slog.Any("in", in))
 	return &helloworld.HelloReply{Message: "Hello " + in.Name}, nil
 }

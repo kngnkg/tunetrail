@@ -3,6 +3,8 @@ package helper
 import (
 	"encoding/base64"
 	"strings"
+
+	"github.com/google/uuid"
 )
 
 func RemoveLastComma(s string) string {
@@ -24,4 +26,8 @@ func DecodeCursor(s string) (string, error) {
 		return "", err
 	}
 	return string(decoded), nil
+}
+
+func GenerateUUID() string {
+	return uuid.New().String()
 }
