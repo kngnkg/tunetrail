@@ -48,6 +48,38 @@ export namespace GetUserByUsernameRequest {
   }
 }
 
+export class UpdateUserRequest extends jspb.Message {
+  getUsername(): string;
+  setUsername(value: string): void;
+
+  getDisplayname(): string;
+  setDisplayname(value: string): void;
+
+  getAvatarurl(): string;
+  setAvatarurl(value: string): void;
+
+  getBio(): string;
+  setBio(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): UpdateUserRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: UpdateUserRequest): UpdateUserRequest.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: UpdateUserRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UpdateUserRequest;
+  static deserializeBinaryFromReader(message: UpdateUserRequest, reader: jspb.BinaryReader): UpdateUserRequest;
+}
+
+export namespace UpdateUserRequest {
+  export type AsObject = {
+    username: string,
+    displayname: string,
+    avatarurl: string,
+    bio: string,
+  }
+}
+
 export class User extends jspb.Message {
   getUsername(): string;
   setUsername(value: string): void;
