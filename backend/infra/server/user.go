@@ -137,6 +137,33 @@ func (s *userServer) CreateUser(ctx context.Context, in *emptypb.Empty) (*user.U
 	return toUser(res), nil
 }
 
+func (s *userServer) UpdateUser(ctx context.Context, in *user.UpdateUserRequest) (*user.User, error) {
+	token := GetToken(ctx)
+
+	req := struct {
+		Username    string `validate:"omitempty,username"`
+		DisplayName string `validate:"omitempty,min=3,max=30"`
+		AvatarUrl   string `validate:"omitempty,url"`
+		Bio         string `validate:"omitempty,max=1000"`
+	}{
+		Username:    in.Username,
+		DisplayName: in.DisplayName,
+		AvatarUrl:   in.AvatarUrl,
+		Bio:         in.Bio,
+	}
+
+	if err := s.validator.Validate(req); err != nil {
+		return nil, invalidArgument(ctx, err)
+	}
+
+	res, err := s.usecase.UpdateUser(ctx, entity.Username(req.Username), entity.ImmutableId(token.Sub), req.DisplayName, req.AvatarUrl, req.Bio)
+	if err != nil {
+		return nil, internal(ctx, err)
+	}
+
+	return toUser(res), nil
+}
+
 func toUserList(users []*entity.User, nextCursor string) *user.UserList {
 	var us []*user.User
 	for _, u := range users {
