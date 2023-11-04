@@ -11,7 +11,7 @@ import (
 	"github.com/kngnkg/tunetrail/backend/logger"
 )
 
-var ErrorDisplayIdAlreadyExists = errors.New("usecase: display id already exists")
+var ErrorUsernameAlreadyExists = errors.New("usecase: username already exists")
 
 type UserUseCase struct {
 	DB       repository.DBAccesser
@@ -103,8 +103,8 @@ func (uc *UserUseCase) Store(ctx context.Context, immutableId entity.ImmutableId
 			}
 		}()
 
-		if errors.Is(err, repository.ErrorDisplayIdAlreadyExists) {
-			return nil, fmt.Errorf("%w: %w", ErrorDisplayIdAlreadyExists, err)
+		if errors.Is(err, repository.ErrorUsernameAlreadyExists) {
+			return nil, fmt.Errorf("%w: %w", ErrorUsernameAlreadyExists, err)
 		}
 
 		return nil, err
@@ -115,4 +115,50 @@ func (uc *UserUseCase) Store(ctx context.Context, immutableId entity.ImmutableId
 	}
 
 	return user, nil
+}
+
+func (uc *UserUseCase) UpdateUser(ctx context.Context, username entity.Username, immutableId entity.ImmutableId, displayName, avatarUrl, bio string) (*entity.User, error) {
+	user, err := uc.userRepo.GetUserByImmutableId(ctx, uc.DB, immutableId)
+	if err != nil {
+		return nil, err
+	}
+	if user == nil {
+		return nil, fmt.Errorf("user not found: immutableId=%s", immutableId)
+	}
+
+	if username != "" && user.Username != username {
+		user.Username = username
+	}
+	if displayName != "" && user.DisplayName != displayName {
+		user.DisplayName = displayName
+	}
+	if avatarUrl != "" && user.AvatarUrl != avatarUrl {
+		user.AvatarUrl = avatarUrl
+	}
+	if bio != "" && user.Bio != bio {
+		user.Bio = bio
+	}
+
+	tx, err := uc.DB.BeginTxx(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	user, err = uc.userRepo.UpdateUser(ctx, tx, user)
+	if err != nil {
+		defer func() {
+			if err := tx.Rollback(); err != nil {
+				logger.FromContext(ctx).Error("failed to rollback transaction: %v", err)
+			}
+		}()
+
+		return nil, err
+	}
+
+	if err = tx.Commit(); err != nil {
+		return nil, err
+	}
+
+	return user, nil
+
 }

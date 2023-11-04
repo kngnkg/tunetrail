@@ -38,6 +38,17 @@ function deserialize_user_ListUsersRequest(buffer_arg) {
   return user_pb.ListUsersRequest.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
+function serialize_user_UpdateUserRequest(arg) {
+  if (!(arg instanceof user_pb.UpdateUserRequest)) {
+    throw new Error('Expected argument of type user.UpdateUserRequest');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_user_UpdateUserRequest(buffer_arg) {
+  return user_pb.UpdateUserRequest.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
 function serialize_user_User(arg) {
   if (!(arg instanceof user_pb.User)) {
     throw new Error('Expected argument of type user.User');
@@ -103,6 +114,17 @@ var UserServiceService = exports.UserServiceService = {
     responseType: user_pb.User,
     requestSerialize: serialize_google_protobuf_Empty,
     requestDeserialize: deserialize_google_protobuf_Empty,
+    responseSerialize: serialize_user_User,
+    responseDeserialize: deserialize_user_User,
+  },
+  updateUser: {
+    path: '/user.UserService/UpdateUser',
+    requestStream: false,
+    responseStream: false,
+    requestType: user_pb.UpdateUserRequest,
+    responseType: user_pb.User,
+    requestSerialize: serialize_user_UpdateUserRequest,
+    requestDeserialize: deserialize_user_UpdateUserRequest,
     responseSerialize: serialize_user_User,
     responseDeserialize: deserialize_user_User,
   },
