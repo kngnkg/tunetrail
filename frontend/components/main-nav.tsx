@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
 
 import { signIn } from "@/lib/auth-navigate"
-import { useLoginUser } from "@/hooks/auth/use-login-user"
 import { Icon } from "@/components/icon"
 
 import { Button } from "./ui/button"
