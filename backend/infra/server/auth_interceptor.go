@@ -47,10 +47,10 @@ func (i *Auth) AuthFunc(ctx context.Context) (context.Context, error) {
 	return context.WithValue(ctx, contextKey, token), nil
 }
 
-func GetImmutableIdFromCtx(ctx context.Context) string {
+func GetToken(ctx context.Context) *entity.IDToken {
 	tokenInfo, ok := ctx.Value(contextKey).(*entity.IDToken)
 	if !ok {
 		panic("tokenInfo not found in context")
 	}
-	return tokenInfo.Sub
+	return tokenInfo
 }

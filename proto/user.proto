@@ -9,20 +9,12 @@ service UserService {
   rpc ListUsers(ListUsersRequest) returns (UserList) {}
   rpc GetUserByUsername(GetUserByUsernameRequest) returns (User) {}
   rpc GetMe(google.protobuf.Empty) returns (User) {}
-  rpc CreateUser(CreateUserRequest) returns (User) {}
+  rpc CreateUser(google.protobuf.Empty) returns (User) {}
 }
 
 message ListUsersRequest {
   string cursor = 1;
   int32 limit = 2;
-}
-
-message CreateUserRequest {
-  string username = 1;
-  string immutableId = 2;
-  string displayName = 3;
-  string avatarUrl = 4;
-  string bio = 5;
 }
 
 message GetUserByUsernameRequest { string username = 1; }
