@@ -11,7 +11,7 @@ interface IUserServiceService extends grpc.ServiceDefinition<grpc.UntypedService
   listUsers: grpc.MethodDefinition<user_pb.ListUsersRequest, user_pb.UserList>;
   getUserByUsername: grpc.MethodDefinition<user_pb.GetUserByUsernameRequest, user_pb.User>;
   getMe: grpc.MethodDefinition<google_protobuf_empty_pb.Empty, user_pb.User>;
-  createUser: grpc.MethodDefinition<user_pb.CreateUserRequest, user_pb.User>;
+  createUser: grpc.MethodDefinition<google_protobuf_empty_pb.Empty, user_pb.User>;
 }
 
 export const UserServiceService: IUserServiceService;
@@ -20,7 +20,7 @@ export interface IUserServiceServer extends grpc.UntypedServiceImplementation {
   listUsers: grpc.handleUnaryCall<user_pb.ListUsersRequest, user_pb.UserList>;
   getUserByUsername: grpc.handleUnaryCall<user_pb.GetUserByUsernameRequest, user_pb.User>;
   getMe: grpc.handleUnaryCall<google_protobuf_empty_pb.Empty, user_pb.User>;
-  createUser: grpc.handleUnaryCall<user_pb.CreateUserRequest, user_pb.User>;
+  createUser: grpc.handleUnaryCall<google_protobuf_empty_pb.Empty, user_pb.User>;
 }
 
 export class UserServiceClient extends grpc.Client {
@@ -34,7 +34,7 @@ export class UserServiceClient extends grpc.Client {
   getMe(argument: google_protobuf_empty_pb.Empty, callback: grpc.requestCallback<user_pb.User>): grpc.ClientUnaryCall;
   getMe(argument: google_protobuf_empty_pb.Empty, metadataOrOptions: grpc.Metadata | grpc.CallOptions | null, callback: grpc.requestCallback<user_pb.User>): grpc.ClientUnaryCall;
   getMe(argument: google_protobuf_empty_pb.Empty, metadata: grpc.Metadata | null, options: grpc.CallOptions | null, callback: grpc.requestCallback<user_pb.User>): grpc.ClientUnaryCall;
-  createUser(argument: user_pb.CreateUserRequest, callback: grpc.requestCallback<user_pb.User>): grpc.ClientUnaryCall;
-  createUser(argument: user_pb.CreateUserRequest, metadataOrOptions: grpc.Metadata | grpc.CallOptions | null, callback: grpc.requestCallback<user_pb.User>): grpc.ClientUnaryCall;
-  createUser(argument: user_pb.CreateUserRequest, metadata: grpc.Metadata | null, options: grpc.CallOptions | null, callback: grpc.requestCallback<user_pb.User>): grpc.ClientUnaryCall;
+  createUser(argument: google_protobuf_empty_pb.Empty, callback: grpc.requestCallback<user_pb.User>): grpc.ClientUnaryCall;
+  createUser(argument: google_protobuf_empty_pb.Empty, metadataOrOptions: grpc.Metadata | grpc.CallOptions | null, callback: grpc.requestCallback<user_pb.User>): grpc.ClientUnaryCall;
+  createUser(argument: google_protobuf_empty_pb.Empty, metadata: grpc.Metadata | null, options: grpc.CallOptions | null, callback: grpc.requestCallback<user_pb.User>): grpc.ClientUnaryCall;
 }

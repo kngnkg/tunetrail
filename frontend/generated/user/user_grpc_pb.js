@@ -16,17 +16,6 @@ function deserialize_google_protobuf_Empty(buffer_arg) {
   return google_protobuf_empty_pb.Empty.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
-function serialize_user_CreateUserRequest(arg) {
-  if (!(arg instanceof user_pb.CreateUserRequest)) {
-    throw new Error('Expected argument of type user.CreateUserRequest');
-  }
-  return Buffer.from(arg.serializeBinary());
-}
-
-function deserialize_user_CreateUserRequest(buffer_arg) {
-  return user_pb.CreateUserRequest.deserializeBinary(new Uint8Array(buffer_arg));
-}
-
 function serialize_user_GetUserByUsernameRequest(arg) {
   if (!(arg instanceof user_pb.GetUserByUsernameRequest)) {
     throw new Error('Expected argument of type user.GetUserByUsernameRequest');
@@ -110,10 +99,10 @@ var UserServiceService = exports.UserServiceService = {
     path: '/user.UserService/CreateUser',
     requestStream: false,
     responseStream: false,
-    requestType: user_pb.CreateUserRequest,
+    requestType: google_protobuf_empty_pb.Empty,
     responseType: user_pb.User,
-    requestSerialize: serialize_user_CreateUserRequest,
-    requestDeserialize: deserialize_user_CreateUserRequest,
+    requestSerialize: serialize_google_protobuf_Empty,
+    requestDeserialize: deserialize_google_protobuf_Empty,
     responseSerialize: serialize_user_User,
     responseDeserialize: deserialize_user_User,
   },

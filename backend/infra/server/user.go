@@ -106,7 +106,8 @@ func (s *userServer) GetUserByUsername(ctx context.Context, in *user.GetUserByUs
 }
 
 func (s *userServer) GetMe(ctx context.Context, in *emptypb.Empty) (*user.User, error) {
-	immutableId := GetImmutableIdFromCtx(ctx)
+	token := GetToken(ctx)
+	immutableId := token.Sub
 
 	res, err := s.usecase.GetMe(ctx, entity.ImmutableId(immutableId))
 	if err != nil {
@@ -119,20 +120,10 @@ func (s *userServer) GetMe(ctx context.Context, in *emptypb.Empty) (*user.User, 
 	return toUser(res), nil
 }
 
-func (s *userServer) CreateUser(ctx context.Context, in *user.CreateUserRequest) (*user.User, error) {
-	u := &entity.User{
-		Username:    entity.Username(in.Username),
-		ImmutableId: entity.ImmutableId(in.ImmutableId),
-		DisplayName: in.DisplayName,
-		AvatarUrl:   in.AvatarUrl,
-		Bio:         in.Bio,
-	}
+func (s *userServer) CreateUser(ctx context.Context, in *emptypb.Empty) (*user.User, error) {
+	token := GetToken(ctx)
 
-	if err := s.validator.Validate(u); err != nil {
-		return nil, invalidArgument(ctx, err)
-	}
-
-	res, err := s.usecase.Store(ctx, u)
+	res, err := s.usecase.Store(ctx, entity.ImmutableId(token.Sub), token.Email)
 	if err != nil {
 		if errors.Is(err, usecase.ErrorDisplayIdAlreadyExists) {
 			return nil, alreadyExists(ctx, err)

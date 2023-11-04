@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/kngnkg/tunetrail/backend/entity"
 	"github.com/kngnkg/tunetrail/backend/infra/repository"
@@ -77,7 +78,18 @@ func (uc *UserUseCase) GetMe(ctx context.Context, immutableId entity.ImmutableId
 	return user, nil
 }
 
-func (uc *UserUseCase) Store(ctx context.Context, user *entity.User) (*entity.User, error) {
+func (uc *UserUseCase) Store(ctx context.Context, immutableId entity.ImmutableId, email string) (*entity.User, error) {
+	// メールアドレスのローカルパートを username および DisplayName として使用する
+	localPart := email[:strings.Index(email, "@")]
+
+	user := &entity.User{
+		Username:    entity.Username(localPart),
+		ImmutableId: immutableId,
+		DisplayName: localPart,
+		AvatarUrl:   "",
+		Bio:         "",
+	}
+
 	tx, err := uc.DB.BeginTxx(ctx, nil)
 	if err != nil {
 		return nil, err

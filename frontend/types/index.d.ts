@@ -16,7 +16,10 @@ export type User = {
   updatedAt: Date
 }
 
-export type LoginUser = Omit<User, "followed" | "following">
+export type LoginUser = Omit<
+  User,
+  "followed" | "following" | "followersCount" | "followingCount"
+>
 
 export type Author = Pick<
   User,
