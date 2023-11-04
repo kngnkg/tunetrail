@@ -110,13 +110,37 @@ func (r *UserRepository) StoreUser(ctx context.Context, db Executor, user *entit
 		VALUES (:user_id, :username, :display_name, :avatar_url, :bio, NOW(), NOW())
 		RETURNING user_id, username, display_name, avatar_url, bio, created_at, updated_at;`
 
+	user, err := namedExecUser(ctx, db, query, user)
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
+
+func (r *UserRepository) UpdateUser(ctx context.Context, db Executor, user *entity.User) (*entity.User, error) {
+	query := `
+		UPDATE users
+		SET username = :username,display_name = :display_name, avatar_url = :avatar_url, bio = :bio, updated_at = NOW()
+		WHERE user_id = :user_id
+		RETURNING user_id, username, display_name, avatar_url, bio, created_at, updated_at;`
+
+	user, err := namedExecUser(ctx, db, query, user)
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
+
+func namedExecUser(ctx context.Context, db Executor, query string, user *entity.User) (*entity.User, error) {
 	_, err := db.NamedExecContext(ctx, query, user)
 	if err != nil {
 		// 重複エラーの場合
 		var pqError *pq.Error
 		if errors.As(err, &pqError) && pqError.Code == ErrCodePostgresDuplicate {
 			if pqError.Constraint == ConstraintUsersDisplayId {
-				return nil, fmt.Errorf("%w: %w", ErrorDisplayIdAlreadyExists, err)
+				return nil, fmt.Errorf("%w: %w", ErrorUsernameAlreadyExists, err)
 			}
 		}
 		return nil, err

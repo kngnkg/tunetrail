@@ -34,6 +34,7 @@ var authRequiredMethodsUser = map[string]bool{
 	"/user.UserService/GetUserByUsername": false,
 	"/user.UserService/GetMe":             true,
 	"/user.UserService/CreateUser":        true,
+	"/user.UserService/UpdateUser":        true,
 }
 
 var _ grpc_auth.ServiceAuthFuncOverride = (*userServer)(nil)
@@ -53,25 +54,26 @@ func (s *userServer) ListUsers(ctx context.Context, in *user.ListUsersRequest) (
 		return nil, invalidArgument(ctx, err)
 	}
 
-	var b struct {
+	req := struct {
 		ImmutableId string `validate:"omitempty,uuid"`
 		Limit       int    `validate:"omitempty,max=50"`
+	}{
+		ImmutableId: decoded,
+		Limit:       int(in.Limit),
 	}
-	b.ImmutableId = decoded
-	b.Limit = int(in.Limit)
 
-	if err := s.validator.Validate(b); err != nil {
+	if err := s.validator.Validate(req); err != nil {
 		return nil, invalidArgument(ctx, err)
 	}
 
 	var limit int
-	if b.Limit == 0 {
+	if req.Limit == 0 {
 		limit = DefaultLimit
 	} else {
-		limit = b.Limit
+		limit = req.Limit
 	}
 
-	res, err := s.usecase.ListUsers(ctx, entity.ImmutableId(b.ImmutableId), limit)
+	res, err := s.usecase.ListUsers(ctx, entity.ImmutableId(req.ImmutableId), limit)
 	if err != nil {
 		return nil, internal(ctx, err)
 	}
@@ -85,12 +87,13 @@ func (s *userServer) ListUsers(ctx context.Context, in *user.ListUsersRequest) (
 }
 
 func (s *userServer) GetUserByUsername(ctx context.Context, in *user.GetUserByUsernameRequest) (*user.User, error) {
-	var b struct {
+	req := struct {
 		Username string `validate:"required,username"`
+	}{
+		Username: in.Username,
 	}
-	b.Username = in.Username
 
-	if err := s.validator.Validate(b); err != nil {
+	if err := s.validator.Validate(req); err != nil {
 		return nil, invalidArgument(ctx, err)
 	}
 
@@ -125,9 +128,36 @@ func (s *userServer) CreateUser(ctx context.Context, in *emptypb.Empty) (*user.U
 
 	res, err := s.usecase.Store(ctx, entity.ImmutableId(token.Sub), token.Email)
 	if err != nil {
-		if errors.Is(err, usecase.ErrorDisplayIdAlreadyExists) {
+		if errors.Is(err, usecase.ErrorUsernameAlreadyExists) {
 			return nil, alreadyExists(ctx, err)
 		}
+		return nil, internal(ctx, err)
+	}
+
+	return toUser(res), nil
+}
+
+func (s *userServer) UpdateUser(ctx context.Context, in *user.UpdateUserRequest) (*user.User, error) {
+	token := GetToken(ctx)
+
+	req := struct {
+		Username    string `validate:"omitempty,username"`
+		DisplayName string `validate:"omitempty,min=3,max=30"`
+		AvatarUrl   string `validate:"omitempty,url"`
+		Bio         string `validate:"omitempty,max=1000"`
+	}{
+		Username:    in.Username,
+		DisplayName: in.DisplayName,
+		AvatarUrl:   in.AvatarUrl,
+		Bio:         in.Bio,
+	}
+
+	if err := s.validator.Validate(req); err != nil {
+		return nil, invalidArgument(ctx, err)
+	}
+
+	res, err := s.usecase.UpdateUser(ctx, entity.Username(req.Username), entity.ImmutableId(token.Sub), req.DisplayName, req.AvatarUrl, req.Bio)
+	if err != nil {
 		return nil, internal(ctx, err)
 	}
 

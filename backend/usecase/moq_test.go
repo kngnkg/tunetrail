@@ -35,6 +35,9 @@ var _ UserRepository = &UserRepositoryMock{}
 //			StoreUserFunc: func(ctx context.Context, db repository.Executor, user *entity.User) (*entity.User, error) {
 //				panic("mock out the StoreUser method")
 //			},
+//			UpdateUserFunc: func(ctx context.Context, db repository.Executor, user *entity.User) (*entity.User, error) {
+//				panic("mock out the UpdateUser method")
+//			},
 //		}
 //
 //		// use mockedUserRepository in code that requires UserRepository
@@ -56,6 +59,9 @@ type UserRepositoryMock struct {
 
 	// StoreUserFunc mocks the StoreUser method.
 	StoreUserFunc func(ctx context.Context, db repository.Executor, user *entity.User) (*entity.User, error)
+
+	// UpdateUserFunc mocks the UpdateUser method.
+	UpdateUserFunc func(ctx context.Context, db repository.Executor, user *entity.User) (*entity.User, error)
 
 	// calls tracks calls to the methods.
 	calls struct {
@@ -106,12 +112,22 @@ type UserRepositoryMock struct {
 			// User is the user argument value.
 			User *entity.User
 		}
+		// UpdateUser holds details about calls to the UpdateUser method.
+		UpdateUser []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Db is the db argument value.
+			Db repository.Executor
+			// User is the user argument value.
+			User *entity.User
+		}
 	}
 	lockGetUserByImmutableId sync.RWMutex
 	lockGetUserByUsername    sync.RWMutex
 	lockListUsers            sync.RWMutex
 	lockListUsersById        sync.RWMutex
 	lockStoreUser            sync.RWMutex
+	lockUpdateUser           sync.RWMutex
 }
 
 // GetUserByImmutableId calls GetUserByImmutableIdFunc.
@@ -315,5 +331,45 @@ func (mock *UserRepositoryMock) StoreUserCalls() []struct {
 	mock.lockStoreUser.RLock()
 	calls = mock.calls.StoreUser
 	mock.lockStoreUser.RUnlock()
+	return calls
+}
+
+// UpdateUser calls UpdateUserFunc.
+func (mock *UserRepositoryMock) UpdateUser(ctx context.Context, db repository.Executor, user *entity.User) (*entity.User, error) {
+	if mock.UpdateUserFunc == nil {
+		panic("UserRepositoryMock.UpdateUserFunc: method is nil but UserRepository.UpdateUser was just called")
+	}
+	callInfo := struct {
+		Ctx  context.Context
+		Db   repository.Executor
+		User *entity.User
+	}{
+		Ctx:  ctx,
+		Db:   db,
+		User: user,
+	}
+	mock.lockUpdateUser.Lock()
+	mock.calls.UpdateUser = append(mock.calls.UpdateUser, callInfo)
+	mock.lockUpdateUser.Unlock()
+	return mock.UpdateUserFunc(ctx, db, user)
+}
+
+// UpdateUserCalls gets all the calls that were made to UpdateUser.
+// Check the length with:
+//
+//	len(mockedUserRepository.UpdateUserCalls())
+func (mock *UserRepositoryMock) UpdateUserCalls() []struct {
+	Ctx  context.Context
+	Db   repository.Executor
+	User *entity.User
+} {
+	var calls []struct {
+		Ctx  context.Context
+		Db   repository.Executor
+		User *entity.User
+	}
+	mock.lockUpdateUser.RLock()
+	calls = mock.calls.UpdateUser
+	mock.lockUpdateUser.RUnlock()
 	return calls
 }
