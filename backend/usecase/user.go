@@ -11,7 +11,7 @@ import (
 	"github.com/kngnkg/tunetrail/backend/logger"
 )
 
-var ErrorDisplayIdAlreadyExists = errors.New("usecase: display id already exists")
+var ErrorUsernameAlreadyExists = errors.New("usecase: username already exists")
 
 type UserUseCase struct {
 	DB       repository.DBAccesser
@@ -103,8 +103,8 @@ func (uc *UserUseCase) Store(ctx context.Context, immutableId entity.ImmutableId
 			}
 		}()
 
-		if errors.Is(err, repository.ErrorDisplayIdAlreadyExists) {
-			return nil, fmt.Errorf("%w: %w", ErrorDisplayIdAlreadyExists, err)
+		if errors.Is(err, repository.ErrorUsernameAlreadyExists) {
+			return nil, fmt.Errorf("%w: %w", ErrorUsernameAlreadyExists, err)
 		}
 
 		return nil, err

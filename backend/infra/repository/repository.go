@@ -50,5 +50,5 @@ var (
 )
 
 var (
-	ErrorDisplayIdAlreadyExists = errors.New("repository: display id already exists")
+	ErrorUsernameAlreadyExists = errors.New("repository: username already exists")
 )
