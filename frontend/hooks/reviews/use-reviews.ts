@@ -1,9 +1,9 @@
-import { transformReview } from "@/service/transform"
 import { ReviewPreview } from "@/types"
 import useSWRInfinite from "swr/infinite"
 import { number } from "zod"
 
 import { clientFetcher } from "@/lib/fetcher"
+import { transformReview } from "@/hooks/transform"
 
 interface UseReviewsProps {
   endpoint: string

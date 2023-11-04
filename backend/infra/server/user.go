@@ -4,32 +4,50 @@ import (
 	"context"
 	"errors"
 
+	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/auth"
 	"github.com/kngnkg/tunetrail/backend/entity"
 	"github.com/kngnkg/tunetrail/backend/gen/user"
 	"github.com/kngnkg/tunetrail/backend/helper"
-	"github.com/kngnkg/tunetrail/backend/logger"
 	"github.com/kngnkg/tunetrail/backend/usecase"
 	"github.com/kngnkg/tunetrail/backend/validator"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 type userServer struct {
 	user.UnimplementedUserServiceServer
-	usecase   *usecase.UserUseCase
+	auth      *Auth
 	validator *validator.Validator
-	logger    *logger.Logger
+	usecase   *usecase.UserUseCase
 }
 
-func NewUserServer(uc *usecase.UserUseCase, v *validator.Validator, l *logger.Logger) user.UserServiceServer {
+func NewUserServer(a *Auth, v *validator.Validator, uc *usecase.UserUseCase) user.UserServiceServer {
 	return &userServer{
-		usecase:   uc,
+		auth:      a,
 		validator: v,
-		logger:    l,
+		usecase:   uc,
 	}
 }
 
-func (s *userServer) ListUsers(ctx context.Context, in *user.ListUsersRequest) (*user.UserList, error) {
-	ctx = logger.WithContent(ctx, s.logger)
+// 認証を必要とするメソッドを定義
+var authRequiredMethodsUser = map[string]bool{
+	"/user.UserService/ListUsers":         false,
+	"/user.UserService/GetUserByUsername": false,
+	"/user.UserService/GetMe":             true,
+	"/user.UserService/CreateUser":        true,
+}
 
+var _ grpc_auth.ServiceAuthFuncOverride = (*userServer)(nil)
+
+func (s *userServer) AuthFuncOverride(ctx context.Context, fullMethodName string) (context.Context, error) {
+	// 認証を必要とするメソッドであるかどうかを判定
+	if authRequiredMethodsUser[fullMethodName] {
+		return s.auth.AuthFunc(ctx)
+	}
+
+	return ctx, nil
+}
+
+func (s *userServer) ListUsers(ctx context.Context, in *user.ListUsersRequest) (*user.UserList, error) {
 	decoded, err := helper.DecodeCursor(in.Cursor)
 	if err != nil {
 		return nil, invalidArgument(ctx, err)
@@ -67,8 +85,6 @@ func (s *userServer) ListUsers(ctx context.Context, in *user.ListUsersRequest) (
 }
 
 func (s *userServer) GetUserByUsername(ctx context.Context, in *user.GetUserByUsernameRequest) (*user.User, error) {
-	ctx = logger.WithContent(ctx, s.logger)
-
 	var b struct {
 		Username string `validate:"required,username"`
 	}
@@ -89,22 +105,25 @@ func (s *userServer) GetUserByUsername(ctx context.Context, in *user.GetUserByUs
 	return toUser(res), nil
 }
 
-func (s *userServer) CreateUser(ctx context.Context, in *user.CreateUserRequest) (*user.User, error) {
-	ctx = logger.WithContent(ctx, s.logger)
+func (s *userServer) GetMe(ctx context.Context, in *emptypb.Empty) (*user.User, error) {
+	token := GetToken(ctx)
+	immutableId := token.Sub
 
-	u := &entity.User{
-		Username:    entity.Username(in.Username),
-		ImmutableId: entity.ImmutableId(in.ImmutableId),
-		DisplayName: in.DisplayName,
-		AvatarUrl:   in.AvatarUrl,
-		Bio:         in.Bio,
+	res, err := s.usecase.GetMe(ctx, entity.ImmutableId(immutableId))
+	if err != nil {
+		return nil, internal(ctx, err)
+	}
+	if res == nil {
+		return nil, notFound(ctx, err)
 	}
 
-	if err := s.validator.Validate(u); err != nil {
-		return nil, invalidArgument(ctx, err)
-	}
+	return toUser(res), nil
+}
 
-	res, err := s.usecase.Store(ctx, u)
+func (s *userServer) CreateUser(ctx context.Context, in *emptypb.Empty) (*user.User, error) {
+	token := GetToken(ctx)
+
+	res, err := s.usecase.Store(ctx, entity.ImmutableId(token.Sub), token.Email)
 	if err != nil {
 		if errors.Is(err, usecase.ErrorDisplayIdAlreadyExists) {
 			return nil, alreadyExists(ctx, err)

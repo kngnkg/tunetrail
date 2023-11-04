@@ -1,8 +1,10 @@
 import { notFound } from "next/navigation"
-import { getUser } from "@/service/user/get-user"
+import { toUser } from "@/service/transform"
+import getUserByUsername from "@/service/user/get-user"
+import { User } from "@/types"
 
-import { env } from "@/env.mjs"
 import { FollowButton } from "@/components/follow-button"
+import { Header } from "@/components/header"
 import { MainNav } from "@/components/main-nav"
 import { MenuTab, MenuTabs } from "@/components/menu-tabs"
 import { UserAvatar } from "@/components/user-avatar"
@@ -13,12 +15,26 @@ interface UserLayoutProps {
   children: React.ReactNode
 }
 
+const getUser = async (username: string): Promise<User | null> => {
+  try {
+    const resp = await getUserByUsername(username)
+    if (!resp) {
+      return null
+    }
+
+    return toUser(resp)
+  } catch (e) {
+    console.error(e)
+    return null
+  }
+}
+
 export default async function UserLayout({
   params,
   children,
 }: UserLayoutProps) {
   const username = decodeURIComponent(params.username)
-  const user = await getUser(`${env.API_ROOT}/users/${username}`)
+  const user = await getUser(username)
 
   if (!user) {
     notFound()
@@ -40,9 +56,9 @@ export default async function UserLayout({
 
   return (
     <div className="flex flex-col min-h-screen">
-      <header className="container mt-10 sm:mt-0 sm:w-4/5">
+      <Header>
         <MainNav />
-      </header>
+      </Header>
       <main className="container flex-1">
         <div className="sm:w-4/6 mx-auto">
           {/* ユーザー情報 */}

@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
-import listAlbums from "@/service/api/album/list-albums"
-import listReviews, {
-  ListReviewsParams,
-} from "@/service/api/review/list-reviews"
-import { toReview, toReviewPreview } from "@/service/api/transform"
+import listAlbums from "@/service/album/list-albums"
+import listReviews, { ListReviewsParams } from "@/service/review/list-reviews"
+import { toReview, toReviewPreview } from "@/service/transform"
 
 import { errBadRequest, errInternal, errNotFound } from "../response"
 

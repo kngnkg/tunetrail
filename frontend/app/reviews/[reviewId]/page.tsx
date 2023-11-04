@@ -1,8 +1,10 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { getReview } from "@/service/review/get-review"
+import getAlbum from "@/service/album/get-album"
+import getReviewById from "@/service/review/get-review"
+import { toReview } from "@/service/transform"
+import { Review } from "@/types"
 
-import { env } from "@/env.mjs"
 import { FollowButton } from "@/components/follow-button"
 import { ReviewContent } from "@/components/reviews/review-content"
 import { TimeStamp } from "@/components/timestamp"
@@ -12,8 +14,27 @@ interface ReviewPageProps {
   params: { reviewId: string }
 }
 
+const getReview = async (reviewId: string): Promise<Review | null> => {
+  try {
+    const reviewResp = await getReviewById(reviewId)
+
+    if (!reviewResp) {
+      return null
+    }
+
+    const albumResp = await getAlbum(reviewResp.getAlbumid())
+
+    const review = toReview(reviewResp, albumResp)
+
+    return review
+  } catch (e) {
+    console.error(e)
+    return null
+  }
+}
+
 export default async function ReviewPage({ params }: ReviewPageProps) {
-  const review = await getReview(`${env.API_ROOT}/reviews/${params.reviewId}`)
+  const review = await getReview(params.reviewId)
 
   if (!review) {
     notFound()

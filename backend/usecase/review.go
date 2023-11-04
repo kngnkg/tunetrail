@@ -121,7 +121,7 @@ func (uc *ReviewUseCase) Store(ctx context.Context, authorId entity.ImmutableId,
 	if err != nil {
 		defer func() {
 			if err := tx.Rollback(); err != nil {
-				logger.FromContent(ctx).Error("failed to rollback transaction: %v", err)
+				logger.FromContext(ctx).Error("failed to rollback transaction: %v", err)
 			}
 		}()
 
@@ -165,7 +165,7 @@ func (uc *ReviewUseCase) Update(ctx context.Context, reviewId, title string, con
 	if err != nil {
 		defer func() {
 			if err := tx.Rollback(); err != nil {
-				logger.FromContent(ctx).Error("failed to rollback transaction: %v", err)
+				logger.FromContext(ctx).Error("failed to rollback transaction: %v", err)
 			}
 		}()
 
@@ -202,7 +202,7 @@ func (uc *ReviewUseCase) DeleteReview(ctx context.Context, reviewId string) erro
 	if err != nil {
 		defer func() {
 			if err := tx.Rollback(); err != nil {
-				logger.FromContent(ctx).Error("failed to rollback transaction: %v", err)
+				logger.FromContext(ctx).Error("failed to rollback transaction: %v", err)
 			}
 		}()
 
