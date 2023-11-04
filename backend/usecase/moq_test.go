@@ -20,6 +20,9 @@ var _ UserRepository = &UserRepositoryMock{}
 //
 //		// make and configure a mocked UserRepository
 //		mockedUserRepository := &UserRepositoryMock{
+//			GetUserByImmutableIdFunc: func(ctx context.Context, db repository.Executor, immutableId entity.ImmutableId) (*entity.User, error) {
+//				panic("mock out the GetUserByImmutableId method")
+//			},
 //			GetUserByUsernameFunc: func(ctx context.Context, db repository.Executor, username entity.Username) (*entity.User, error) {
 //				panic("mock out the GetUserByUsername method")
 //			},
@@ -39,6 +42,9 @@ var _ UserRepository = &UserRepositoryMock{}
 //
 //	}
 type UserRepositoryMock struct {
+	// GetUserByImmutableIdFunc mocks the GetUserByImmutableId method.
+	GetUserByImmutableIdFunc func(ctx context.Context, db repository.Executor, immutableId entity.ImmutableId) (*entity.User, error)
+
 	// GetUserByUsernameFunc mocks the GetUserByUsername method.
 	GetUserByUsernameFunc func(ctx context.Context, db repository.Executor, username entity.Username) (*entity.User, error)
 
@@ -53,6 +59,15 @@ type UserRepositoryMock struct {
 
 	// calls tracks calls to the methods.
 	calls struct {
+		// GetUserByImmutableId holds details about calls to the GetUserByImmutableId method.
+		GetUserByImmutableId []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Db is the db argument value.
+			Db repository.Executor
+			// ImmutableId is the immutableId argument value.
+			ImmutableId entity.ImmutableId
+		}
 		// GetUserByUsername holds details about calls to the GetUserByUsername method.
 		GetUserByUsername []struct {
 			// Ctx is the ctx argument value.
@@ -92,10 +107,51 @@ type UserRepositoryMock struct {
 			User *entity.User
 		}
 	}
-	lockGetUserByUsername sync.RWMutex
-	lockListUsers         sync.RWMutex
-	lockListUsersById     sync.RWMutex
-	lockStoreUser         sync.RWMutex
+	lockGetUserByImmutableId sync.RWMutex
+	lockGetUserByUsername    sync.RWMutex
+	lockListUsers            sync.RWMutex
+	lockListUsersById        sync.RWMutex
+	lockStoreUser            sync.RWMutex
+}
+
+// GetUserByImmutableId calls GetUserByImmutableIdFunc.
+func (mock *UserRepositoryMock) GetUserByImmutableId(ctx context.Context, db repository.Executor, immutableId entity.ImmutableId) (*entity.User, error) {
+	if mock.GetUserByImmutableIdFunc == nil {
+		panic("UserRepositoryMock.GetUserByImmutableIdFunc: method is nil but UserRepository.GetUserByImmutableId was just called")
+	}
+	callInfo := struct {
+		Ctx         context.Context
+		Db          repository.Executor
+		ImmutableId entity.ImmutableId
+	}{
+		Ctx:         ctx,
+		Db:          db,
+		ImmutableId: immutableId,
+	}
+	mock.lockGetUserByImmutableId.Lock()
+	mock.calls.GetUserByImmutableId = append(mock.calls.GetUserByImmutableId, callInfo)
+	mock.lockGetUserByImmutableId.Unlock()
+	return mock.GetUserByImmutableIdFunc(ctx, db, immutableId)
+}
+
+// GetUserByImmutableIdCalls gets all the calls that were made to GetUserByImmutableId.
+// Check the length with:
+//
+//	len(mockedUserRepository.GetUserByImmutableIdCalls())
+func (mock *UserRepositoryMock) GetUserByImmutableIdCalls() []struct {
+	Ctx         context.Context
+	Db          repository.Executor
+	ImmutableId entity.ImmutableId
+} {
+	var calls []struct {
+		Ctx         context.Context
+		Db          repository.Executor
+		ImmutableId entity.ImmutableId
+	}
+	mock.lockGetUserByImmutableId.RLock()
+	calls = mock.calls.GetUserByImmutableId
+	mock.lockGetUserByImmutableId.RUnlock()
+	return calls
 }
 
 // GetUserByUsername calls GetUserByUsernameFunc.
