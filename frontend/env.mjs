@@ -8,6 +8,10 @@ export const env = createEnv({
     GRPC_API_ROOT: z.string().url(),
     SPOTIFY_CLIENT_ID: z.string(),
     SPOTIFY_CLIENT_SECRET: z.string(),
+    NEXTAUTH_SECRET: z.string(),
+    COGNITO_CLIENT_ID: z.string(),
+    COGNITO_CLIENT_SECRET: z.string(),
+    COGNITO_ISSUER: z.string().url(),
   },
   client: {
     NEXT_PUBLIC_API_ROOT: z.string().url(),
@@ -23,5 +27,9 @@ export const env = createEnv({
     NEXT_PUBLIC_API_ROOT: process.env.NEXT_PUBLIC_API_ROOT,
     NEXT_PUBLIC_MOCK_API_ROOT: process.env.NEXT_PUBLIC_MOCK_API_ROOT,
     NEXT_PUBLIC_SPOTIFY_CDN_HOST: process.env.NEXT_PUBLIC_SPOTIFY_CDN_HOST,
+    NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
+    COGNITO_CLIENT_ID: process.env.COGNITO_CLIENT_ID,
+    COGNITO_CLIENT_SECRET: process.env.COGNITO_CLIENT_SECRET,
+    COGNITO_ISSUER: process.env.COGNITO_ISSUER,
   },
 })

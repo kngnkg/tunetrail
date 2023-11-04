@@ -9,6 +9,10 @@ process.env.NEXT_PUBLIC_MOCK_API_ROOT = "http://api.example.com"
 process.env.NEXT_PUBLIC_SPOTIFY_CDN_HOST = "http://cdn.example.com"
 process.env.SPOTIFY_CLIENT_ID = "client_id"
 process.env.SPOTIFY_CLIENT_SECRET = "client_secret"
+process.env.NEXTAUTH_SECRET = "secret"
+process.env.COGNITO_CLIENT_ID = "client_id"
+process.env.COGNITO_CLIENT_SECRET = "client_secret"
+process.env.COGNITO_ISSUER = "http://example.com"
 
 const createJestConfig = nextJest({
   // Provide the path to your Next.js app to load next.config.js and .env files in your test environment
