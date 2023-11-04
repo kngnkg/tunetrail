@@ -1,8 +1,6 @@
 import { env } from "@/env.mjs"
 
-import { getReview } from "./get-review"
-
-describe("getReview", () => {
+describe("useReviews", () => {
   afterEach(() => {
     jest.clearAllMocks()
   })

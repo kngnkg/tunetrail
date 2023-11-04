@@ -4,10 +4,10 @@ import (
 	"context"
 	"encoding/json"
 
+	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/auth"
 	"github.com/kngnkg/tunetrail/backend/entity"
 	"github.com/kngnkg/tunetrail/backend/gen/review"
 	"github.com/kngnkg/tunetrail/backend/helper"
-	"github.com/kngnkg/tunetrail/backend/logger"
 	"github.com/kngnkg/tunetrail/backend/usecase"
 	"github.com/kngnkg/tunetrail/backend/validator"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -15,24 +15,42 @@ import (
 
 type reviewServer struct {
 	review.UnimplementedReviewServiceServer
-	uc        *usecase.ReviewUseCase
+	auth      *Auth
 	validator *validator.Validator
-	logger    *logger.Logger
+	uc        *usecase.ReviewUseCase
 }
 
-func NewReviewServer(uc *usecase.ReviewUseCase, v *validator.Validator, l *logger.Logger) review.ReviewServiceServer {
+func NewReviewServer(a *Auth, v *validator.Validator, uc *usecase.ReviewUseCase) review.ReviewServiceServer {
 	return &reviewServer{
-		uc:        uc,
+		auth:      a,
 		validator: v,
-		logger:    l,
+		uc:        uc,
 	}
 }
 
 const DefaultLimit = 20
 
-func (s *reviewServer) ListReviews(ctx context.Context, in *review.ListReviewsRequest) (*review.ReviewList, error) {
-	ctx = logger.WithContent(ctx, s.logger)
+// 認証を必要とするメソッドを定義
+var authRequiredMethodsReview = map[string]bool{
+	"/review.ReviewService/ListReviews":   false,
+	"/review.ReviewService/GetReviewById": false,
+	"/review.ReviewService/CreateReview":  true,
+	"/review.ReviewService/UpdateReview":  true,
+	"/review.ReviewService/DeleteReview":  true,
+}
 
+var _ grpc_auth.ServiceAuthFuncOverride = (*reviewServer)(nil)
+
+func (s *reviewServer) AuthFuncOverride(ctx context.Context, fullMethodName string) (context.Context, error) {
+	// 認証を必要とするメソッドであるかどうかを判定
+	if authRequiredMethodsReview[fullMethodName] {
+		return s.auth.AuthFunc(ctx)
+	}
+
+	return ctx, nil
+}
+
+func (s *reviewServer) ListReviews(ctx context.Context, in *review.ListReviewsRequest) (*review.ReviewList, error) {
 	decoded, err := helper.DecodeCursor(in.Cursor)
 	if err != nil {
 		return nil, invalidArgument(ctx, err)
@@ -84,8 +102,6 @@ func toReviewList(reviews []*entity.Review, nextCursor string) *review.ReviewLis
 }
 
 func (s *reviewServer) GetReviewById(ctx context.Context, in *review.GetReviewByIdRequest) (*review.Review, error) {
-	ctx = logger.WithContent(ctx, s.logger)
-
 	req := struct {
 		ReviewId string `validate:"required,uuid4"`
 	}{
@@ -108,8 +124,6 @@ func (s *reviewServer) GetReviewById(ctx context.Context, in *review.GetReviewBy
 }
 
 func (s *reviewServer) CreateReview(ctx context.Context, in *review.CreateReviewRequest) (*review.Review, error) {
-	ctx = logger.WithContent(ctx, s.logger)
-
 	// TODO: ここでのバリデーションはどうするか
 	req := struct {
 		AuthorId        entity.ImmutableId     `validate:"required"`
@@ -138,8 +152,6 @@ func (s *reviewServer) CreateReview(ctx context.Context, in *review.CreateReview
 }
 
 func (s *reviewServer) UpdateReview(ctx context.Context, in *review.UpdateReviewRequest) (*review.Review, error) {
-	ctx = logger.WithContent(ctx, s.logger)
-
 	req := struct {
 		ReviewId        string                 `validate:"required,uuid4"`
 		Title           string                 `validate:"required"`
@@ -165,8 +177,6 @@ func (s *reviewServer) UpdateReview(ctx context.Context, in *review.UpdateReview
 }
 
 func (s *reviewServer) DeleteReview(ctx context.Context, in *review.DeleteReviewRequest) (*emptypb.Empty, error) {
-	ctx = logger.WithContent(ctx, s.logger)
-
 	req := struct {
 		ReviewId string `validate:"required,uuid4"`
 	}{

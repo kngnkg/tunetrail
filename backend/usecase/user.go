@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/kngnkg/tunetrail/backend/entity"
 	"github.com/kngnkg/tunetrail/backend/infra/repository"
@@ -64,7 +65,31 @@ func (uc *UserUseCase) GetByUsername(ctx context.Context, username entity.Userna
 	return user, nil
 }
 
-func (uc *UserUseCase) Store(ctx context.Context, user *entity.User) (*entity.User, error) {
+func (uc *UserUseCase) GetMe(ctx context.Context, immutableId entity.ImmutableId) (*entity.User, error) {
+	user, err := uc.userRepo.GetUserByImmutableId(ctx, uc.DB, immutableId)
+	if err != nil {
+		return nil, err
+	}
+	if user == nil {
+		return nil, nil
+	}
+
+	// TODO: フォロー数等の情報を取得する
+	return user, nil
+}
+
+func (uc *UserUseCase) Store(ctx context.Context, immutableId entity.ImmutableId, email string) (*entity.User, error) {
+	// メールアドレスのローカルパートを username および DisplayName として使用する
+	localPart := email[:strings.Index(email, "@")]
+
+	user := &entity.User{
+		Username:    entity.Username(localPart),
+		ImmutableId: immutableId,
+		DisplayName: localPart,
+		AvatarUrl:   "",
+		Bio:         "",
+	}
+
 	tx, err := uc.DB.BeginTxx(ctx, nil)
 	if err != nil {
 		return nil, err
@@ -74,7 +99,7 @@ func (uc *UserUseCase) Store(ctx context.Context, user *entity.User) (*entity.Us
 	if err != nil {
 		defer func() {
 			if err := tx.Rollback(); err != nil {
-				logger.FromContent(ctx).Error("failed to rollback transaction: %v", err)
+				logger.FromContext(ctx).Error("failed to rollback transaction: %v", err)
 			}
 		}()
 

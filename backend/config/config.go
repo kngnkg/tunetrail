@@ -15,6 +15,7 @@ type Config struct {
 	DBName        string `env:"TUNETRAIL_DB_NAME"`
 	SpotifyId     string `env:"SPOTIFY_ID"`
 	SpotifySecret string `env:"SPOTIFY_SECRET"`
+	CognitoJWKUrl string `env:"COGNITO_JWK_URL"`
 }
 
 // Newは環境変数から設定を取得してConfigを返す

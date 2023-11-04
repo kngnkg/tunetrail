@@ -1,14 +1,17 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log/slog"
 	"net"
 	"strconv"
 
+	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/auth"
 	"github.com/kngnkg/tunetrail/backend/config"
 	"github.com/kngnkg/tunetrail/backend/infra/repository"
 	"github.com/kngnkg/tunetrail/backend/infra/server"
+	"github.com/kngnkg/tunetrail/backend/jwt"
 	"github.com/kngnkg/tunetrail/backend/logger"
 	"github.com/kngnkg/tunetrail/backend/usecase"
 	"github.com/kngnkg/tunetrail/backend/validator"
@@ -52,17 +55,31 @@ func main() {
 	userUc := usecase.NewUserUseCase(db, ur)
 	reviewUc := usecase.NewReviewUseCase(db, rr, ur)
 
-	s := grpc.NewServer()
+	li := server.NewLoggingInterceptor(l)
+
+	j, err := jwt.NewJWTer(logger.WithContext(context.TODO(), l), cfg.CognitoJWKUrl)
+	if err != nil {
+		l.Fatal("failed to create JWTer.", err)
+	}
+
+	au := server.NewAuth(j)
+
+	s := grpc.NewServer(
+		grpc.ChainUnaryInterceptor(
+			li.UnaryLoggingInterceptor,
+			auth.UnaryServerInterceptor(au.AuthFunc),
+		),
+	)
 
 	v := validator.New()
 
-	helloworldServer := server.NewHelloworldServer(l)
+	helloworldServer := server.NewHelloworldServer(au)
 	helloworld.RegisterGreeterServer(s, helloworldServer)
 
-	userServer := server.NewUserServer(userUc, v, l)
+	userServer := server.NewUserServer(au, v, userUc)
 	user.RegisterUserServiceServer(s, userServer)
 
-	reviewServer := server.NewReviewServer(reviewUc, v, l)
+	reviewServer := server.NewReviewServer(au, v, reviewUc)
 	review.RegisterReviewServiceServer(s, reviewServer)
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%v", cfg.Port))

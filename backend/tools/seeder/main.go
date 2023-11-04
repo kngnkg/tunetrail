@@ -100,13 +100,13 @@ func (s *seeder) exec(ctx context.Context) error {
 	// 	return err
 	// }
 
-	logger.FromContent(ctx).Info("initializing db...")
+	logger.FromContext(ctx).Info("initializing db...")
 	if err := s.initDB(ctx, s.db); err != nil {
 		// tx.Rollback()
 		return err
 	}
 
-	logger.FromContent(ctx).Info("storeing random users...")
+	logger.FromContext(ctx).Info("storeing random users...")
 	users, err := s.storeRandomUsers(ctx, s.db)
 	if err != nil {
 		// tx.Rollback()
@@ -118,7 +118,7 @@ func (s *seeder) exec(ctx context.Context) error {
 		authorIds = append(authorIds, user.ImmutableId)
 	}
 
-	logger.FromContent(ctx).Info("storing random reviews...")
+	logger.FromContext(ctx).Info("storing random reviews...")
 	for i := 0; i < 3; i++ {
 		_, err = s.storeRandomReviews(ctx, s.db, authorIds, albumIds)
 		if err != nil {
@@ -136,7 +136,7 @@ func main() {
 	l := logger.New(&logger.LoggerOptions{
 		Level: slog.LevelDebug,
 	})
-	ctx := logger.WithContent(context.Background(), l)
+	ctx := logger.WithContext(context.Background(), l)
 
 	// .envファイルを読み込む
 	err := godotenv.Load()

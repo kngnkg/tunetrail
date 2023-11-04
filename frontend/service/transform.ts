@@ -1,43 +1,147 @@
-import { Review, User } from "@/types"
+import * as PBReview from "@/generated/review/review_pb"
+import * as PBUser from "@/generated/user/user_pb"
+import {
+  Album,
+  AlbumInfo,
+  ArtistInfo,
+  Author,
+  Review,
+  ReviewPreview,
+  Track,
+  User,
+} from "@/types"
 
-export function transformUser(apiUser: any): User {
+import { isPublishedStatus } from "@/types/type-guard"
+
+export const toUser = (pbUser: PBUser.User): User => {
   return {
-    username: apiUser.username,
-    immutableId: apiUser.immutableId,
-    displayName: apiUser.displayName,
-    avatarUrl: apiUser.avatarUrl,
-    bio: apiUser.bio ?? "", // デフォルト値
-    followersCount: apiUser.followersCount,
-    followingCount: apiUser.followingCount,
-    createdAt: apiUser.createdAt ? new Date(apiUser.createdAt) : new Date(),
-    updatedAt: apiUser.updatedAt ? new Date(apiUser.updatedAt) : new Date(),
+    username: pbUser.getUsername(),
+    immutableId: pbUser.getImmutableid(),
+    displayName: pbUser.getDisplayname(),
+    avatarUrl: pbUser.getAvatarurl(),
+    bio: pbUser.getBio(),
+    followersCount: pbUser.getFollowerscount(),
+    followingCount: pbUser.getFollowingcount(),
+    createdAt: pbUser.getCreatedat()
+      ? new Date(pbUser.getCreatedat())
+      : new Date(),
+    updatedAt: pbUser.getUpdatedat()
+      ? new Date(pbUser.getUpdatedat())
+      : new Date(),
   }
 }
 
-export function transformReview(apiReview: any): Review {
+export const toReview = (
+  pbReview: PBReview.Review,
+  album: SpotifyApi.SingleAlbumResponse
+): Review => {
+  const publishedStatus = pbReview.getPublishedstatus()
+  if (!isPublishedStatus(publishedStatus)) {
+    throw new Error("invalid published status")
+  }
+
+  const author = pbReview.getUser()
+  if (!author) {
+    throw new Error("invalid author")
+  }
+
   return {
-    reviewId: apiReview.reviewId,
-    publishedStatus: apiReview.publishedStatus,
-    title: apiReview.title,
-    content: apiReview.content ?? "", // デフォルト値
-    likesCount: apiReview.likesCount,
-    createdAt: new Date(apiReview.createdAt),
-    updatedAt: new Date(apiReview.updatedAt),
-    author: transformUser(apiReview.author),
-    album: {
-      albumId: apiReview.album.albumId,
-      spotifyUri: apiReview.album.spotifyUri,
-      spotifyUrl: apiReview.album.spotifyUrl,
-      name: apiReview.album.name,
-      artists: apiReview.album.artists.map((artist: any) => ({
-        artistId: artist.artistId,
-        spotifyUri: artist.spotifyUri,
-        name: artist.name,
-        imageUrl: artist.imageUrl,
-      })),
-      tracks: [], // デフォルト値
-      coverUrl: apiReview.album.coverUrl,
-      releaseDate: new Date(apiReview.album.releaseDate),
-    },
+    reviewId: pbReview.getReviewid(),
+    publishedStatus: publishedStatus,
+    author: toAuthor(author),
+    album: toAlbum(album),
+    title: pbReview.getTitle(),
+    content: JSON.parse(pbReview.getContent()),
+    likesCount: pbReview.getLikescount(),
+    createdAt: pbReview.getCreatedat()
+      ? new Date(pbReview.getCreatedat())
+      : new Date(),
+    updatedAt: pbReview.getUpdatedat()
+      ? new Date(pbReview.getUpdatedat())
+      : new Date(),
+  }
+}
+
+export const toReviewPreview = (
+  pbReview: PBReview.Review,
+  album: SpotifyApi.AlbumObjectSimplified
+): ReviewPreview => {
+  const publishedStatus = pbReview.getPublishedstatus()
+  if (!isPublishedStatus(publishedStatus)) {
+    throw new Error("invalid published status")
+  }
+
+  const author = pbReview.getUser()
+  if (!author) {
+    throw new Error("invalid author")
+  }
+
+  return {
+    reviewId: pbReview.getReviewid(),
+    publishedStatus: publishedStatus,
+    author: toAuthor(author),
+    album: toAlbumInfo(album),
+    title: pbReview.getTitle(),
+    likesCount: pbReview.getLikescount(),
+    createdAt: pbReview.getCreatedat()
+      ? new Date(pbReview.getCreatedat())
+      : new Date(),
+  }
+}
+
+export const toAlbumInfo = (
+  album: SpotifyApi.AlbumObjectSimplified
+): AlbumInfo => {
+  return {
+    albumId: album.id,
+    name: album.name,
+    artists: album.artists.map((artist) => toArtistInfo(artist)),
+    coverUrl: album.images[0].url,
+  }
+}
+
+export const toAuthor = (pbAuthor: PBReview.Author): Author => {
+  return {
+    username: pbAuthor.getUsername(),
+    immutableId: pbAuthor.getImmutableid(),
+    displayName: pbAuthor.getDisplayname(),
+    avatarUrl: pbAuthor.getAvatarurl(),
+  }
+}
+
+export const toAlbum = (
+  spotifyAlbum: SpotifyApi.SingleAlbumResponse
+): Album => {
+  return {
+    albumId: spotifyAlbum.id,
+    spotifyUri: spotifyAlbum.uri,
+    spotifyUrl: spotifyAlbum.external_urls.spotify,
+    name: spotifyAlbum.name,
+    artists: spotifyAlbum.artists.map((artist) => toArtistInfo(artist)),
+    tracks: spotifyAlbum.tracks.items.map((track) => toTrack(track)),
+    coverUrl: spotifyAlbum.images[0].url,
+    releaseDate: new Date(spotifyAlbum.release_date),
+  }
+}
+
+export const toArtistInfo = (
+  spotifyArtist: SpotifyApi.ArtistObjectSimplified
+): ArtistInfo => {
+  return {
+    artistId: spotifyArtist.id,
+    name: spotifyArtist.name,
+  }
+}
+
+export const toTrack = (
+  spotifyTrack: SpotifyApi.TrackObjectSimplified
+): Track => {
+  return {
+    trackId: spotifyTrack.id,
+    spotifyUri: spotifyTrack.uri,
+    spotifyUrl: spotifyTrack.external_urls.spotify,
+    title: spotifyTrack.name,
+    durationMs: spotifyTrack.duration_ms,
+    trackNumber: spotifyTrack.track_number,
   }
 }

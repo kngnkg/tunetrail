@@ -1,24 +1,19 @@
-import { transformUser } from "@/service/transform"
-import { User } from "@/types"
+import { GetUserByUsernameRequest, User } from "@/generated/user/user_pb"
 
-export async function getUser(
-  resource: RequestInfo,
-  init?: RequestInit
+import { client } from "./client"
+
+export default function getUserByUsername(
+  username: string
 ): Promise<User | null> {
-  try {
-    const res = await fetch(resource, init)
+  return new Promise((resolve, reject) => {
+    const req = new GetUserByUsernameRequest()
 
-    if (!res.ok) {
-      throw new Error(res.statusText)
-    }
+    req.setUsername(username)
 
-    const data = await res.json()
-
-    const review = transformUser(data)
-
-    return review
-  } catch (error) {
-    console.error(error)
-    return null
-  }
+    client.getUserByUsername(req, (err, response) => {
+      if (err) reject(err)
+      if (!response) return resolve(null)
+      resolve(response)
+    })
+  })
 }

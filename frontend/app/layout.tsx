@@ -5,6 +5,8 @@ import "@/styles/globals.css"
 import type { Metadata } from "next"
 import { Noto_Sans_JP } from "next/font/google"
 
+import { SessionProvider } from "@/components/session-provider"
+
 const notojp = Noto_Sans_JP({
   weight: ["400", "500"],
   subsets: ["latin"],
@@ -25,7 +27,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={cn("bg-background", notojp.className)}>
         <ThemeProvider attribute="class" defaultTheme="dark">
-          {children}
+          <SessionProvider>{children}</SessionProvider>
         </ThemeProvider>
       </body>
     </html>
