@@ -1,6 +1,6 @@
 import { Review } from "@/types"
 
-import { Icon } from "./icon"
+import { Icon } from "../icon"
 
 interface LikeButtonProps extends React.HTMLAttributes<HTMLButtonElement> {
   review: Pick<Review, "reviewId" | "likesCount">

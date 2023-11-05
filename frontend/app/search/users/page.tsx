@@ -2,7 +2,7 @@ import { User } from "@/types"
 
 import { env } from "@/env.mjs"
 import { transformUser } from "@/hooks/transform"
-import { UserList } from "@/components/user-list"
+import { UserList } from "@/components/users/user-list"
 
 async function getUsers(
   resource: RequestInfo,

@@ -8,7 +8,7 @@ import { Header } from "@/components/header"
 import { MainNav } from "@/components/main-nav"
 import { MenuTab, MenuTabs } from "@/components/menu-tabs"
 import { UserAvatar } from "@/components/user-avatar"
-import { UserListDialog } from "@/components/user-list-dialog"
+import { UserListDialog } from "@/components/users/user-list-dialog"
 
 interface UserLayoutProps {
   params: { username: string }
