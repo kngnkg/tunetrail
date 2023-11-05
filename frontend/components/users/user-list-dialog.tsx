@@ -12,7 +12,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { UserList } from "@/components/user-list"
+import { UserList } from "@/components/users/user-list"
 
 interface UserListDialogProps {
   type: "followers" | "following"
