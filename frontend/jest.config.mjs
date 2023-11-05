@@ -13,6 +13,7 @@ process.env.NEXTAUTH_SECRET = "secret"
 process.env.COGNITO_CLIENT_ID = "client_id"
 process.env.COGNITO_CLIENT_SECRET = "client_secret"
 process.env.COGNITO_ISSUER = "http://example.com"
+process.env.COGNITO_DOMAIN = "example.com"
 
 const createJestConfig = nextJest({
   // Provide the path to your Next.js app to load next.config.js and .env files in your test environment

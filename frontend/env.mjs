@@ -12,6 +12,7 @@ export const env = createEnv({
     COGNITO_CLIENT_ID: z.string(),
     COGNITO_CLIENT_SECRET: z.string(),
     COGNITO_ISSUER: z.string().url(),
+    COGNITO_DOMAIN: z.string(),
   },
   client: {
     NEXT_PUBLIC_API_ROOT: z.string().url(),
@@ -31,5 +32,6 @@ export const env = createEnv({
     COGNITO_CLIENT_ID: process.env.COGNITO_CLIENT_ID,
     COGNITO_CLIENT_SECRET: process.env.COGNITO_CLIENT_SECRET,
     COGNITO_ISSUER: process.env.COGNITO_ISSUER,
+    COGNITO_DOMAIN: process.env.COGNITO_DOMAIN,
   },
 })
