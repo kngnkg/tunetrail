@@ -5,15 +5,11 @@ import { useRouter } from "next/navigation"
 import { LoginUser } from "@/types"
 import { useSession } from "next-auth/react"
 
+import { Phase } from "@/app/(auth)/welcome/page"
+
 import { Button } from "../ui/button"
 import { ProfileForm } from "./profile-form"
 import { UserNameForm } from "./user-name-form"
-
-export type Phase = "username" | "profile" | "complete"
-
-export const isPhase = (phase: string): phase is Phase => {
-  return ["username", "profile", "complete"].includes(phase)
-}
 
 interface WelcomeFormProps {
   user: LoginUser
