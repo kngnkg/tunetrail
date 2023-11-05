@@ -6,6 +6,7 @@ declare module "next-auth" {
     user?: User & LoginUser
     idToken?: string
     accessToken?: string
+    refreshToken?: string
     isNewUser?: boolean
   }
 }
