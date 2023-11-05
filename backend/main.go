@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"net"
 	"strconv"
+	"time"
 
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/auth"
 	"github.com/kngnkg/tunetrail/backend/config"
@@ -57,7 +58,10 @@ func main() {
 
 	li := server.NewLoggingInterceptor(l)
 
-	j, err := jwt.NewJWTer(logger.WithContext(context.TODO(), l), cfg.CognitoJWKUrl)
+	j, err := jwt.NewJWTer(logger.WithContext(context.TODO(), l), &jwt.JWTerConfig{
+		AcceptableSkew: time.Duration(cfg.JWTAcceptableSkewMinute) * time.Minute,
+		JWKUrl:         cfg.CognitoJWKUrl,
+	})
 	if err != nil {
 		l.Fatal("failed to create JWTer.", err)
 	}
