@@ -5,7 +5,13 @@ import { LoginUser } from "@/types"
 import { getServerSession } from "next-auth"
 
 import { authOptions } from "@/lib/auth-options"
-import { Phase, WelcomeForm, isPhase } from "@/components/users/welcome-form"
+import { WelcomeForm } from "@/components/users/welcome-form"
+
+export type Phase = "username" | "profile" | "complete"
+
+export const isPhase = (phase: string): phase is Phase => {
+  return ["username", "profile", "complete"].includes(phase)
+}
 
 interface WelcomePageProps {
   searchParams: { [key: string]: Phase | undefined }

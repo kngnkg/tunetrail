@@ -1,3 +1,4 @@
+import { refreshTokens } from "@/service/auth/refresh-tokens"
 import createUser from "@/service/user/create-user"
 import getMe from "@/service/user/get-me"
 import { NextAuthOptions } from "next-auth"
@@ -19,15 +20,15 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
   callbacks: {
-    async jwt({ token, user, account }) {
+    async jwt({ token, user, account, trigger, session }) {
       // 最初のサインインの場合
       if (account && user) {
         token.idToken = account.id_token
         token.accessToken = account.access_token
+        token.refreshToken = account.refresh_token
         token.tokenExpires = account.expires_at
 
         // APIを呼び出してユーザー情報を取得する
-        console.log("jwt: getMe")
         const me = await getMe(account.id_token!)
 
         if (!me) {
@@ -40,15 +41,27 @@ export const authOptions: NextAuthOptions = {
           return token
         }
 
-        // ユーザーが存在する場合は、トークンに追加する
+        // ユーザーが存在する場合
+        token.isNewUser = false
         token.user = me
+        return token
+      }
+
+      // セッション更新時
+      if (trigger === "update") {
+        token.isNewUser = false
         return token
       }
 
       // トークンが期限切れの場合は、リフレッシュする
       if (Date.now() > (token.tokenExpires ?? 0) * 1000) {
-        // TODO: リフレッシュトークンを使ってリフレッシュする
-        return token
+        // リフレッシュトークンを使ってリフレッシュする
+        const newToken = await refreshTokens(token)
+        if (!newToken) {
+          throw new Error("トークンのリフレッシュに失敗しました")
+        }
+
+        return newToken
       }
 
       // トークンが有効な場合は、そのまま返す
@@ -58,12 +71,13 @@ export const authOptions: NextAuthOptions = {
       // JWTトークンをセッションに追加する
       if (session.user) {
         session.user = token.user
-        // session.user.immutableId = token.sub
       }
 
       session.idToken = token.idToken
       session.accessToken = token.accessToken
+      session.refreshToken = token.refreshToken
       session.isNewUser = token.isNewUser
+
       return session
     },
   },
