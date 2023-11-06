@@ -1,3 +1,4 @@
 .PHONY: gen
 gen: ## Generate pb files
-	./scripts/gen-go.sh && ./scripts/gen-js-ts.sh
+	docker compose exec -T grpc ./scripts/gen-go.sh && \
+	docker compose exec -T frontend ./scripts/gen-js-ts.sh

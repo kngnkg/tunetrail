@@ -13,13 +13,12 @@ if [[ "$1" == "dry" ]]; then
     DRY_RUN="--dry-run"
 fi
 
-docker-compose exec -T grpc \
-    psqldef \
-        ${DRY_RUN} \
-        --enable-drop-table \
-        --host=${DB_HOST} \
-        --port=${DB_PORT} \
-        --user=${DB_USER} \
-        --password=${DB_PASSWORD} \
-        ${DB_NAME} \
-        < ./_tools/postgres/schema.sql
+psqldef \
+    ${DRY_RUN} \
+    --enable-drop-table \
+    --host=${DB_HOST} \
+    --port=${DB_PORT} \
+    --user=${DB_USER} \
+    --password=${DB_PASSWORD} \
+    ${DB_NAME} \
+    < ./_tools/postgres/schema.sql
