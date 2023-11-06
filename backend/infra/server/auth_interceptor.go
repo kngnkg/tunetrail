@@ -54,3 +54,7 @@ func GetToken(ctx context.Context) *entity.IDToken {
 	}
 	return tokenInfo
 }
+
+func GetImmutableId(ctx context.Context) entity.ImmutableId {
+	return entity.ImmutableId(GetToken(ctx).Sub)
+}
