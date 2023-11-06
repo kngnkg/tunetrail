@@ -1,5 +1,8 @@
-FROM node:20.5 as dev
+FROM node:20.9-bullseye as dev
 
-WORKDIR /app
+WORKDIR /workspace/frontend
+
+# npm を最新にする
+RUN npm install -g npm@latest
 
 ENTRYPOINT [ "npm", "run", "dev" ]
