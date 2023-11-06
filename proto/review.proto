@@ -22,11 +22,10 @@ message ListReviewsRequest {
 message GetReviewByIdRequest { string reviewId = 1; }
 
 message CreateReviewRequest {
-  string userId = 1;
-  string albumId = 2;
-  string title = 3;
-  string content = 4;
-  string publishedStatus = 5;
+  string albumId = 1;
+  string title = 2;
+  string content = 3;
+  string publishedStatus = 4;
 }
 
 message UpdateReviewRequest {

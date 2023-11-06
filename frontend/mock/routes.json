@@ -8,7 +8,9 @@
   "/users/:user_id/likes": "/feeds",
   "/users/:user_id/followers": "/users",
   "/users/:user_id/following": "/users",
-  "/genres?q=:q": "/genres",
+  "/albums/:album_id": "/album_sample",
+  "/albumlist": "/albumlist_sample",
   "/trends": "/feeds",
-  "/timeline": "/feeds"
+  "/timeline": "/feeds",
+  "/jwk": "/jwk_sample"
 }
