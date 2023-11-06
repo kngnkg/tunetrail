@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation"
 
 import { getCurrentUser } from "@/lib/session"
-import { ReviewForm } from "@/components/reviews/review-form"
+import { NewReviewForm } from "@/components/reviews/new-review-form"
 
 export default async function NewReviewEditorPage() {
   const user = await getCurrentUser()
@@ -11,8 +11,8 @@ export default async function NewReviewEditorPage() {
 
   return (
     <>
-      <section>
-        <ReviewForm />
+      <section className="mt-4">
+        <NewReviewForm user={user} />
       </section>
     </>
   )
