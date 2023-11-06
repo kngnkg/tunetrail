@@ -1,19 +1,25 @@
-import { notFound } from "next/navigation"
+import { notFound, redirect } from "next/navigation"
 import getAlbum from "@/service/album/get-album"
 import getReviewById from "@/service/review/get-review"
 import { toReview } from "@/service/transform"
 import { Review } from "@/types"
 
-import { ReviewForm } from "@/components/reviews/review-form"
+import { getCurrentUser } from "@/lib/session"
+import { ReviewEditForm } from "@/components/reviews/review-edit-form"
 
 interface EditorPageProps {
   params: { reviewId: string }
 }
 
 // TODO: 認証済みユーザー専用のエンドポイントを作る
-const getLoginUserReview = async (reviewId: string): Promise<Review | null> => {
+const getLoginUserReview = async (
+  immutableId: string,
+  reviewId: string
+): Promise<Review | null> => {
   try {
-    const reviewResp = await getReviewById(reviewId)
+    const reviewResp = await getReviewById(
+      "77da1a38-0ef4-4b43-8628-ef1174017917"
+    )
 
     if (!reviewResp) {
       return null
@@ -31,16 +37,20 @@ const getLoginUserReview = async (reviewId: string): Promise<Review | null> => {
 }
 
 export default async function EditorPage({ params }: EditorPageProps) {
-  const review = await getLoginUserReview(params.reviewId)
+  const user = await getCurrentUser()
+  if (!user) {
+    return redirect("/")
+  }
 
+  const review = await getLoginUserReview(user.immutableId, params.reviewId)
   if (!review) {
     notFound()
   }
 
   return (
     <>
-      <section>
-        <ReviewForm review={review} />
+      <section className="mt-4">
+        <ReviewEditForm user={user} initialReview={review} />
       </section>
     </>
   )
