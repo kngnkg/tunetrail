@@ -16,4 +16,4 @@ migrate:  ## Execute migration
 
 .PHONY: seed
 seed: ## Seed data
-	docker-compose exec -T grpc go run ./tools/seeder/main.go
+	go run ./tools/seeder/main.go

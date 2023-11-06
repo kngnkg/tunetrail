@@ -10,9 +10,21 @@ services:
       dockerfile: ./docker/frontend/Dockerfile
     tty: true
     volumes:
-      - ./frontend:/app
+      # `.git` や `*.proto` などもコンテナ内で参照できるようにするため、
+      # `/workspace` 直下にリポジトリのルートディレクトリごとマウントする
+      - .:/workspace:cached
     ports:
       - 3000:3000
+  mock:
+    container_name: tunetrail-mock
+    hostname: tunetrail-mock
+    image: node:20.9-bullseye-slim
+    volumes:
+      - .:/workspace:cached
+    ports:
+      - 3001:3001
+    working_dir: /workspace/frontend
+    command: npm run mock
   db:
     container_name: tunetrail-db
     hostname: tunetrail-db
@@ -40,7 +52,7 @@ services:
       dockerfile: ./docker/grpc/Dockerfile
     tty: true
     volumes:
-      - ./backend:/app
+      - .:/workspace:cached
     ports:
       - 50051:50051
     env_file:
