@@ -5,6 +5,7 @@ import { PublishedStatusType } from "@/types/type-guard"
 export const reviewTitleSchema = z.string().min(1).max(100)
 
 export const reviewSchema = z.object({
+  albumId: z.string().regex(/^[a-zA-Z0-9]{22}$/),
   title: reviewTitleSchema,
   // TODO: editorjsのデータ構造をzodで定義する
   content: z.any(),
