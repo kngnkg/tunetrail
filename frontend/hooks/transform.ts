@@ -1,4 +1,4 @@
-import { Review, User } from "@/types"
+import { AlbumInfo, Review, User } from "@/types"
 
 export function transformUser(apiUser: any): User {
   return {
@@ -39,5 +39,19 @@ export function transformReview(apiReview: any): Review {
       coverUrl: apiReview.album.coverUrl,
       releaseDate: new Date(apiReview.album.releaseDate),
     },
+  }
+}
+
+export function transformAlbumInfo(apiAlbum: any): AlbumInfo {
+  return {
+    albumId: apiAlbum.albumId,
+    name: apiAlbum.name,
+    artists: apiAlbum.artists.map((artist: any) => ({
+      artistId: artist.artistId,
+      spotifyUri: artist.spotifyUri,
+      name: artist.name,
+      imageUrl: artist.imageUrl,
+    })),
+    coverUrl: apiAlbum.coverUrl,
   }
 }

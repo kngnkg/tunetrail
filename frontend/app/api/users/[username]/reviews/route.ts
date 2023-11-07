@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server"
+import getAlbum from "@/service/album/get-album"
 import createReview from "@/service/review/create-review"
+import { toReview } from "@/service/transform"
+import { Review } from "@/types"
 import * as z from "zod"
 
 import { getCurrentUser, getServerSession } from "@/lib/session"
@@ -46,7 +49,10 @@ export async function POST(req: Request, context: UserReviewRouteContext) {
       return NextResponse.json(null, { status: 409 })
     }
 
-    return NextResponse.json(updated)
+    const album = await getAlbum(body.albumId)
+
+    const review = toReview(updated, album)
+    return NextResponse.json(review, { status: 200 })
   } catch (e) {
     console.error(e)
     if (e instanceof z.ZodError) {
