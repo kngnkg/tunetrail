@@ -1,5 +1,6 @@
 "use client"
 
+import { useRouter } from "next/navigation"
 import { LoginUser } from "@/types"
 
 import { env } from "@/env.mjs"
@@ -24,8 +25,9 @@ export const NewReviewForm: React.FC<NewReviewFormProps> = ({
         {
           method: "POST",
           body: JSON.stringify({
+            albumId: data.albumId,
             title: data.title,
-            content: data.content,
+            content: JSON.stringify(data.content),
             publishedStatus: data.publishedStatus,
           }),
         }

@@ -1,5 +1,6 @@
 "use client"
 
+import * as React from "react"
 import { Suspense } from "react"
 import { ReviewPreview } from "@/types"
 
@@ -26,12 +27,16 @@ export const ReviewList: React.FC<ReviewListProps> = ({ endpoint }) => {
     return (
       <>
         {isLoading ? (
-          <div>
-            <ReviewCardSkeleton />
-            <ReviewCardSkeleton />
-            <ReviewCardSkeleton />
-            <ReviewCardSkeleton />
-            <ReviewCardSkeleton />
+          <div className="flex flex-col gap-2">
+            <div className="mt-4 flex flex-col gap-4">
+              {Array(10)
+                .fill(null)
+                .map((_, idx) => (
+                  <div key={idx}>
+                    <ReviewCardSkeleton />
+                  </div>
+                ))}
+            </div>
           </div>
         ) : (
           <p>Something went wrong.</p>
@@ -42,24 +47,22 @@ export const ReviewList: React.FC<ReviewListProps> = ({ endpoint }) => {
 
   return (
     <div className="flex flex-col gap-2">
-      <div>
-        {data.map((reviewWithPagination, idx) => {
-          return (
-            <div key={idx}>
-              {reviewWithPagination.reviews.map((review: ReviewPreview) => {
-                return (
-                  <div key={review.reviewId} className="mt-2 mb-2">
-                    <Suspense fallback={<ReviewCardSkeleton />}>
-                      <ReviewCard review={review} />
-                    </Suspense>
-                  </div>
-                )
-              })}
-            </div>
-          )
-        })}
-      </div>
-      <div>
+      {data.map((reviewWithPagination, idx) => {
+        return (
+          <div key={idx} className="mt-4 flex flex-col gap-4">
+            {reviewWithPagination.reviews.map((review: ReviewPreview) => {
+              return (
+                <div key={review.reviewId}>
+                  <Suspense fallback={<ReviewCardSkeleton />}>
+                    <ReviewCard review={review} />
+                  </Suspense>
+                </div>
+              )
+            })}
+          </div>
+        )
+      })}
+      <div className="mb-20 flex flex-col items-center">
         <Button variant="ghost" size="lg" onClick={() => loadMore()}>
           もっと見る
         </Button>

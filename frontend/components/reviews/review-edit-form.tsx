@@ -25,6 +25,7 @@ export const ReviewEditForm: React.FC<ReviewEditFormProps> = ({
         {
           method: "PATCH",
           body: JSON.stringify({
+            albumId: data.albumId,
             title: data.title,
             content: data.content,
             publishedStatus: data.publishedStatus,

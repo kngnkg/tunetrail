@@ -76,6 +76,14 @@ export type Album = {
 
 export type AlbumInfo = Pick<Album, "albumId" | "name" | "artists" | "coverUrl">
 
+export type AlbumWithPagination = {
+  albums: AlbumInfo[]
+  limit: number
+  next: string | null
+  offset: number
+  total: number
+}
+
 export type Artist = {
   artistId: string // Spotify ID
   spotifyUri: string
