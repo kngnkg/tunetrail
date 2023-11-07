@@ -1,33 +1,30 @@
 "use client"
 
 import * as React from "react"
-import { useRouter } from "next/navigation"
 
 import { Input } from "@/components/ui/input"
 import { Icon } from "@/components/icon"
 
 interface SearchBarProps extends React.InputHTMLAttributes<HTMLInputElement> {
   className?: string
+  value: string
+  onChange: (e: any) => void
+  onEnterKeyDown?: () => void // Enter キー押下時のコールバック
 }
 
 const enterKeyCode = 13
 
 export const SearchBar = React.forwardRef<HTMLInputElement, SearchBarProps>(
-  ({ className, ...props }, ref) => {
-    const router = useRouter()
-    const [query, setQuery] = React.useState("")
-
-    const handleChange = (e: any) => {
-      setQuery(e.target.value)
-    }
-
+  ({ className, value, onChange, onEnterKeyDown, ...props }, ref) => {
     const handleKeyDown = (e: any) => {
+      if (!onEnterKeyDown) return
+
       if (e.keyCode !== enterKeyCode) return
-      if (!query) return
+      if (!value) return
 
       e.preventDefault()
 
-      router.push(`?q=${query}`)
+      onEnterKeyDown()
     }
 
     return (
@@ -36,8 +33,8 @@ export const SearchBar = React.forwardRef<HTMLInputElement, SearchBarProps>(
         <Input
           type="text"
           placeholder="Search..."
-          value={query}
-          onChange={handleChange}
+          value={value}
+          onChange={onChange}
           onKeyDown={handleKeyDown}
           className="h-12 text-lg bg-transparent pl-14"
           ref={ref}
