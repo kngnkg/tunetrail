@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server"
+import createReview from "@/service/review/create-review"
 import * as z from "zod"
 
 import { getCurrentUser, getServerSession } from "@/lib/session"
+import { reviewSchema } from "@/lib/validations/review"
 
 const routeContextSchema = z.object({
   params: z.object({
@@ -20,24 +22,24 @@ export async function POST(req: Request, context: UserReviewRouteContext) {
       return NextResponse.json(null, { status: 401 })
     }
 
-    // const user = await getCurrentUser()
-    // if (!user) {
-    //   return NextResponse.json(null, { status: 401 })
-    // }
+    const user = await getCurrentUser()
+    if (!user) {
+      return NextResponse.json(null, { status: 401 })
+    }
 
-    // if (user.username !== params.username) {
-    //   return NextResponse.json(null, { status: 403 })
-    // }
+    if (user.username !== params.username) {
+      return NextResponse.json(null, { status: 403 })
+    }
 
     // リクエストボディをバリデーションする
     const json = await req.json()
-    const body = userUpdateSchema.parse(json)
+    const body = reviewSchema.parse(json)
 
     const updated = await createReview(session.idToken, {
-      username: body.username ?? undefined,
-      displayName: body.displayName ?? undefined,
-      avatarUrl: body.avatarUrl ?? undefined,
-      bio: body.bio ?? undefined,
+      albumId: body.albumId,
+      title: body.title,
+      content: body.content,
+      publishedStatus: body.publishedStatus,
     })
 
     if (!updated) {
