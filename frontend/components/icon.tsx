@@ -7,6 +7,7 @@ import {
   HeartIcon,
   MagnifyingGlassIcon,
   Pencil2Icon,
+  PlusCircledIcon,
 } from "@radix-ui/react-icons"
 
 import { cn } from "@/lib/utils"
@@ -21,6 +22,7 @@ interface IconProps {
     | "like"
     | "filled-like"
     | "comment"
+    | "add"
   className?: string
 }
 
@@ -54,6 +56,10 @@ export const Icon: React.FC<IconProps> = ({ type, className, ...props }) => {
     case "comment":
       return (
         <ChatBubbleIcon className={cn(baseClassName, className)} {...props} />
+      )
+    case "add":
+      return (
+        <PlusCircledIcon className={cn(baseClassName, className)} {...props} />
       )
     default:
       return null

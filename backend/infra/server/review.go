@@ -124,15 +124,12 @@ func (s *reviewServer) GetReviewById(ctx context.Context, in *review.GetReviewBy
 }
 
 func (s *reviewServer) CreateReview(ctx context.Context, in *review.CreateReviewRequest) (*review.Review, error) {
-	// TODO: ここでのバリデーションはどうするか
 	req := struct {
-		AuthorId        entity.ImmutableId     `validate:"required"`
-		AlbumId         string                 `validate:"required"`
-		Title           string                 `validate:"required"`
+		AlbumId         string                 `validate:"required,album_id"`
+		Title           string                 `validate:"required,min=1,max=100"`
 		Content         string                 `validate:"required,json"`
-		PublishedStatus entity.PublishedStatus `validate:"required"`
+		PublishedStatus entity.PublishedStatus `validate:"required,published_status"`
 	}{
-		AuthorId:        entity.ImmutableId(in.UserId),
 		AlbumId:         in.AlbumId,
 		Title:           in.Title,
 		Content:         in.Content,
@@ -143,7 +140,9 @@ func (s *reviewServer) CreateReview(ctx context.Context, in *review.CreateReview
 		return nil, invalidArgument(ctx, err)
 	}
 
-	res, err := s.uc.Store(ctx, req.AuthorId, req.AlbumId, req.Title, json.RawMessage(req.Content), req.PublishedStatus)
+	authorId := GetImmutableId(ctx)
+
+	res, err := s.uc.StoreReview(ctx, authorId, req.AlbumId, req.Title, json.RawMessage(req.Content), req.PublishedStatus)
 	if err != nil {
 		return nil, internal(ctx, err)
 	}

@@ -101,7 +101,7 @@ func (uc *ReviewUseCase) GetReviewById(ctx context.Context, reviewId string) (*e
 	return r, nil
 }
 
-func (uc *ReviewUseCase) Store(ctx context.Context, authorId entity.ImmutableId, albumId, title string, content json.RawMessage, status entity.PublishedStatus) (*entity.Review, error) {
+func (uc *ReviewUseCase) StoreReview(ctx context.Context, authorId entity.ImmutableId, albumId, title string, content json.RawMessage, status entity.PublishedStatus) (*entity.Review, error) {
 	review := &entity.Review{
 		PublishedStatus: status,
 		Author: &entity.Author{

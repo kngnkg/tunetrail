@@ -521,11 +521,10 @@ proto.review.CreateReviewRequest.prototype.toObject = function(opt_includeInstan
  */
 proto.review.CreateReviewRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
-    userid: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    albumid: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    title: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    content: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    publishedstatus: jspb.Message.getFieldWithDefault(msg, 5, "")
+    albumid: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    title: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    content: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    publishedstatus: jspb.Message.getFieldWithDefault(msg, 4, "")
   };
 
   if (includeInstance) {
@@ -564,21 +563,17 @@ proto.review.CreateReviewRequest.deserializeBinaryFromReader = function(msg, rea
     switch (field) {
     case 1:
       var value = /** @type {string} */ (reader.readString());
-      msg.setUserid(value);
+      msg.setAlbumid(value);
       break;
     case 2:
       var value = /** @type {string} */ (reader.readString());
-      msg.setAlbumid(value);
+      msg.setTitle(value);
       break;
     case 3:
       var value = /** @type {string} */ (reader.readString());
-      msg.setTitle(value);
-      break;
-    case 4:
-      var value = /** @type {string} */ (reader.readString());
       msg.setContent(value);
       break;
-    case 5:
+    case 4:
       var value = /** @type {string} */ (reader.readString());
       msg.setPublishedstatus(value);
       break;
@@ -611,38 +606,31 @@ proto.review.CreateReviewRequest.prototype.serializeBinary = function() {
  */
 proto.review.CreateReviewRequest.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getUserid();
+  f = message.getAlbumid();
   if (f.length > 0) {
     writer.writeString(
       1,
       f
     );
   }
-  f = message.getAlbumid();
+  f = message.getTitle();
   if (f.length > 0) {
     writer.writeString(
       2,
       f
     );
   }
-  f = message.getTitle();
+  f = message.getContent();
   if (f.length > 0) {
     writer.writeString(
       3,
       f
     );
   }
-  f = message.getContent();
-  if (f.length > 0) {
-    writer.writeString(
-      4,
-      f
-    );
-  }
   f = message.getPublishedstatus();
   if (f.length > 0) {
     writer.writeString(
-      5,
+      4,
       f
     );
   }
@@ -650,10 +638,10 @@ proto.review.CreateReviewRequest.serializeBinaryToWriter = function(message, wri
 
 
 /**
- * optional string userId = 1;
+ * optional string albumId = 1;
  * @return {string}
  */
-proto.review.CreateReviewRequest.prototype.getUserid = function() {
+proto.review.CreateReviewRequest.prototype.getAlbumid = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
@@ -662,16 +650,16 @@ proto.review.CreateReviewRequest.prototype.getUserid = function() {
  * @param {string} value
  * @return {!proto.review.CreateReviewRequest} returns this
  */
-proto.review.CreateReviewRequest.prototype.setUserid = function(value) {
+proto.review.CreateReviewRequest.prototype.setAlbumid = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
 /**
- * optional string albumId = 2;
+ * optional string title = 2;
  * @return {string}
  */
-proto.review.CreateReviewRequest.prototype.getAlbumid = function() {
+proto.review.CreateReviewRequest.prototype.getTitle = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
@@ -680,16 +668,16 @@ proto.review.CreateReviewRequest.prototype.getAlbumid = function() {
  * @param {string} value
  * @return {!proto.review.CreateReviewRequest} returns this
  */
-proto.review.CreateReviewRequest.prototype.setAlbumid = function(value) {
+proto.review.CreateReviewRequest.prototype.setTitle = function(value) {
   return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
 /**
- * optional string title = 3;
+ * optional string content = 3;
  * @return {string}
  */
-proto.review.CreateReviewRequest.prototype.getTitle = function() {
+proto.review.CreateReviewRequest.prototype.getContent = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
@@ -698,16 +686,16 @@ proto.review.CreateReviewRequest.prototype.getTitle = function() {
  * @param {string} value
  * @return {!proto.review.CreateReviewRequest} returns this
  */
-proto.review.CreateReviewRequest.prototype.setTitle = function(value) {
+proto.review.CreateReviewRequest.prototype.setContent = function(value) {
   return jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
 /**
- * optional string content = 4;
+ * optional string publishedStatus = 4;
  * @return {string}
  */
-proto.review.CreateReviewRequest.prototype.getContent = function() {
+proto.review.CreateReviewRequest.prototype.getPublishedstatus = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
 };
 
@@ -716,26 +704,8 @@ proto.review.CreateReviewRequest.prototype.getContent = function() {
  * @param {string} value
  * @return {!proto.review.CreateReviewRequest} returns this
  */
-proto.review.CreateReviewRequest.prototype.setContent = function(value) {
-  return jspb.Message.setProto3StringField(this, 4, value);
-};
-
-
-/**
- * optional string publishedStatus = 5;
- * @return {string}
- */
-proto.review.CreateReviewRequest.prototype.getPublishedstatus = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.review.CreateReviewRequest} returns this
- */
 proto.review.CreateReviewRequest.prototype.setPublishedstatus = function(value) {
-  return jspb.Message.setProto3StringField(this, 5, value);
+  return jspb.Message.setProto3StringField(this, 4, value);
 };
 
 

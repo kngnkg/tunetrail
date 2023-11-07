@@ -109,8 +109,7 @@ func (s *userServer) GetUserByUsername(ctx context.Context, in *user.GetUserByUs
 }
 
 func (s *userServer) GetMe(ctx context.Context, in *emptypb.Empty) (*user.User, error) {
-	token := GetToken(ctx)
-	immutableId := token.Sub
+	immutableId := GetImmutableId(ctx)
 
 	res, err := s.usecase.GetMe(ctx, entity.ImmutableId(immutableId))
 	if err != nil {

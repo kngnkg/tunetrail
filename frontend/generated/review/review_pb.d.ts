@@ -49,9 +49,6 @@ export namespace GetReviewByIdRequest {
 }
 
 export class CreateReviewRequest extends jspb.Message {
-  getUserid(): string;
-  setUserid(value: string): void;
-
   getAlbumid(): string;
   setAlbumid(value: string): void;
 
@@ -76,7 +73,6 @@ export class CreateReviewRequest extends jspb.Message {
 
 export namespace CreateReviewRequest {
   export type AsObject = {
-    userid: string,
     albumid: string,
     title: string,
     content: string,

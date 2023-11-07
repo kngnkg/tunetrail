@@ -1,3 +1,4 @@
+import { useRouter } from "next/navigation"
 import { LoginUser } from "@/types"
 import { useSession } from "next-auth/react"
 import useSWR from "swr"
@@ -7,8 +8,8 @@ import { clientFetcher } from "@/lib/fetcher"
 
 interface UseLoginUser {
   user: LoginUser | undefined
-  isLoading: boolean
-  isError: boolean
+  // isLoading: boolean
+  // isError: booleans
 }
 
 const fetcher = async (
@@ -22,8 +23,8 @@ const fetcher = async (
     displayName: res.displayName,
     avatarUrl: res.avatarUrl,
     bio: res.bio,
-    followersCount: res.followersCount,
-    followingCount: res.followingCount,
+    // followersCount: res.followersCount,
+    // followingCount: res.followingCount,
     createdAt: res.createdAt,
     updatedAt: res.updatedAt,
   }
@@ -33,34 +34,39 @@ const fetcher = async (
 
 export const useLoginUser = (): UseLoginUser => {
   const { data: session, status } = useSession()
-  const {
-    data: user,
-    isLoading,
-    error,
-  } = useSWR<LoginUser>(
-    status === "authenticated" ? `${env.NEXT_PUBLIC_API_ROOT}/users/me` : null,
-    fetcher
-  )
+  const router = useRouter()
+  // const {
+  //   data: user,
+  //   isLoading,
+  //   error,
+  // } = useSWR<LoginUser>(
+  //   status === "authenticated" ? `${env.NEXT_PUBLIC_API_ROOT}/users/me` : null,
+  //   fetcher
+  // )
 
-  if (status === "loading") {
-    return {
-      user: undefined,
-      isLoading: true,
-      isError: false,
-    }
-  }
+  // if (status === "loading") {
+  //   return {
+  //     user: undefined,
+  //     isLoading: true,
+  //     // isError: false,
+  //   }
+  // }
 
   if (status === "unauthenticated" || !session) {
     return {
       user: undefined,
-      isLoading: false,
-      isError: false,
+      // isLoading: false,
+      // isError: false,
     }
   }
 
+  if (session.isNewUser) {
+    router.push("/signup")
+  }
+
   return {
-    user: user,
-    isLoading,
-    isError: error,
+    user: session.user,
+    // isLoading: false,
+    // isError: error,
   }
 }

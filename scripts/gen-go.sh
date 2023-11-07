@@ -2,6 +2,8 @@
 
 set -e
 
+WORK_DIR="/workspace"
+
 # 生成ファイルを格納するフォルダのベースパス
 BASE_OUT_DIR="./backend/gen"
 
@@ -9,6 +11,8 @@ BASE_OUT_DIR="./backend/gen"
 PROTO_PATH="./proto"
 
 MODULE_BASE="github.com/kngnkg/tunetrail/backend/gen"
+
+cd ${WORK_DIR}
 
 # proto のコンパイル
 for PROTO_FILE in ${PROTO_PATH}/*.proto; do

@@ -1,10 +1,14 @@
 package validator
 
 import (
+	"encoding/json"
 	"regexp"
+	"unicode"
 
 	"github.com/go-playground/validator"
 )
+
+const AlbumIdLength = 22
 
 type Validator struct {
 	validator *validator.Validate
@@ -13,6 +17,18 @@ type Validator struct {
 func New() *Validator {
 	v := validator.New()
 	if err := v.RegisterValidation("username", isDisplayIdValid); err != nil {
+		panic(err)
+	}
+
+	if err := v.RegisterValidation("published_status", isPublishedStatusValid); err != nil {
+		panic(err)
+	}
+
+	if err := v.RegisterValidation("album_id", isAlbumIdValid); err != nil {
+		panic(err)
+	}
+
+	if err := v.RegisterValidation("json", isJSONValid); err != nil {
 		panic(err)
 	}
 
@@ -29,4 +45,33 @@ func (v *Validator) Validate(i interface{}) error {
 func isDisplayIdValid(fl validator.FieldLevel) bool {
 	re := regexp.MustCompile(`^[a-zA-Z0-9_]{4,20}$`)
 	return re.MatchString(fl.Field().String())
+}
+
+func isPublishedStatusValid(fl validator.FieldLevel) bool {
+	switch fl.Field().String() {
+	case "published", "draft", "unlisted":
+		return true
+	default:
+		return false
+	}
+}
+
+func isAlbumIdValid(fl validator.FieldLevel) bool {
+	field := fl.Field().String()
+	if len(field) != AlbumIdLength {
+		return false
+	}
+	// すべての文字が英数字であることを確認
+	for _, r := range field {
+		if !unicode.IsLetter(r) && !unicode.IsNumber(r) {
+			return false
+		}
+	}
+	return true
+}
+
+func isJSONValid(fl validator.FieldLevel) bool {
+	str := fl.Field().String()
+	var js json.RawMessage
+	return json.Unmarshal([]byte(str), &js) == nil
 }
