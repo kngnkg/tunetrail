@@ -1,6 +1,7 @@
 package validator
 
 import (
+	"encoding/json"
 	"regexp"
 	"unicode"
 
@@ -24,6 +25,10 @@ func New() *Validator {
 	}
 
 	if err := v.RegisterValidation("album_id", isAlbumIdValid); err != nil {
+		panic(err)
+	}
+
+	if err := v.RegisterValidation("json", isJSONValid); err != nil {
 		panic(err)
 	}
 
@@ -63,4 +68,10 @@ func isAlbumIdValid(fl validator.FieldLevel) bool {
 		}
 	}
 	return true
+}
+
+func isJSONValid(fl validator.FieldLevel) bool {
+	str := fl.Field().String()
+	var js json.RawMessage
+	return json.Unmarshal([]byte(str), &js) == nil
 }
