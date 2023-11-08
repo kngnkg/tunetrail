@@ -27,7 +27,7 @@ export const ReviewEditForm: React.FC<ReviewEditFormProps> = ({
           body: JSON.stringify({
             albumId: data.albumId,
             title: data.title,
-            content: data.content,
+            content: JSON.stringify(data.content),
             publishedStatus: data.publishedStatus,
           }),
         }
