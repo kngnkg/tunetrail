@@ -10,6 +10,7 @@ service ReviewService {
   rpc ListReviews(ListReviewsRequest) returns (ReviewList) {}
   rpc ListMyReviews(ListReviewsRequest) returns (ReviewList) {}
   rpc GetReviewById(GetReviewByIdRequest) returns (Review) {}
+  rpc GetMyReviewById(GetReviewByIdRequest) returns (Review) {}
   rpc CreateReview(CreateReviewRequest) returns (Review) {}
   rpc UpdateReview(UpdateReviewRequest) returns (Review) {}
   rpc DeleteReview(DeleteReviewRequest) returns (google.protobuf.Empty) {}
