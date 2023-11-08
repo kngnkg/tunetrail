@@ -17,6 +17,7 @@ const EditorBlock: React.FC<EditorBlockProps> = ({
   const ref = React.useRef<EditorJS>()
   // editorjsを初期化する
   React.useEffect(() => {
+    if (typeof window === "undefined") return
     if (ref.current) return
 
     const editor = new EditorJS({
