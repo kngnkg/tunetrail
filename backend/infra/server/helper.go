@@ -19,6 +19,10 @@ func alreadyExists(ctx context.Context, err error) error {
 	return status.Error(codes.AlreadyExists, "already exists")
 }
 
+func permissionDenied(ctx context.Context, err error) error {
+	return status.Error(codes.PermissionDenied, "permission denied")
+}
+
 func internal(ctx context.Context, err error) error {
 	return status.Error(codes.Internal, "internal server error")
 }

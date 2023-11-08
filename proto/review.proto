@@ -30,9 +30,10 @@ message CreateReviewRequest {
 
 message UpdateReviewRequest {
   string reviewId = 1;
-  string title = 2;
-  string content = 3;
-  string publishedStatus = 4;
+  string albumId = 2;
+  string title = 3;
+  string content = 4;
+  string publishedStatus = 5;
 }
 
 message DeleteReviewRequest { string reviewId = 1; }

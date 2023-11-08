@@ -21,7 +21,7 @@ func NewHelloworldServer(a *Auth) helloworld.GreeterServer {
 
 // 認証を必要とするメソッドを定義
 var authRequiredMethodsHW = map[string]bool{
-	"/helloworld.Greeter/SayHello": true,
+	"/helloworld.Greeter/SayHello": false,
 }
 
 var _ grpc_auth.ServiceAuthFuncOverride = (*helloworldServer)(nil)
@@ -39,5 +39,10 @@ func (s *helloworldServer) AuthFuncOverride(ctx context.Context, fullMethodName 
 
 func (s *helloworldServer) SayHello(ctx context.Context, in *helloworld.HelloRequest) (*helloworld.HelloReply, error) {
 	logger.FromContext(ctx).Info("SayHello", slog.Any("in", in))
+
+	if in.Name == "panic" {
+		panic("panic")
+	}
+
 	return &helloworld.HelloReply{Message: "Hello " + in.Name}, nil
 }
