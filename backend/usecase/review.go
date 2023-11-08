@@ -90,30 +90,28 @@ func (uc *ReviewUseCase) GetReviewById(ctx context.Context, reviewId string) (*e
 		return nil, nil
 	}
 
-	var ids []entity.ImmutableId
-	ids = append(ids, r.Author.ImmutableId)
-	users, err := uc.userRepo.ListUsersById(ctx, uc.DB, ids)
+	user, err := uc.userRepo.GetUserByImmutableId(ctx, uc.DB, r.Author.ImmutableId)
 	if err != nil {
 		return nil, err
 	}
-	if len(users) != 1 {
-		return nil, fmt.Errorf("length of users is not 1, len(users)=%v", len(users))
-	}
 
-	r.Author = users[0].ToAuthor()
+	r.Author = user.ToAuthor()
 
 	return r, nil
 }
 
 func (uc *ReviewUseCase) StoreReview(ctx context.Context, authorId entity.ImmutableId, albumId, title string, content json.RawMessage, status entity.PublishedStatus) (*entity.Review, error) {
-	review := &entity.Review{
+	user, err := uc.userRepo.GetUserByImmutableId(ctx, uc.DB, authorId)
+	if err != nil {
+		return nil, err
+	}
+
+	r := &entity.Review{
 		PublishedStatus: status,
-		Author: &entity.Author{
-			ImmutableId: authorId,
-		},
-		AlbumId: albumId,
-		Title:   title,
-		Content: content,
+		Author:          user.ToAuthor(),
+		AlbumId:         albumId,
+		Title:           title,
+		Content:         content,
 	}
 
 	tx, err := uc.DB.BeginTxx(ctx, nil)
@@ -121,7 +119,7 @@ func (uc *ReviewUseCase) StoreReview(ctx context.Context, authorId entity.Immuta
 		return nil, err
 	}
 
-	r, err := uc.reviewRepo.StoreReview(ctx, tx, review)
+	r, err = uc.reviewRepo.StoreReview(ctx, tx, r)
 	if err != nil {
 		defer func() {
 			if err := tx.Rollback(); err != nil {
@@ -137,19 +135,7 @@ func (uc *ReviewUseCase) StoreReview(ctx context.Context, authorId entity.Immuta
 		return nil, err
 	}
 
-	var ids []entity.ImmutableId
-	ids = append(ids, r.Author.ImmutableId)
-	users, err := uc.userRepo.ListUsersById(ctx, uc.DB, ids)
-	if err != nil {
-		return nil, err
-	}
-	if len(users) != 1 {
-		return nil, fmt.Errorf("length of users is not 1, len(users)=%v", len(users))
-	}
-
-	review.Author = users[0].ToAuthor()
-
-	return review, nil
+	return r, nil
 }
 
 func (uc *ReviewUseCase) UpdateReview(ctx context.Context, authorId entity.ImmutableId, reviewId, albumId, title string, content json.RawMessage, publishedStatus entity.PublishedStatus) (*entity.Review, error) {
