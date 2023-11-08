@@ -133,6 +133,7 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
                 <FormControl>
                   <Input autoFocus placeholder="タイトル" {...field} />
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />

@@ -3,13 +3,18 @@ import { toAlbumInfo } from "@/service/transform"
 import * as z from "zod"
 
 import { env } from "@/env.mjs"
+import {
+  limitSchema,
+  offsetSchema,
+  querySchema,
+} from "@/lib/validations/search"
 
 import { errBadRequest, errInternal, errNotFound } from "../response"
 
 const searchAlbumsSchema = z.object({
-  q: z.string().min(1).max(100),
-  offset: z.number().optional(),
-  limit: z.number().optional(),
+  q: querySchema,
+  offset: offsetSchema,
+  limit: limitSchema,
 })
 
 type SearchAlbumsParams = z.infer<typeof searchAlbumsSchema>

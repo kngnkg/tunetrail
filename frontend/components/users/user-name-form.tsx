@@ -26,7 +26,11 @@ interface UserNameFormProps {
   onUserUpdateComplete?: () => void // 送信時のコールバック
 }
 
-type FormData = z.infer<typeof userNameSchema>
+const userNameFormSchema = z.object({
+  username: userNameSchema,
+})
+
+type FormData = z.infer<typeof userNameFormSchema>
 
 export const UserNameForm: React.FC<UserNameFormProps> = ({
   className,
@@ -36,7 +40,7 @@ export const UserNameForm: React.FC<UserNameFormProps> = ({
   const currentUserName = user.username
 
   const form = useForm<FormData>({
-    resolver: zodResolver(userNameSchema),
+    resolver: zodResolver(userNameFormSchema),
     defaultValues: {
       username: currentUserName,
     },
@@ -79,6 +83,7 @@ export const UserNameForm: React.FC<UserNameFormProps> = ({
               <FormControl>
                 <Input placeholder="Username" {...field} />
               </FormControl>
+              <FormMessage />
             </FormItem>
           )}
         />

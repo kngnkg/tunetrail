@@ -84,6 +84,7 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
               <FormControl>
                 <Input placeholder="表示名" {...field} />
               </FormControl>
+              <FormMessage />
             </FormItem>
           )}
         />
@@ -95,6 +96,7 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
               <FormControl>
                 <Input placeholder="自己紹介" {...field} />
               </FormControl>
+              <FormMessage />
             </FormItem>
           )}
         />

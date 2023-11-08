@@ -2,15 +2,15 @@ import { NextResponse } from "next/server"
 import getAlbum from "@/service/album/get-album"
 import createReview from "@/service/review/create-review"
 import { toReview } from "@/service/transform"
-import { Review } from "@/types"
 import * as z from "zod"
 
 import { getCurrentUser, getServerSession } from "@/lib/session"
 import { reviewSchema } from "@/lib/validations/review"
+import { userNameSchema } from "@/lib/validations/user"
 
 const routeContextSchema = z.object({
   params: z.object({
-    username: z.string().min(4).max(20),
+    username: userNameSchema,
   }),
 })
 
