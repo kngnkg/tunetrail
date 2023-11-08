@@ -152,6 +152,28 @@ func (s *reviewServer) GetReviewById(ctx context.Context, in *review.GetReviewBy
 	return toReview(res), nil
 }
 
+func (s *reviewServer) GetMyReviewById(ctx context.Context, in *review.GetReviewByIdRequest) (*review.Review, error) {
+	req := struct {
+		ReviewId string `validate:"required,uuid4"`
+	}{
+		ReviewId: in.ReviewId,
+	}
+
+	if err := s.validator.Validate(req); err != nil {
+		return nil, invalidArgument(ctx, err)
+	}
+
+	res, err := s.uc.GetMyReviewById(ctx, req.ReviewId)
+	if err != nil {
+		return nil, internal(ctx, err)
+	}
+	if res == nil {
+		return nil, notFound(ctx, err)
+	}
+
+	return toReview(res), nil
+}
+
 func (s *reviewServer) CreateReview(ctx context.Context, in *review.CreateReviewRequest) (*review.Review, error) {
 	req := struct {
 		AlbumId         string                 `validate:"required,album_id"`

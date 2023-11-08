@@ -114,7 +114,7 @@ func (uc *ReviewUseCase) ListMyReviews(ctx context.Context, authorId entity.Immu
 	return resp, nil
 }
 
-func (uc *ReviewUseCase) GetReviewById(ctx context.Context, reviewId string) (*entity.Review, error) {
+func (uc *ReviewUseCase) getReview(ctx context.Context, reviewId string) (*entity.Review, error) {
 	r, err := uc.reviewRepo.GetReviewById(ctx, uc.DB, reviewId)
 	if err != nil {
 		return nil, err
@@ -131,6 +131,23 @@ func (uc *ReviewUseCase) GetReviewById(ctx context.Context, reviewId string) (*e
 	r.Author = user.ToAuthor()
 
 	return r, nil
+}
+
+func (uc *ReviewUseCase) GetReviewById(ctx context.Context, reviewId string) (*entity.Review, error) {
+	r, err := uc.getReview(ctx, reviewId)
+	if err != nil {
+		return nil, err
+	}
+
+	if r.PublishedStatus != entity.Published {
+		return nil, nil
+	}
+
+	return r, nil
+}
+
+func (uc *ReviewUseCase) GetMyReviewById(ctx context.Context, reviewId string) (*entity.Review, error) {
+	return uc.getReview(ctx, reviewId)
 }
 
 func (uc *ReviewUseCase) StoreReview(ctx context.Context, authorId entity.ImmutableId, albumId, title string, content json.RawMessage, status entity.PublishedStatus) (*entity.Review, error) {

@@ -20,12 +20,13 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	ReviewService_ListReviews_FullMethodName   = "/review.ReviewService/ListReviews"
-	ReviewService_ListMyReviews_FullMethodName = "/review.ReviewService/ListMyReviews"
-	ReviewService_GetReviewById_FullMethodName = "/review.ReviewService/GetReviewById"
-	ReviewService_CreateReview_FullMethodName  = "/review.ReviewService/CreateReview"
-	ReviewService_UpdateReview_FullMethodName  = "/review.ReviewService/UpdateReview"
-	ReviewService_DeleteReview_FullMethodName  = "/review.ReviewService/DeleteReview"
+	ReviewService_ListReviews_FullMethodName     = "/review.ReviewService/ListReviews"
+	ReviewService_ListMyReviews_FullMethodName   = "/review.ReviewService/ListMyReviews"
+	ReviewService_GetReviewById_FullMethodName   = "/review.ReviewService/GetReviewById"
+	ReviewService_GetMyReviewById_FullMethodName = "/review.ReviewService/GetMyReviewById"
+	ReviewService_CreateReview_FullMethodName    = "/review.ReviewService/CreateReview"
+	ReviewService_UpdateReview_FullMethodName    = "/review.ReviewService/UpdateReview"
+	ReviewService_DeleteReview_FullMethodName    = "/review.ReviewService/DeleteReview"
 )
 
 // ReviewServiceClient is the client API for ReviewService service.
@@ -35,6 +36,7 @@ type ReviewServiceClient interface {
 	ListReviews(ctx context.Context, in *ListReviewsRequest, opts ...grpc.CallOption) (*ReviewList, error)
 	ListMyReviews(ctx context.Context, in *ListReviewsRequest, opts ...grpc.CallOption) (*ReviewList, error)
 	GetReviewById(ctx context.Context, in *GetReviewByIdRequest, opts ...grpc.CallOption) (*Review, error)
+	GetMyReviewById(ctx context.Context, in *GetReviewByIdRequest, opts ...grpc.CallOption) (*Review, error)
 	CreateReview(ctx context.Context, in *CreateReviewRequest, opts ...grpc.CallOption) (*Review, error)
 	UpdateReview(ctx context.Context, in *UpdateReviewRequest, opts ...grpc.CallOption) (*Review, error)
 	DeleteReview(ctx context.Context, in *DeleteReviewRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
@@ -75,6 +77,15 @@ func (c *reviewServiceClient) GetReviewById(ctx context.Context, in *GetReviewBy
 	return out, nil
 }
 
+func (c *reviewServiceClient) GetMyReviewById(ctx context.Context, in *GetReviewByIdRequest, opts ...grpc.CallOption) (*Review, error) {
+	out := new(Review)
+	err := c.cc.Invoke(ctx, ReviewService_GetMyReviewById_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *reviewServiceClient) CreateReview(ctx context.Context, in *CreateReviewRequest, opts ...grpc.CallOption) (*Review, error) {
 	out := new(Review)
 	err := c.cc.Invoke(ctx, ReviewService_CreateReview_FullMethodName, in, out, opts...)
@@ -109,6 +120,7 @@ type ReviewServiceServer interface {
 	ListReviews(context.Context, *ListReviewsRequest) (*ReviewList, error)
 	ListMyReviews(context.Context, *ListReviewsRequest) (*ReviewList, error)
 	GetReviewById(context.Context, *GetReviewByIdRequest) (*Review, error)
+	GetMyReviewById(context.Context, *GetReviewByIdRequest) (*Review, error)
 	CreateReview(context.Context, *CreateReviewRequest) (*Review, error)
 	UpdateReview(context.Context, *UpdateReviewRequest) (*Review, error)
 	DeleteReview(context.Context, *DeleteReviewRequest) (*emptypb.Empty, error)
@@ -127,6 +139,9 @@ func (UnimplementedReviewServiceServer) ListMyReviews(context.Context, *ListRevi
 }
 func (UnimplementedReviewServiceServer) GetReviewById(context.Context, *GetReviewByIdRequest) (*Review, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetReviewById not implemented")
+}
+func (UnimplementedReviewServiceServer) GetMyReviewById(context.Context, *GetReviewByIdRequest) (*Review, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetMyReviewById not implemented")
 }
 func (UnimplementedReviewServiceServer) CreateReview(context.Context, *CreateReviewRequest) (*Review, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateReview not implemented")
@@ -204,6 +219,24 @@ func _ReviewService_GetReviewById_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ReviewService_GetMyReviewById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetReviewByIdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ReviewServiceServer).GetMyReviewById(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ReviewService_GetMyReviewById_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ReviewServiceServer).GetMyReviewById(ctx, req.(*GetReviewByIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ReviewService_CreateReview_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreateReviewRequest)
 	if err := dec(in); err != nil {
@@ -276,6 +309,10 @@ var ReviewService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetReviewById",
 			Handler:    _ReviewService_GetReviewById_Handler,
+		},
+		{
+			MethodName: "GetMyReviewById",
+			Handler:    _ReviewService_GetMyReviewById_Handler,
 		},
 		{
 			MethodName: "CreateReview",

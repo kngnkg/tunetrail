@@ -1,6 +1,6 @@
 import { notFound, redirect } from "next/navigation"
 import getAlbum from "@/service/album/get-album"
-import getReviewById from "@/service/review/get-review"
+import getMyReviewById from "@/service/review/get-my-review"
 import { toReview } from "@/service/transform"
 import { Review } from "@/types"
 
@@ -11,21 +11,20 @@ interface EditorPageProps {
   params: { reviewId: string }
 }
 
-// TODO: 認証済みユーザー専用のエンドポイントを作る
 const getLoginUserReview = async (
-  immutableId: string,
+  idToken: string,
   reviewId: string
 ): Promise<Review | null> => {
   try {
-    const reviewResp = await getReviewById(reviewId)
+    const resp = await getMyReviewById(idToken, reviewId)
 
-    if (!reviewResp) {
+    if (!resp) {
       return null
     }
 
-    const albumResp = await getAlbum(reviewResp.getAlbumid())
+    const albumResp = await getAlbum(resp.getAlbumid())
 
-    const review = toReview(reviewResp, albumResp)
+    const review = toReview(resp, albumResp)
 
     return review
   } catch (e) {

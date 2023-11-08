@@ -11,6 +11,7 @@ interface IReviewServiceService extends grpc.ServiceDefinition<grpc.UntypedServi
   listReviews: grpc.MethodDefinition<review_pb.ListReviewsRequest, review_pb.ReviewList>;
   listMyReviews: grpc.MethodDefinition<review_pb.ListReviewsRequest, review_pb.ReviewList>;
   getReviewById: grpc.MethodDefinition<review_pb.GetReviewByIdRequest, review_pb.Review>;
+  getMyReviewById: grpc.MethodDefinition<review_pb.GetReviewByIdRequest, review_pb.Review>;
   createReview: grpc.MethodDefinition<review_pb.CreateReviewRequest, review_pb.Review>;
   updateReview: grpc.MethodDefinition<review_pb.UpdateReviewRequest, review_pb.Review>;
   deleteReview: grpc.MethodDefinition<review_pb.DeleteReviewRequest, google_protobuf_empty_pb.Empty>;
@@ -22,6 +23,7 @@ export interface IReviewServiceServer extends grpc.UntypedServiceImplementation 
   listReviews: grpc.handleUnaryCall<review_pb.ListReviewsRequest, review_pb.ReviewList>;
   listMyReviews: grpc.handleUnaryCall<review_pb.ListReviewsRequest, review_pb.ReviewList>;
   getReviewById: grpc.handleUnaryCall<review_pb.GetReviewByIdRequest, review_pb.Review>;
+  getMyReviewById: grpc.handleUnaryCall<review_pb.GetReviewByIdRequest, review_pb.Review>;
   createReview: grpc.handleUnaryCall<review_pb.CreateReviewRequest, review_pb.Review>;
   updateReview: grpc.handleUnaryCall<review_pb.UpdateReviewRequest, review_pb.Review>;
   deleteReview: grpc.handleUnaryCall<review_pb.DeleteReviewRequest, google_protobuf_empty_pb.Empty>;
@@ -38,6 +40,9 @@ export class ReviewServiceClient extends grpc.Client {
   getReviewById(argument: review_pb.GetReviewByIdRequest, callback: grpc.requestCallback<review_pb.Review>): grpc.ClientUnaryCall;
   getReviewById(argument: review_pb.GetReviewByIdRequest, metadataOrOptions: grpc.Metadata | grpc.CallOptions | null, callback: grpc.requestCallback<review_pb.Review>): grpc.ClientUnaryCall;
   getReviewById(argument: review_pb.GetReviewByIdRequest, metadata: grpc.Metadata | null, options: grpc.CallOptions | null, callback: grpc.requestCallback<review_pb.Review>): grpc.ClientUnaryCall;
+  getMyReviewById(argument: review_pb.GetReviewByIdRequest, callback: grpc.requestCallback<review_pb.Review>): grpc.ClientUnaryCall;
+  getMyReviewById(argument: review_pb.GetReviewByIdRequest, metadataOrOptions: grpc.Metadata | grpc.CallOptions | null, callback: grpc.requestCallback<review_pb.Review>): grpc.ClientUnaryCall;
+  getMyReviewById(argument: review_pb.GetReviewByIdRequest, metadata: grpc.Metadata | null, options: grpc.CallOptions | null, callback: grpc.requestCallback<review_pb.Review>): grpc.ClientUnaryCall;
   createReview(argument: review_pb.CreateReviewRequest, callback: grpc.requestCallback<review_pb.Review>): grpc.ClientUnaryCall;
   createReview(argument: review_pb.CreateReviewRequest, metadataOrOptions: grpc.Metadata | grpc.CallOptions | null, callback: grpc.requestCallback<review_pb.Review>): grpc.ClientUnaryCall;
   createReview(argument: review_pb.CreateReviewRequest, metadata: grpc.Metadata | null, options: grpc.CallOptions | null, callback: grpc.requestCallback<review_pb.Review>): grpc.ClientUnaryCall;
