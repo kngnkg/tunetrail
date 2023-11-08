@@ -11,22 +11,48 @@ import (
 
 type ReviewRepository struct{}
 
+func reviewPagenationQuery(query string, cursor string, limit int, args []interface{}) (string, []interface{}) {
+	if cursor != "" {
+		query += fmt.Sprintf(" AND created_at <= (SELECT created_at FROM reviews WHERE review_id = $%d)", len(args)+1)
+		args = append(args, cursor)
+	}
+
+	query += fmt.Sprintf(" ORDER BY created_at DESC LIMIT $%d;", len(args)+1)
+	args = append(args, limit)
+
+	return query, args
+}
+
 func (r *ReviewRepository) ListReviews(ctx context.Context, db Executor, reviewId string, limit int) ([]*entity.Review, error) {
 	query := `
 	SELECT review_id, user_id AS "author.user_id", album_id, title, content, published_status, created_at, updated_at
 	FROM reviews WHERE published_status = 'published'`
 
-	placeholderNum := 1
 	args := []interface{}{}
 
-	if reviewId != "" {
-		query += fmt.Sprintf(" AND created_at <= (SELECT created_at FROM reviews WHERE review_id = $%d)", placeholderNum)
-		args = append(args, reviewId)
-		placeholderNum++
+	query, args = reviewPagenationQuery(query, reviewId, limit, args)
+
+	reviews := []*entity.Review{}
+	err := db.SelectContext(ctx, &reviews, query, args...)
+	if err != nil {
+		logger.FromContext(ctx).Error("failed to get reviews.", err)
+		return nil, err
 	}
 
-	query += fmt.Sprintf(" ORDER BY created_at DESC LIMIT $%d;", placeholderNum)
-	args = append(args, limit)
+	return reviews, nil
+}
+
+func (r *ReviewRepository) ListMyReviews(ctx context.Context, db Executor, authorId entity.ImmutableId, reviewId string, limit int) ([]*entity.Review, error) {
+	query := `
+	SELECT review_id, user_id AS "author.user_id", album_id, title, content, published_status, created_at, updated_at
+	FROM reviews WHERE 1 = 1`
+
+	args := []interface{}{}
+
+	query += fmt.Sprintf(" AND user_id = $%d", len(args)+1)
+	args = append(args, authorId)
+
+	query, args = reviewPagenationQuery(query, reviewId, limit, args)
 
 	reviews := []*entity.Review{}
 	err := db.SelectContext(ctx, &reviews, query, args...)

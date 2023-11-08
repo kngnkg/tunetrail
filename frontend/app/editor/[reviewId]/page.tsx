@@ -17,9 +17,7 @@ const getLoginUserReview = async (
   reviewId: string
 ): Promise<Review | null> => {
   try {
-    const reviewResp = await getReviewById(
-      "77da1a38-0ef4-4b43-8628-ef1174017917"
-    )
+    const reviewResp = await getReviewById(reviewId)
 
     if (!reviewResp) {
       return null

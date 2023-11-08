@@ -106,6 +106,17 @@ var ReviewServiceService = exports.ReviewServiceService = {
     responseSerialize: serialize_review_ReviewList,
     responseDeserialize: deserialize_review_ReviewList,
   },
+  listMyReviews: {
+    path: '/review.ReviewService/ListMyReviews',
+    requestStream: false,
+    responseStream: false,
+    requestType: review_pb.ListReviewsRequest,
+    responseType: review_pb.ReviewList,
+    requestSerialize: serialize_review_ListReviewsRequest,
+    requestDeserialize: deserialize_review_ListReviewsRequest,
+    responseSerialize: serialize_review_ReviewList,
+    responseDeserialize: deserialize_review_ReviewList,
+  },
   getReviewById: {
     path: '/review.ReviewService/GetReviewById',
     requestStream: false,
