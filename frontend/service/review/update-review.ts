@@ -1,5 +1,6 @@
 import { Review, UpdateReviewRequest } from "@/generated/review/review_pb"
-import * as grpc from "@grpc/grpc-js"
+
+import { getMetadata } from "@/lib/grpc"
 
 import { client } from "./client"
 
@@ -16,9 +17,6 @@ export default function updateReview(
   input: UpdateReviewInput
 ): Promise<Review | null> {
   return new Promise((resolve, reject) => {
-    const metadata = new grpc.Metadata()
-    metadata.add("Authorization", `Bearer ${idToken}`)
-
     const req = new UpdateReviewRequest()
 
     req.setReviewid(input.reviewId)
@@ -27,6 +25,7 @@ export default function updateReview(
     req.setContent(input.content)
     req.setPublishedstatus(input.publishedStatus)
 
+    const metadata = getMetadata(idToken)
     client.updateReview(req, metadata, (err, response) => {
       if (err) {
         return reject(err)

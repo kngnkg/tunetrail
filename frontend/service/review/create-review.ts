@@ -1,5 +1,6 @@
 import { CreateReviewRequest, Review } from "@/generated/review/review_pb"
-import * as grpc from "@grpc/grpc-js"
+
+import { getMetadata } from "@/lib/grpc"
 
 import { client } from "./client"
 
@@ -15,9 +16,6 @@ export default function createReview(
   input: CreateReviewInput
 ): Promise<Review | null> {
   return new Promise((resolve, reject) => {
-    const metadata = new grpc.Metadata()
-    metadata.add("Authorization", `Bearer ${idToken}`)
-
     const req = new CreateReviewRequest()
 
     req.setAlbumid(input.albumId)
@@ -25,6 +23,7 @@ export default function createReview(
     req.setContent(input.content)
     req.setPublishedstatus(input.publishedStatus)
 
+    const metadata = getMetadata(idToken)
     client.createReview(req, metadata, (err, response) => {
       if (err) {
         return reject(err)
