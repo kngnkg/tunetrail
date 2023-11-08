@@ -8,18 +8,18 @@ import (
 	"strconv"
 	"time"
 
+	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/auth"
 	"github.com/kngnkg/tunetrail/backend/config"
+	helloworld "github.com/kngnkg/tunetrail/backend/gen/helloworld"
+	"github.com/kngnkg/tunetrail/backend/gen/review"
+	user "github.com/kngnkg/tunetrail/backend/gen/user"
 	"github.com/kngnkg/tunetrail/backend/infra/repository"
 	"github.com/kngnkg/tunetrail/backend/infra/server"
 	"github.com/kngnkg/tunetrail/backend/jwt"
 	"github.com/kngnkg/tunetrail/backend/logger"
 	"github.com/kngnkg/tunetrail/backend/usecase"
 	"github.com/kngnkg/tunetrail/backend/validator"
-
-	helloworld "github.com/kngnkg/tunetrail/backend/gen/helloworld"
-	"github.com/kngnkg/tunetrail/backend/gen/review"
-	user "github.com/kngnkg/tunetrail/backend/gen/user"
 	"google.golang.org/grpc"
 )
 
@@ -68,10 +68,15 @@ func main() {
 
 	au := server.NewAuth(j)
 
+	opts := []grpc_recovery.Option{
+		grpc_recovery.WithRecoveryHandlerContext(server.RecoveryFunc),
+	}
+
 	s := grpc.NewServer(
 		grpc.ChainUnaryInterceptor(
 			li.UnaryLoggingInterceptor,
 			auth.UnaryServerInterceptor(au.AuthFunc),
+			grpc_recovery.UnaryServerInterceptor(opts...),
 		),
 	)
 
