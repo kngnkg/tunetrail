@@ -21,6 +21,7 @@ const _ = grpc.SupportPackageIsVersion7
 
 const (
 	ReviewService_ListReviews_FullMethodName   = "/review.ReviewService/ListReviews"
+	ReviewService_ListMyReviews_FullMethodName = "/review.ReviewService/ListMyReviews"
 	ReviewService_GetReviewById_FullMethodName = "/review.ReviewService/GetReviewById"
 	ReviewService_CreateReview_FullMethodName  = "/review.ReviewService/CreateReview"
 	ReviewService_UpdateReview_FullMethodName  = "/review.ReviewService/UpdateReview"
@@ -32,6 +33,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ReviewServiceClient interface {
 	ListReviews(ctx context.Context, in *ListReviewsRequest, opts ...grpc.CallOption) (*ReviewList, error)
+	ListMyReviews(ctx context.Context, in *ListReviewsRequest, opts ...grpc.CallOption) (*ReviewList, error)
 	GetReviewById(ctx context.Context, in *GetReviewByIdRequest, opts ...grpc.CallOption) (*Review, error)
 	CreateReview(ctx context.Context, in *CreateReviewRequest, opts ...grpc.CallOption) (*Review, error)
 	UpdateReview(ctx context.Context, in *UpdateReviewRequest, opts ...grpc.CallOption) (*Review, error)
@@ -49,6 +51,15 @@ func NewReviewServiceClient(cc grpc.ClientConnInterface) ReviewServiceClient {
 func (c *reviewServiceClient) ListReviews(ctx context.Context, in *ListReviewsRequest, opts ...grpc.CallOption) (*ReviewList, error) {
 	out := new(ReviewList)
 	err := c.cc.Invoke(ctx, ReviewService_ListReviews_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *reviewServiceClient) ListMyReviews(ctx context.Context, in *ListReviewsRequest, opts ...grpc.CallOption) (*ReviewList, error) {
+	out := new(ReviewList)
+	err := c.cc.Invoke(ctx, ReviewService_ListMyReviews_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -96,6 +107,7 @@ func (c *reviewServiceClient) DeleteReview(ctx context.Context, in *DeleteReview
 // for forward compatibility
 type ReviewServiceServer interface {
 	ListReviews(context.Context, *ListReviewsRequest) (*ReviewList, error)
+	ListMyReviews(context.Context, *ListReviewsRequest) (*ReviewList, error)
 	GetReviewById(context.Context, *GetReviewByIdRequest) (*Review, error)
 	CreateReview(context.Context, *CreateReviewRequest) (*Review, error)
 	UpdateReview(context.Context, *UpdateReviewRequest) (*Review, error)
@@ -109,6 +121,9 @@ type UnimplementedReviewServiceServer struct {
 
 func (UnimplementedReviewServiceServer) ListReviews(context.Context, *ListReviewsRequest) (*ReviewList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListReviews not implemented")
+}
+func (UnimplementedReviewServiceServer) ListMyReviews(context.Context, *ListReviewsRequest) (*ReviewList, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListMyReviews not implemented")
 }
 func (UnimplementedReviewServiceServer) GetReviewById(context.Context, *GetReviewByIdRequest) (*Review, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetReviewById not implemented")
@@ -149,6 +164,24 @@ func _ReviewService_ListReviews_Handler(srv interface{}, ctx context.Context, de
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ReviewServiceServer).ListReviews(ctx, req.(*ListReviewsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ReviewService_ListMyReviews_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListReviewsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ReviewServiceServer).ListMyReviews(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ReviewService_ListMyReviews_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ReviewServiceServer).ListMyReviews(ctx, req.(*ListReviewsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -235,6 +268,10 @@ var ReviewService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListReviews",
 			Handler:    _ReviewService_ListReviews_Handler,
+		},
+		{
+			MethodName: "ListMyReviews",
+			Handler:    _ReviewService_ListMyReviews_Handler,
 		},
 		{
 			MethodName: "GetReviewById",

@@ -52,9 +52,49 @@ func (s *reviewServer) AuthFuncOverride(ctx context.Context, fullMethodName stri
 }
 
 func (s *reviewServer) ListReviews(ctx context.Context, in *review.ListReviewsRequest) (*review.ReviewList, error) {
+	reviewId, limit, err := s.handleListRequestPagenation(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := s.uc.ListReviews(ctx, reviewId, limit)
+	if err != nil {
+		return nil, internal(ctx, err)
+	}
+
+	nextCursor := ""
+	if res.NextCursor != "" {
+		nextCursor = helper.EncodeCursor(res.NextCursor)
+	}
+
+	return toReviewList(res.Reviews, nextCursor), nil
+}
+
+func (s *reviewServer) ListMyReviews(ctx context.Context, in *review.ListReviewsRequest) (*review.ReviewList, error) {
+	reviewId, limit, err := s.handleListRequestPagenation(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+
+	authorId := GetImmutableId(ctx)
+
+	res, err := s.uc.ListMyReviews(ctx, authorId, reviewId, limit)
+	if err != nil {
+		return nil, internal(ctx, err)
+	}
+
+	nextCursor := ""
+	if res.NextCursor != "" {
+		nextCursor = helper.EncodeCursor(res.NextCursor)
+	}
+
+	return toReviewList(res.Reviews, nextCursor), nil
+}
+
+func (s *reviewServer) handleListRequestPagenation(ctx context.Context, in *review.ListReviewsRequest) (string, int, error) {
 	decoded, err := helper.DecodeCursor(in.Cursor)
 	if err != nil {
-		return nil, invalidArgument(ctx, err)
+		return "", 0, invalidArgument(ctx, err)
 	}
 
 	req := struct {
@@ -66,27 +106,15 @@ func (s *reviewServer) ListReviews(ctx context.Context, in *review.ListReviewsRe
 	}
 
 	if err := s.validator.Validate(req); err != nil {
-		return nil, invalidArgument(ctx, err)
+		return "", 0, invalidArgument(ctx, err)
 	}
 
-	var limit int
-	if req.Limit == 0 {
-		limit = DefaultLimit
-	} else {
+	limit := DefaultLimit
+	if req.Limit > 0 {
 		limit = req.Limit
 	}
 
-	res, err := s.uc.ListReviews(ctx, req.ReviewId, limit)
-	if err != nil {
-		return nil, internal(ctx, err)
-	}
-
-	nextCursor := ""
-	if res.NextCursor != "" {
-		nextCursor = helper.EncodeCursor(res.NextCursor)
-	}
-
-	return toReviewList(res.Reviews, nextCursor), nil
+	return req.ReviewId, limit, nil
 }
 
 func toReviewList(reviews []*entity.Review, nextCursor string) *review.ReviewList {

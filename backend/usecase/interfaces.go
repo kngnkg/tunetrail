@@ -10,6 +10,7 @@ import (
 //go:generate go run github.com/matryer/moq -out moq_test.go . UserRepository
 type ReviewRepository interface {
 	ListReviews(ctx context.Context, db repository.Executor, reviewId string, limit int) ([]*entity.Review, error)
+	ListMyReviews(ctx context.Context, db repository.Executor, authorId entity.ImmutableId, reviewId string, limit int) ([]*entity.Review, error)
 	// ListReviewsByUsername(ctx context.Context, db repository.Executor, cursor string, limit int, usernames []*entity.Username) ([]*entity.Review, error)
 	// ListReviewsByAlbumId(ctx context.Context, db repository.Executor, cursor string, limit int, usernames []*entity.Username) ([]*entity.Review, error)
 	GetReviewById(ctx context.Context, db repository.Executor, reviewId string) (*entity.Review, error)

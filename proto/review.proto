@@ -8,6 +8,7 @@ import "google/protobuf/empty.proto";
 
 service ReviewService {
   rpc ListReviews(ListReviewsRequest) returns (ReviewList) {}
+  rpc ListMyReviews(ListReviewsRequest) returns (ReviewList) {}
   rpc GetReviewById(GetReviewByIdRequest) returns (Review) {}
   rpc CreateReview(CreateReviewRequest) returns (Review) {}
   rpc UpdateReview(UpdateReviewRequest) returns (Review) {}
