@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"encoding/json"
+	"errors"
 
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/auth"
 	"github.com/kngnkg/tunetrail/backend/entity"
@@ -153,11 +154,13 @@ func (s *reviewServer) CreateReview(ctx context.Context, in *review.CreateReview
 func (s *reviewServer) UpdateReview(ctx context.Context, in *review.UpdateReviewRequest) (*review.Review, error) {
 	req := struct {
 		ReviewId        string                 `validate:"required,uuid4"`
+		AlbumId         string                 `validate:"required,album_id"`
 		Title           string                 `validate:"required"`
 		Content         string                 `validate:"required,json"`
 		PublishedStatus entity.PublishedStatus `validate:"required"`
 	}{
 		ReviewId:        in.ReviewId,
+		AlbumId:         in.AlbumId,
 		Title:           in.Title,
 		Content:         in.Content,
 		PublishedStatus: entity.PublishedStatus(in.PublishedStatus),
@@ -167,9 +170,17 @@ func (s *reviewServer) UpdateReview(ctx context.Context, in *review.UpdateReview
 		return nil, invalidArgument(ctx, err)
 	}
 
-	res, err := s.uc.Update(ctx, req.ReviewId, req.Title, json.RawMessage(req.Content), req.PublishedStatus)
+	authorId := GetImmutableId(ctx)
+
+	res, err := s.uc.UpdateReview(ctx, authorId, req.ReviewId, req.AlbumId, req.Title, json.RawMessage(req.Content), req.PublishedStatus)
 	if err != nil {
+		if errors.Is(err, usecase.ErrorImmutableIdIsNotMatch) {
+			return nil, permissionDenied(ctx, err)
+		}
 		return nil, internal(ctx, err)
+	}
+	if res == nil {
+		return nil, notFound(ctx, err)
 	}
 
 	return toReview(res), nil

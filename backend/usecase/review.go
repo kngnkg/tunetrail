@@ -10,6 +10,10 @@ import (
 	"github.com/kngnkg/tunetrail/backend/logger"
 )
 
+var (
+	ErrorImmutableIdIsNotMatch = fmt.Errorf("usecase: immutableId is not match")
+)
+
 type ReviewUseCase struct {
 	DB         repository.DBAccesser
 	reviewRepo ReviewRepository
@@ -148,9 +152,20 @@ func (uc *ReviewUseCase) StoreReview(ctx context.Context, authorId entity.Immuta
 	return review, nil
 }
 
-func (uc *ReviewUseCase) Update(ctx context.Context, reviewId, title string, content json.RawMessage, publishedStatus entity.PublishedStatus) (*entity.Review, error) {
+func (uc *ReviewUseCase) UpdateReview(ctx context.Context, authorId entity.ImmutableId, reviewId, albumId, title string, content json.RawMessage, publishedStatus entity.PublishedStatus) (*entity.Review, error) {
+	user, err := uc.userRepo.GetUserByImmutableId(ctx, uc.DB, authorId)
+	if err != nil {
+		return nil, err
+	}
+	if authorId != user.ImmutableId {
+		logger.FromContext(ctx).Info(fmt.Sprintf("immutableId is not match, immutableId=%v, user.ImmutableId=%v", authorId, user.ImmutableId))
+		return nil, ErrorImmutableIdIsNotMatch
+	}
+
 	r := &entity.Review{
 		ReviewId:        reviewId,
+		Author:          user.ToAuthor(),
+		AlbumId:         albumId,
 		Title:           title,
 		Content:         content,
 		PublishedStatus: publishedStatus,
@@ -162,32 +177,24 @@ func (uc *ReviewUseCase) Update(ctx context.Context, reviewId, title string, con
 	}
 
 	r, err = uc.reviewRepo.UpdateReview(ctx, tx, r)
-	if err != nil {
+	if err != nil || r == nil {
 		defer func() {
 			if err := tx.Rollback(); err != nil {
 				logger.FromContext(ctx).Error("failed to rollback transaction: %v", err)
 			}
 		}()
 
-		return nil, err
+		if err != nil {
+			return nil, err
+		}
+
+		return nil, nil
 	}
 
 	// TODO: Commitのエラーハンドリング
 	if err = tx.Commit(); err != nil {
 		return nil, err
 	}
-
-	var ids []entity.ImmutableId
-	ids = append(ids, r.Author.ImmutableId)
-	users, err := uc.userRepo.ListUsersById(ctx, uc.DB, ids)
-	if err != nil {
-		return nil, err
-	}
-	if len(users) != 1 {
-		return nil, fmt.Errorf("length of users is not 1, len(users)=%v", len(users))
-	}
-
-	r.Author = users[0].ToAuthor()
 
 	return r, nil
 }

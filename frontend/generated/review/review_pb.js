@@ -742,9 +742,10 @@ proto.review.UpdateReviewRequest.prototype.toObject = function(opt_includeInstan
 proto.review.UpdateReviewRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
     reviewid: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    title: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    content: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    publishedstatus: jspb.Message.getFieldWithDefault(msg, 4, "")
+    albumid: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    title: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    content: jspb.Message.getFieldWithDefault(msg, 4, ""),
+    publishedstatus: jspb.Message.getFieldWithDefault(msg, 5, "")
   };
 
   if (includeInstance) {
@@ -787,13 +788,17 @@ proto.review.UpdateReviewRequest.deserializeBinaryFromReader = function(msg, rea
       break;
     case 2:
       var value = /** @type {string} */ (reader.readString());
-      msg.setTitle(value);
+      msg.setAlbumid(value);
       break;
     case 3:
       var value = /** @type {string} */ (reader.readString());
-      msg.setContent(value);
+      msg.setTitle(value);
       break;
     case 4:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setContent(value);
+      break;
+    case 5:
       var value = /** @type {string} */ (reader.readString());
       msg.setPublishedstatus(value);
       break;
@@ -833,24 +838,31 @@ proto.review.UpdateReviewRequest.serializeBinaryToWriter = function(message, wri
       f
     );
   }
-  f = message.getTitle();
+  f = message.getAlbumid();
   if (f.length > 0) {
     writer.writeString(
       2,
       f
     );
   }
-  f = message.getContent();
+  f = message.getTitle();
   if (f.length > 0) {
     writer.writeString(
       3,
       f
     );
   }
-  f = message.getPublishedstatus();
+  f = message.getContent();
   if (f.length > 0) {
     writer.writeString(
       4,
+      f
+    );
+  }
+  f = message.getPublishedstatus();
+  if (f.length > 0) {
+    writer.writeString(
+      5,
       f
     );
   }
@@ -876,10 +888,10 @@ proto.review.UpdateReviewRequest.prototype.setReviewid = function(value) {
 
 
 /**
- * optional string title = 2;
+ * optional string albumId = 2;
  * @return {string}
  */
-proto.review.UpdateReviewRequest.prototype.getTitle = function() {
+proto.review.UpdateReviewRequest.prototype.getAlbumid = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
@@ -888,16 +900,16 @@ proto.review.UpdateReviewRequest.prototype.getTitle = function() {
  * @param {string} value
  * @return {!proto.review.UpdateReviewRequest} returns this
  */
-proto.review.UpdateReviewRequest.prototype.setTitle = function(value) {
+proto.review.UpdateReviewRequest.prototype.setAlbumid = function(value) {
   return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
 /**
- * optional string content = 3;
+ * optional string title = 3;
  * @return {string}
  */
-proto.review.UpdateReviewRequest.prototype.getContent = function() {
+proto.review.UpdateReviewRequest.prototype.getTitle = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
@@ -906,16 +918,16 @@ proto.review.UpdateReviewRequest.prototype.getContent = function() {
  * @param {string} value
  * @return {!proto.review.UpdateReviewRequest} returns this
  */
-proto.review.UpdateReviewRequest.prototype.setContent = function(value) {
+proto.review.UpdateReviewRequest.prototype.setTitle = function(value) {
   return jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
 /**
- * optional string publishedStatus = 4;
+ * optional string content = 4;
  * @return {string}
  */
-proto.review.UpdateReviewRequest.prototype.getPublishedstatus = function() {
+proto.review.UpdateReviewRequest.prototype.getContent = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
 };
 
@@ -924,8 +936,26 @@ proto.review.UpdateReviewRequest.prototype.getPublishedstatus = function() {
  * @param {string} value
  * @return {!proto.review.UpdateReviewRequest} returns this
  */
-proto.review.UpdateReviewRequest.prototype.setPublishedstatus = function(value) {
+proto.review.UpdateReviewRequest.prototype.setContent = function(value) {
   return jspb.Message.setProto3StringField(this, 4, value);
+};
+
+
+/**
+ * optional string publishedStatus = 5;
+ * @return {string}
+ */
+proto.review.UpdateReviewRequest.prototype.getPublishedstatus = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.review.UpdateReviewRequest} returns this
+ */
+proto.review.UpdateReviewRequest.prototype.setPublishedstatus = function(value) {
+  return jspb.Message.setProto3StringField(this, 5, value);
 };
 
 

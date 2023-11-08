@@ -84,6 +84,9 @@ export class UpdateReviewRequest extends jspb.Message {
   getReviewid(): string;
   setReviewid(value: string): void;
 
+  getAlbumid(): string;
+  setAlbumid(value: string): void;
+
   getTitle(): string;
   setTitle(value: string): void;
 
@@ -106,6 +109,7 @@ export class UpdateReviewRequest extends jspb.Message {
 export namespace UpdateReviewRequest {
   export type AsObject = {
     reviewid: string,
+    albumid: string,
     title: string,
     content: string,
     publishedstatus: string,
