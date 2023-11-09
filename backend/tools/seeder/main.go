@@ -40,7 +40,9 @@ func (s *seeder) initDB(ctx context.Context, tx repository.DBAccesser) error {
 func (s *seeder) storeRandomUsers(ctx context.Context, tx repository.DBAccesser) ([]*entity.User, error) {
 	var users []*entity.User
 	for i := 0; i < 100; i++ {
-		users = append(users, fixture.User(nil))
+		users = append(users, fixture.User(&entity.User{
+			AvatarUrl: "https://source.unsplash.com/random",
+		}))
 	}
 
 	for _, user := range users {
