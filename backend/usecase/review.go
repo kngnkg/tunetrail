@@ -42,11 +42,11 @@ func (uc *ReviewUseCase) ListReviews(ctx context.Context, reviewId string, limit
 
 	nextCursor := ""
 	if len(rs) > limit {
-		// limit を超えた最初の要素を取得
+		// limit を超えた最初の要素の id を取得
 		nextCursor = rs[limit].ReviewId
+		// limit までの要素を取得
+		rs = rs[:limit]
 	}
-	// limit までの要素を取得
-	rs = rs[:limit]
 
 	// 取得するユーザーIdのスライスを作成する
 	uids := make([]entity.ImmutableId, len(rs))
@@ -90,11 +90,11 @@ func (uc *ReviewUseCase) ListMyReviews(ctx context.Context, authorId entity.Immu
 
 	nextCursor := ""
 	if len(rs) > limit {
-		// limit を超えた最初の要素を取得
+		// limit を超えた最初の要素の id を取得
 		nextCursor = rs[limit].ReviewId
+		// limit までの要素を取得
+		rs = rs[:limit]
 	}
-	// limit までの要素を取得
-	rs = rs[:limit]
 
 	user, err := uc.userRepo.GetUserByImmutableId(ctx, uc.DB, authorId)
 	if err != nil {
