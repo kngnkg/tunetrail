@@ -2,24 +2,25 @@ import { Redis } from "ioredis"
 import SpotifyWebApi from "spotify-web-api-node"
 
 import { env } from "@/env.mjs"
-import { setAccessTokenToKVS } from "@/lib/kvs"
+import { getAccessTokenFromKVS, setAccessTokenToKVS } from "@/lib/kvs"
 
-// export const client = new SpotifyWebApi({
-//   clientId: env.SPOTIFY_CLIENT_ID,
-//   clientSecret: env.SPOTIFY_CLIENT_SECRET,
-// })
+export const spotifyClient = new SpotifyWebApi({
+  clientId: env.SPOTIFY_CLIENT_ID,
+  clientSecret: env.SPOTIFY_CLIENT_SECRET,
+})
 
-export const clientCredentialsGrant = async (
-  redisClient: Redis
-): Promise<string | null> => {
+async function clientCredentialsGrant(
+  redisClient: Redis,
+  spotifyClient: SpotifyWebApi
+): Promise<string | null> {
   try {
     // アクセストークンを取得する
-    // const data = await client.clientCredentialsGrant()
-    // const token = data.body["access_token"]
-    // const expiresInSeconds = data.body["expires_in"]
+    const data = await spotifyClient.clientCredentialsGrant()
+    const token = data.body["access_token"]
+    const expiresInSeconds = data.body["expires_in"]
 
-    const token = "test"
-    const expiresInSeconds = 3600
+    // const token = "test"
+    // const expiresInSeconds = 3600
 
     // KVSに保存する
     setAccessTokenToKVS(redisClient, { token, expiresIn: expiresInSeconds })
@@ -29,4 +30,19 @@ export const clientCredentialsGrant = async (
     console.error(e)
     throw new Error("Failed to fetch token")
   }
+}
+
+export async function setSpotifyClientAccessToken(
+  redisClient: Redis,
+  spotifyClient: SpotifyWebApi
+): Promise<void> {
+  let token: string | null = await getAccessTokenFromKVS(redisClient)
+  if (!token) {
+    token = await clientCredentialsGrant(redisClient, spotifyClient)
+    if (!token) {
+      throw new Error("Failed to fetch token")
+    }
+  }
+
+  spotifyClient.setAccessToken(token)
 }
