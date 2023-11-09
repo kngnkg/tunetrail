@@ -39,11 +39,11 @@ func (uc *UserUseCase) ListUsers(ctx context.Context, immutableId entity.Immutab
 
 	nextCursor := ""
 	if len(users) > limit {
-		// limit を超えた最初の要素を取得
+		// limit を超えた最初の要素の id を取得
 		nextCursor = string(users[limit].ImmutableId)
+		// limit までの要素を取得
+		users = users[:limit]
 	}
-	// limit までの要素を取得
-	users = users[:limit]
 
 	resp := &UserListResponse{
 		Users:      users,
