@@ -1,23 +1,26 @@
 import { redisClient } from "@/lib/kvs"
+import { SearchParams } from "@/lib/validations/search"
 
 import { setSpotifyClientAccessToken, spotifyClient } from "../spotify-client"
 
-export default async function getAlbum(
-  albumId: string
-): Promise<SpotifyApi.SingleAlbumResponse> {
+export const searchAlbums = async (
+  params: SearchParams
+): Promise<SpotifyApi.SearchResponse | null> => {
+  console.log("searchAlbums")
+
   try {
     await setSpotifyClientAccessToken(redisClient, spotifyClient)
 
-    const resp = await spotifyClient.getAlbum(albumId)
-    const data = resp.body
+    const resp = await spotifyClient.searchAlbums(params.q, {
+      limit: params.limit,
+      offset: params.offset,
+    })
 
-    // const resp = await fetch(`${env.MOCK_API_ROOT}/albums/${albumId}`, {})
-    // const data = await resp.json()
+    const data = resp.body
 
     if (!data) {
       throw new Error("Failed to fetch album")
     }
-
     return data
   } catch (e) {
     console.error(e)

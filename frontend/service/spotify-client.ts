@@ -19,9 +19,6 @@ async function clientCredentialsGrant(
     const token = data.body["access_token"]
     const expiresInSeconds = data.body["expires_in"]
 
-    // const token = "test"
-    // const expiresInSeconds = 3600
-
     // KVSに保存する
     setAccessTokenToKVS(redisClient, { token, expiresIn: expiresInSeconds })
 
