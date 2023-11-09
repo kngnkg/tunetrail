@@ -1,11 +1,12 @@
 import { AlbumInfo, AlbumWithPagination } from "@/types"
 import useSWRInfinite from "swr/infinite"
 
+import { env } from "@/env.mjs"
 import { clientFetcher } from "@/lib/fetcher"
 import { transformAlbumInfo } from "@/hooks/transform"
 
 interface UseAlbumsProps {
-  endpoint: string
+  query: string
   limit?: number
 }
 
@@ -35,19 +36,23 @@ const fetcher = async (
   }
 }
 
-export const useAlbums = ({
-  endpoint,
-  limit = 20,
-}: UseAlbumsProps): UseAlbums => {
+export const useAlbums = ({ query, limit = 20 }: UseAlbumsProps): UseAlbums => {
   const getKey = (pageIndex: number, previousPageData: AlbumWithPagination) => {
+    // 検索クエリがない場合
+    if (query === "") {
+      return null
+    }
+
     // 最後に到達した場合
     if (previousPageData && !previousPageData.next) {
       return null
     }
 
-    // 最初のページでは、`previousPageData` がない
+    const endpoint = `${env.NEXT_PUBLIC_API_ROOT}/album-search?q=${query}`
+
+    // // 最初のページの場合
     if (pageIndex === 0) {
-      return `${endpoint}`
+      return `${endpoint}&offset=0&limit=${limit}`
     }
 
     const offset = previousPageData.offset + previousPageData.limit

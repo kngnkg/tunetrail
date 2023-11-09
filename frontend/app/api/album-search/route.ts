@@ -1,59 +1,25 @@
 import { NextRequest, NextResponse } from "next/server"
+import { searchAlbums } from "@/service/album/search-albums"
 import { toAlbumInfo } from "@/service/transform"
-import * as z from "zod"
 
-import { env } from "@/env.mjs"
-import {
-  limitSchema,
-  offsetSchema,
-  querySchema,
-} from "@/lib/validations/search"
+import { SearchParams } from "@/lib/validations/search"
 
 import { errBadRequest, errInternal, errNotFound } from "../response"
 
-const searchAlbumsSchema = z.object({
-  q: querySchema,
-  offset: offsetSchema,
-  limit: limitSchema,
-})
-
-type SearchAlbumsParams = z.infer<typeof searchAlbumsSchema>
-
-const searchAlbums = async (
-  params: SearchAlbumsParams
-): Promise<SpotifyApi.SearchResponse | null> => {
-  // TODO: implement
-
-  console.log("searchAlbums")
-
-  const albumIds = ["2up3OPMp9Tb4dAKM2erWXQ", "2up3OPMp9Tb4dAKM2erWXQ"]
-  const resp = await fetch(`${env.MOCK_API_ROOT}/simple-albumlist`, {})
-  const data = await resp.json()
-
-  if (!data) {
-    throw new Error("Failed to fetch album")
-  }
-
-  return data
-}
-
 export async function GET(request: NextRequest) {
-  console.log("GET")
+  console.log("GET /api/album-search")
   const searchParams = request.nextUrl.searchParams
 
-  console.log(`searchParams: ${searchParams}`)
-  //   const q = searchParams.get("q")
-  //   if (!q) {
-  //     return errBadRequest("q is required")
-  //   }
-
-  const q = "test"
+  const q = searchParams.get("q")
+  if (!q) {
+    return errBadRequest("q is required")
+  }
 
   const offsetStr = searchParams.get("offset")
   const limitStr = searchParams.get("limit")
 
   try {
-    const params: SearchAlbumsParams = {
+    const params: SearchParams = {
       q: q,
       offset: offsetStr ? parseInt(offsetStr) : undefined,
       limit: limitStr ? parseInt(limitStr) : undefined,

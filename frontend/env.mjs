@@ -13,6 +13,9 @@ export const env = createEnv({
     COGNITO_CLIENT_SECRET: z.string(),
     COGNITO_ISSUER: z.string().url(),
     COGNITO_DOMAIN: z.string(),
+    REDIS_HOST: z.string(),
+    REDIS_PORT: z.number(),
+    REDIS_PASSWORD: z.string(),
   },
   client: {
     NEXT_PUBLIC_API_ROOT: z.string().url(),
@@ -33,5 +36,8 @@ export const env = createEnv({
     COGNITO_CLIENT_SECRET: process.env.COGNITO_CLIENT_SECRET,
     COGNITO_ISSUER: process.env.COGNITO_ISSUER,
     COGNITO_DOMAIN: process.env.COGNITO_DOMAIN,
+    REDIS_HOST: process.env.REDIS_HOST,
+    REDIS_PORT: parseInt(process.env.REDIS_PORT, 10),
+    REDIS_PASSWORD: process.env.REDIS_PASSWORD,
   },
 })
