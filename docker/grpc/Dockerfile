@@ -15,7 +15,8 @@ RUN curl -L https://github.com/protocolbuffers/protobuf/releases/download/v${PRO
 
 WORKDIR /workspace/backend
 
-RUN go install github.com/uudashr/gopkgs/v2/cmd/gopkgs@latest && \
+RUN apt-get update && apt-get install -y postgresql-client && \
+    go install github.com/uudashr/gopkgs/v2/cmd/gopkgs@latest && \
     go install github.com/go-delve/delve/cmd/dlv@latest && \
     go install github.com/ramya-rao-a/go-outline@latest && \
     go install github.com/stamblerre/gocode@latest && \
@@ -29,4 +30,4 @@ RUN go install github.com/uudashr/gopkgs/v2/cmd/gopkgs@latest && \
 # $GOPATH/bin を PATH に追加
 ENV PATH $PATH:/go/bin
 
-CMD ["air", "-c", ".air.toml"]
+ENTRYPOINT [ "../scripts/grpc-entry.sh" ]
