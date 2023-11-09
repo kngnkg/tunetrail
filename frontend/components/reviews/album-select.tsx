@@ -30,18 +30,19 @@ export const AlbumSelect: React.FC<AlbumSelectProps> = ({
   album,
   setAlbum,
 }: AlbumSelectProps) => {
+  const [inputValue, setInputValue] = React.useState<string>("")
   const [query, setQuery] = React.useState<string>("")
   const { data, error, isLoading, loadMore } = useAlbums({
-    endpoint: `${env.NEXT_PUBLIC_API_ROOT}/album-search?q=${query}`,
+    query: query,
     limit: 20,
   })
 
   const onChange = (e: any) => {
-    setQuery(e.target.value)
+    setInputValue(e.target.value)
   }
 
   const onKeyDown = () => {
-    alert(`query: ${query}`)
+    setQuery(inputValue)
   }
 
   if (error) {
@@ -73,20 +74,30 @@ export const AlbumSelect: React.FC<AlbumSelectProps> = ({
         <DialogHeader className="mt-8">
           <SearchBar
             autoFocus
-            value={query}
+            value={inputValue}
             onChange={onChange}
             onEnterKeyDown={onKeyDown}
           />
         </DialogHeader>
         <ScrollArea>
-          <DialogClose>
-            <AlbumList data={data} isLoading={isLoading} setAlbum={setAlbum} />
-          </DialogClose>
-          <div className="mb-20 flex flex-col items-center">
-            <Button variant="ghost" size="lg" onClick={() => loadMore()}>
-              もっと見る
-            </Button>
-          </div>
+          {query && data ? (
+            <>
+              <DialogClose>
+                <AlbumList
+                  data={data}
+                  isLoading={isLoading}
+                  setAlbum={setAlbum}
+                />
+              </DialogClose>
+              <div className="mb-20 flex flex-col items-center">
+                <Button variant="ghost" size="lg" onClick={() => loadMore()}>
+                  もっと見る
+                </Button>
+              </div>
+            </>
+          ) : (
+            <p>検索条件を入力してください。</p>
+          )}
         </ScrollArea>
       </DialogContent>
     </Dialog>

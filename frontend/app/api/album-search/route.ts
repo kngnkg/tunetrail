@@ -2,21 +2,18 @@ import { NextRequest, NextResponse } from "next/server"
 import { searchAlbums } from "@/service/album/search-albums"
 import { toAlbumInfo } from "@/service/transform"
 
-import { SearchParams, searchSchema } from "@/lib/validations/search"
+import { SearchParams } from "@/lib/validations/search"
 
 import { errBadRequest, errInternal, errNotFound } from "../response"
 
 export async function GET(request: NextRequest) {
-  console.log("GET")
+  console.log("GET /api/album-search")
   const searchParams = request.nextUrl.searchParams
 
-  console.log(`searchParams: ${searchParams}`)
-  //   const q = searchParams.get("q")
-  //   if (!q) {
-  //     return errBadRequest("q is required")
-  //   }
-
-  const q = "radiohead"
+  const q = searchParams.get("q")
+  if (!q) {
+    return errBadRequest("q is required")
+  }
 
   const offsetStr = searchParams.get("offset")
   const limitStr = searchParams.get("limit")
