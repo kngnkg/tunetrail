@@ -1,10 +1,10 @@
 "use client"
 
 import * as React from "react"
-import Image from "next/image"
 import { AlbumInfo, AlbumWithPagination } from "@/types"
 
 import { Skeleton } from "../ui/skeleton"
+import { AlbumArt } from "./album"
 
 interface AlbumListProps {
   setAlbum: (album: AlbumInfo) => void
@@ -51,12 +51,9 @@ export const AlbumList: React.FC<AlbumListProps> = ({
                   className="flex items-center gap-4 cursor-pointer"
                   onClick={() => setAlbum(album)}
                 >
-                  <Image
-                    src={album.coverUrl}
-                    height={300}
-                    width={300}
-                    alt={album.name}
-                    className="rounded-lg w-14 h-14"
+                  <AlbumArt
+                    album={album}
+                    className="w-14 h-14 sm:w-14 sm:h-14"
                   />
                   <div className="flex flex-col gap-1">
                     <div className="text-sm sm:text-base">{album.name}</div>

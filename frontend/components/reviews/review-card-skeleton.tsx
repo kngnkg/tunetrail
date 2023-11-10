@@ -6,7 +6,7 @@ export const ReviewCardSkeleton: React.FC = () => {
     <Card>
       <CardContent className="flex p-4 sm:p-8">
         <div className="flex flex-col mr-4 sm:mr-12">
-          <Skeleton className="rounded-lg w-28 h-28 sm:w-48 sm:h-48" />
+          <Skeleton className="rounded-none w-28 h-28 sm:w-48 sm:h-48" />
         </div>
         <div className="sm:pt-2">
           <div className="mb-2">
