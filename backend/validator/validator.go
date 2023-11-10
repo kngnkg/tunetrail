@@ -16,7 +16,7 @@ type Validator struct {
 
 func New() *Validator {
 	v := validator.New()
-	if err := v.RegisterValidation("username", isDisplayIdValid); err != nil {
+	if err := v.RegisterValidation("username", isUserNameValid); err != nil {
 		panic(err)
 	}
 
@@ -42,8 +42,8 @@ func (v *Validator) Validate(i interface{}) error {
 	return v.validator.Struct(i)
 }
 
-func isDisplayIdValid(fl validator.FieldLevel) bool {
-	re := regexp.MustCompile(`^[a-zA-Z0-9_]{4,20}$`)
+func isUserNameValid(fl validator.FieldLevel) bool {
+	re := regexp.MustCompile(`^[a-zA-Z0-9_.]{4,20}$`)
 	return re.MatchString(fl.Field().String())
 }
 
