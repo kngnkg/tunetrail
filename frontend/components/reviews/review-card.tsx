@@ -6,6 +6,7 @@ import { Icon } from "../icon"
 import { TimeStamp } from "../timestamp"
 import { Card, CardContent } from "../ui/card"
 import { UserAvatar } from "../user-avatar"
+import { AlbumArt } from "./album"
 
 export interface ReviewCardProps {
   review: ReviewPreview
@@ -25,13 +26,7 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
         {/* アルバム情報 */}
         <div className="flex flex-col mr-4 sm:mr-12">
           <Link href={pathToReview}>
-            <Image
-              src={review.album.coverUrl}
-              height={300}
-              width={300}
-              alt={review.album.name}
-              className="rounded-lg w-28 h-28 sm:w-48 sm:h-48"
-            />
+            <AlbumArt album={review.album} />
           </Link>
           <div className="pl-2 pt-1 text-zinc-400 dark:text-zinc-400">
             <p className="text-base">

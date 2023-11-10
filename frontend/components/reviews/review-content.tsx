@@ -1,11 +1,10 @@
-import Image from "next/image"
 import Link from "next/link"
 import { Review } from "@/types"
 
 import { FollowButton } from "../follow-button"
 import { TimeStamp } from "../timestamp"
-import { Button } from "../ui/button"
 import { UserAvatar } from "../user-avatar"
+import { AlbumArt } from "./album"
 import { Content } from "./content"
 
 interface ReviewContentProps {
@@ -20,12 +19,9 @@ export const ReviewContent: React.FC<ReviewContentProps> = ({ review }) => {
       {/* アルバム情報 */}
       <section className="flex flex-col gap-4 pt-8">
         <div className="flex flex-col gap-2 items-center">
-          <Image
-            src={review.album.coverUrl}
-            height={300}
-            width={300}
-            alt={review.album.name}
-            className="rounded-lg w-80 h-80 sm:w-80 sm:h-80"
+          <AlbumArt
+            className="w-80 h-80 sm:w-80 sm:h-80"
+            album={review.album}
           />
           <div>
             <p>アルバムタイトル・アーティスト名</p>

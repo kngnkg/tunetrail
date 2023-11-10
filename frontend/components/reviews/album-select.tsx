@@ -1,11 +1,9 @@
 "use client"
 
 import * as React from "react"
-import Image from "next/image"
 import { AlbumInfo } from "@/types"
 import { DialogClose } from "@radix-ui/react-dialog"
 
-import { env } from "@/env.mjs"
 import { useAlbums } from "@/hooks/albums/use-albums"
 import {
   Dialog,
@@ -19,6 +17,7 @@ import { Icon } from "../icon"
 import { SearchBar } from "../search-bar"
 import { Button } from "../ui/button"
 import { ScrollArea } from "../ui/scroll-area"
+import { AlbumArt } from "./album"
 import { AlbumList } from "./album-list"
 
 interface AlbumSelectProps {
@@ -55,17 +54,11 @@ export const AlbumSelect: React.FC<AlbumSelectProps> = ({
       <DialogTrigger>
         <div>
           {album ? (
-            <Image
-              src={album.coverUrl}
-              height={300}
-              width={300}
-              alt={album.name}
-              className="rounded-lg w-28 h-28 sm:w-48 sm:h-48"
-            />
+            <AlbumArt album={album} />
           ) : (
             <div className="flex items-center justify-center relative">
               <Icon type="add" className="absolute w-28 h-28 sm:w-28 sm:h-28" />
-              <div className="bg-zinc-700 rounded-lg w-28 h-28 sm:w-48 sm:h-48" />
+              <div className="bg-zinc-700 rounded-none w-28 h-28 sm:w-48 sm:h-48" />
             </div>
           )}
         </div>
