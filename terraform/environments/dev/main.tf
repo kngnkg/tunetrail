@@ -35,3 +35,9 @@ module "vpc" {
   source = "../../modules/vpc"
   env    = var.env
 }
+
+module "ecr_web" {
+  source        = "../../modules/ecr"
+  env           = var.env
+  artifact_name = "web"
+}
