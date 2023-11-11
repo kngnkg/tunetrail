@@ -30,3 +30,8 @@ module "cognito" {
   env         = var.env
   client_name = "TuneTrail Dev"
 }
+
+module "vpc" {
+  source = "../../modules/vpc"
+  env    = var.env
+}
