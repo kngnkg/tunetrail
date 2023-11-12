@@ -40,6 +40,13 @@ module "vpc" {
   env    = var.env
 }
 
+module "alb" {
+  source = "../../modules/alb"
+  env    = var.env
+  region = var.aws_region
+  vpc_id = module.vpc.vpc_id
+}
+
 module "ecs_cluster" {
   source = "../../modules/cluster"
   env    = var.env
