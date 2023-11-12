@@ -41,3 +41,8 @@ module "ecr_web" {
   env           = var.env
   artifact_name = "web"
 }
+
+module "cluster" {
+  source = "../../modules/cluster"
+  env    = var.env
+}
