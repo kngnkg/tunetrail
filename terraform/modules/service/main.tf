@@ -7,7 +7,7 @@ resource "aws_security_group" "main" {
   ingress {
     description = "For VPC Endpoint"
     cidr_blocks = [
-      "10.1.0.0/16",
+      var.env == "prod" ? "10.0.0.0/16" : "10.1.0.0/16",
     ]
     from_port = 443
     to_port   = 443
@@ -19,7 +19,7 @@ resource "aws_security_group" "main" {
     content {
       description = "Inbound traffic to access ${ingress.value.name}"
       cidr_blocks = [
-        "10.1.0.0/16",
+        var.env == "prod" ? "10.0.0.0/16" : "10.1.0.0/16",
       ]
       from_port = ingress.value.port
       to_port   = ingress.value.port
@@ -72,7 +72,7 @@ resource "aws_ecs_task_definition" "this" {
         options = {
           "awslogs-create-group"  = "true"
           "awslogs-group"         = "/ecs/tunetrail-${task.name}-task"
-          "awslogs-region"        = var.aws_region
+          "awslogs-region"        = var.region
           "awslogs-stream-prefix" = "ecs"
         }
       }

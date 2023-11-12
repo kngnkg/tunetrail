@@ -40,21 +40,21 @@ module "vpc" {
   env    = var.env
 }
 
+module "ecs_cluster" {
+  source = "../../modules/cluster"
+  env    = var.env
+}
+
 module "ecr_web" {
   source        = "../../modules/ecr"
   env           = var.env
   artifact_name = "web"
 }
 
-module "ecs_cluster" {
-  source = "../../modules/cluster"
-  env    = var.env
-}
-
 module "ecs_service_web" {
   source                  = "../../modules/service"
   env                     = var.env
-  aws_region              = var.aws_region
+  region                  = var.aws_region
   vpc_id                  = module.vpc.vpc_id
   service_name            = "web"
   cluster_id              = module.ecs_cluster.id
