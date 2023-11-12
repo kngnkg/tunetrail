@@ -10,7 +10,7 @@ variable "service_name" {
   type = string
 }
 
-variable "cluster_id" {
+variable "vpc_id" {
   type = string
 }
 
@@ -18,8 +18,12 @@ variable "subnet_ids" {
   type = list(string)
 }
 
-variable "task" {
-  type = object({
+variable "cluster_id" {
+  type = string
+}
+
+variable "tasks" {
+  type = list(object({
     name     = string
     protocol = string
     port     = number
@@ -28,7 +32,7 @@ variable "task" {
       uri = string
       tag = string
     })
-  })
+  }))
 }
 
 variable "task_execution_role_arn" {

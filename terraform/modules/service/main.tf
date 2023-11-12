@@ -1,18 +1,59 @@
+# ECS サービスに適用するセキュリティグループ
+resource "aws_security_group" "main" {
+  name        = "tunetrail-${var.env}-${var.service_name}-sg"
+  description = "Security Group for ${var.service_name}"
+  vpc_id      = var.vpc_id
+
+  ingress {
+    description = "For VPC Endpoint"
+    cidr_blocks = [
+      "10.1.0.0/16",
+    ]
+    from_port = 443
+    to_port   = 443
+    protocol  = "tcp"
+  }
+
+  dynamic "ingress" {
+    for_each = var.tasks
+    content {
+      description = "Inbound traffic to access ${ingress.value.name}"
+      cidr_blocks = [
+        "10.1.0.0/16",
+      ]
+      from_port = ingress.value.port
+      to_port   = ingress.value.port
+      protocol  = "tcp"
+    }
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    "Name" = "tunetrail-${var.env}-${var.service_name}-sg"
+  }
+}
+
 # ECS タスク定義
 resource "aws_ecs_task_definition" "this" {
-  container_definitions = jsonencode([
+  container_definitions = jsonencode([for task in var.tasks :
     {
-      name      = var.task.name
-      image     = "${var.task.image.uri}:${var.task.image.tag}"
+      name      = task.name
+      image     = "${task.image.uri}:${task.image.tag}"
       cpu       = 0
       essential = true
 
       portMappings = [
         {
-          appProtocol   = var.task.protocol
-          containerPort = var.task.port
-          hostPort      = var.task.port
-          name          = "${var.task.name}-${var.task.port}-${var.task.protocol}"
+          appProtocol   = task.protocol
+          containerPort = task.port
+          hostPort      = task.port
+          name          = "${task.name}-${task.port}-${task.protocol}"
           protocol      = "tcp"
         }
       ]
@@ -30,7 +71,7 @@ resource "aws_ecs_task_definition" "this" {
 
         options = {
           "awslogs-create-group"  = "true"
-          "awslogs-group"         = "/ecs/tunetrail-${var.task.name}-task"
+          "awslogs-group"         = "/ecs/tunetrail-${task.name}-task"
           "awslogs-region"        = var.aws_region
           "awslogs-stream-prefix" = "ecs"
         }

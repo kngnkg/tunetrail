@@ -55,6 +55,7 @@ module "ecs_service_web" {
   source                  = "../../modules/service"
   env                     = var.env
   aws_region              = var.aws_region
+  vpc_id                  = module.vpc.vpc_id
   service_name            = "web"
   cluster_id              = module.ecs_cluster.id
   task_execution_role_arn = module.ecs_cluster.task_execution_role_arn
@@ -64,14 +65,16 @@ module "ecs_service_web" {
     module.vpc.subnet.private2_id,
   ]
 
-  task = {
-    name     = "web"
-    protocol = "http"
-    port     = 3000
+  tasks = [
+    {
+      name     = "web"
+      protocol = "http"
+      port     = 3000
 
-    image = {
-      uri = module.ecr_web.repository_url
-      tag = var.web_image_tag
+      image = {
+        uri = module.ecr_web.repository_url
+        tag = var.web_image_tag
+      }
     }
-  }
+  ]
 }
