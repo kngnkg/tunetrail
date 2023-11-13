@@ -28,6 +28,14 @@ provider "aws" {
   }
 }
 
+locals {
+  web = {
+    name              = "web"
+    port              = 3000
+    health_check_path = "/"
+  }
+}
+
 # TODO: SMS の I AM ロールを作成する
 module "cognito" {
   source      = "../../modules/cognito"
@@ -45,6 +53,11 @@ module "alb" {
   env    = var.env
   region = var.aws_region
   vpc_id = module.vpc.vpc_id
+
+  web = {
+    port              = local.web.port
+    health_check_path = local.web.health_check_path
+  }
 }
 
 module "ecs_cluster" {
@@ -55,7 +68,7 @@ module "ecs_cluster" {
 module "ecr_web" {
   source        = "../../modules/ecr"
   env           = var.env
-  artifact_name = "web"
+  artifact_name = local.web.name
 }
 
 module "ecs_service_web" {
@@ -63,7 +76,7 @@ module "ecs_service_web" {
   env                     = var.env
   region                  = var.aws_region
   vpc_id                  = module.vpc.vpc_id
-  service_name            = "web"
+  service_name            = local.web.name
   cluster_id              = module.ecs_cluster.id
   task_execution_role_arn = module.ecs_cluster.task_execution_role_arn
 
@@ -74,9 +87,9 @@ module "ecs_service_web" {
 
   tasks = [
     {
-      name     = "web"
+      name     = local.web.name
       protocol = "http"
-      port     = 3000
+      port     = local.web.port
 
       image = {
         uri = module.ecr_web.repository_url
