@@ -9,7 +9,7 @@ terraform {
   }
 
   backend "s3" {
-    bucket  = "foderee-dev-tf-state" # TODO: バケット名を変更する
+    bucket  = "foderee-dev-tf-state"
     region  = "ap-northeast-1"
     key     = "terraform.tfstate"
     encrypt = true
@@ -29,6 +29,8 @@ provider "aws" {
 }
 
 locals {
+  domain = "tune-trail.com"
+
   web = {
     name              = "web"
     port              = 3000
@@ -49,11 +51,27 @@ module "vpc" {
   env    = var.env
 }
 
-module "alb" {
-  source = "../../modules/alb"
+module "route53" {
+  source = "../../modules/route53"
   env    = var.env
-  region = var.aws_region
-  vpc_id = module.vpc.vpc_id
+  domain = local.domain
+
+  alb = {
+    dns_name = module.alb.dns_name
+    zone_id  = module.alb.zone_id
+  }
+}
+
+module "alb" {
+  source              = "../../modules/alb"
+  env                 = var.env
+  region              = var.aws_region
+  vpc_id              = module.vpc.vpc_id
+  acm_certificate_arn = module.route53.acm_certificate_arn
+  public_subnet_ids = [
+    module.vpc.subnet.public1_id,
+    module.vpc.subnet.public2_id,
+  ]
 
   web = {
     port              = local.web.port
