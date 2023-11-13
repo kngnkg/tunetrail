@@ -9,7 +9,7 @@ terraform {
   }
 
   backend "s3" {
-    bucket  = "tunetrail-dev-tf-state"
+    bucket  = "foderee-dev-tf-state" # TODO: バケット名を変更する
     region  = "ap-northeast-1"
     key     = "terraform.tfstate"
     encrypt = true
@@ -21,7 +21,7 @@ provider "aws" {
 
   default_tags {
     tags = {
-      service   = "tunetrail"
+      service   = "foderee"
       env       = var.env
       terraform = "true"
     }
@@ -37,6 +37,7 @@ locals {
 }
 
 # TODO: SMS の I AM ロールを作成する
+# TODO: サービス名を変更する
 module "cognito" {
   source      = "../../modules/cognito"
   env         = var.env

@@ -1,5 +1,9 @@
+locals {
+  service = "foderee"
+}
+
 resource "aws_ecs_cluster" "this" {
-  name = "tunetrail-${var.env}-cluster"
+  name = "${local.service}-${var.env}-cluster"
 
   configuration {
     execute_command_configuration {
@@ -8,13 +12,13 @@ resource "aws_ecs_cluster" "this" {
   }
 
   tags = {
-    Name = "tunetrail-${var.env}-cluster"
+    Name = "${local.service}-${var.env}-cluster"
   }
 }
 
 # ECS タスク実行ロール
 resource "aws_iam_role" "task_executer" {
-  name        = "tunetrail${title(var.env)}EcsTaskExecutionRole"
+  name        = "${local.service}${title(var.env)}EcsTaskExecutionRole"
   description = "Allows ECS tasks to call AWS services on your behalf."
 
   assume_role_policy = jsonencode(
@@ -34,7 +38,7 @@ resource "aws_iam_role" "task_executer" {
   )
 
   tags = {
-    "Name" = "tunetrail-${var.env}-ecs-task-execution-role"
+    "Name" = "${local.service}-${var.env}-ecs-task-execution-role"
   }
 }
 

@@ -1,6 +1,10 @@
+locals {
+  service = "foderee"
+}
+
 # ECS サービスに適用するセキュリティグループ
 resource "aws_security_group" "main" {
-  name        = "tunetrail-${var.env}-${var.service_name}-sg"
+  name        = "${local.service}-${var.env}-${var.service_name}-sg"
   description = "Security Group for ${var.service_name}"
   vpc_id      = var.vpc_id
 
@@ -35,7 +39,7 @@ resource "aws_security_group" "main" {
   }
 
   tags = {
-    "Name" = "tunetrail-${var.env}-${var.service_name}-sg"
+    "Name" = "${local.service}-${var.env}-${var.service_name}-sg"
   }
 }
 
@@ -71,7 +75,7 @@ resource "aws_ecs_task_definition" "this" {
 
         options = {
           "awslogs-create-group"  = "true"
-          "awslogs-group"         = "/ecs/tunetrail-${task.name}-task"
+          "awslogs-group"         = "/ecs/${local.service}-${task.name}-task"
           "awslogs-region"        = var.region
           "awslogs-stream-prefix" = "ecs"
         }
@@ -79,7 +83,7 @@ resource "aws_ecs_task_definition" "this" {
     }
   ])
 
-  family                   = "tunetrail-${var.env}-${var.service_name}-task"
+  family                   = "${local.service}-${var.env}-${var.service_name}-task"
   requires_compatibilities = ["FARGATE"]
   cpu                      = "256"
   memory                   = "512"
@@ -93,13 +97,13 @@ resource "aws_ecs_task_definition" "this" {
   }
 
   tags = {
-    Name = "tunetrail-${var.env}-task-definition-${var.service_name}"
+    Name = "${local.service}-${var.env}-task-definition-${var.service_name}"
   }
 }
 
 # ECS タスクロール
 resource "aws_iam_role" "main" {
-  name        = "tunetrail${title(var.env)}EcsTaskRole${title(var.service_name)}"
+  name        = "${local.service}${title(var.env)}EcsTaskRole${title(var.service_name)}"
   description = "Allows ECS tasks to call AWS services on your behalf."
 
   assume_role_policy = jsonencode(
@@ -119,6 +123,6 @@ resource "aws_iam_role" "main" {
   )
 
   tags = {
-    Name = "tunetrail-${var.env}-ecs-task-role-${var.service_name}"
+    Name = "${local.service}-${var.env}-ecs-task-role-${var.service_name}"
   }
 }

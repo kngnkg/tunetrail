@@ -1,5 +1,9 @@
+locals {
+  service = "foderee"
+}
+
 resource "aws_ecr_repository" "this" {
-  name                 = "tunetrail-${var.env}-${var.artifact_name}"
+  name                 = "${local.service}-${var.env}-${var.artifact_name}"
   image_tag_mutability = "MUTABLE"
 
   image_scanning_configuration {
@@ -7,6 +11,6 @@ resource "aws_ecr_repository" "this" {
   }
 
   tags = {
-    Name = "tunetrail-${var.env}-ecr-${var.artifact_name}"
+    Name = "${local.service}-${var.env}-ecr-${var.artifact_name}"
   }
 }
