@@ -69,6 +69,14 @@ resource "aws_ecs_task_definition" "this" {
       ulimits     = []
       volumesFrom = []
 
+      healthCheck = {
+        command     = ["CMD-SHELL", "curl -f http://localhost:${task.port} || exit 1"]
+        interval    = 60
+        timeout     = 5
+        retries     = 3
+        startPeriod = 0
+      }
+
       logConfiguration = {
         logDriver     = "awslogs"
         secretOptions = []
