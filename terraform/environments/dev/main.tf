@@ -30,12 +30,13 @@ provider "aws" {
 
 locals {
   service            = "foderee"
-  vpc_endpoint_count = 1
+  vpc_endpoint_count = var.create ? 1 : 0
 
   web = {
     name              = "web"
     port              = 3000
     health_check_path = "/"
+    desired_count     = var.create ? 2 : 0
   }
 }
 
@@ -83,6 +84,7 @@ module "ecs_service_web" {
   cluster_id              = module.ecs_cluster.id
   target_group_arn        = module.alb.target_group_arn
   task_execution_role_arn = module.ecs_cluster.task_execution_role_arn
+  desired_count           = local.web.desired_count
 
   subnet_ids = [
     module.vpc.subnet.private1_id,

@@ -39,8 +39,6 @@ resource "aws_ecs_task_definition" "this" {
     {
       name  = task.name
       image = "${task.image.uri}:${task.image.tag}"
-      # cpu       = 0
-      # essential = true
 
       portMappings = [
         {
@@ -129,7 +127,7 @@ resource "aws_ecs_service" "this" {
   name                              = "${local.service}-${var.env}-${var.service_name}-service"
   cluster                           = var.cluster_id
   task_definition                   = aws_ecs_task_definition.this.arn
-  desired_count                     = 2
+  desired_count                     = var.desired_count
   launch_type                       = "FARGATE"
   health_check_grace_period_seconds = 180
 

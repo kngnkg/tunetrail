@@ -2,6 +2,10 @@ variable "env" {
   type = string
 }
 
+variable "create" {
+  type = bool
+}
+
 variable "aws_region" {
   type    = string
   default = "ap-northeast-1"
