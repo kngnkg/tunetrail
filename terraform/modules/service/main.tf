@@ -126,3 +126,33 @@ resource "aws_iam_role" "main" {
     Name = "${local.service}-${var.env}-ecs-task-role-${var.service_name}"
   }
 }
+
+resource "aws_ecs_service" "this" {
+  name            = "${local.service}-${var.env}-${var.service_name}-service"
+  cluster         = var.cluster_id
+  task_definition = aws_ecs_task_definition.this.arn
+  desired_count   = 2
+  launch_type     = "FARGATE"
+
+  network_configuration {
+    subnets = var.subnet_ids
+
+    security_groups = [
+      aws_security_group.main.id,
+    ]
+
+    assign_public_ip = false
+  }
+
+  # ロードバランサーの設定
+  # ターゲットグループをアタッチすることで、ロードバランサーにターゲットとして登録される
+  dynamic "load_balancer" {
+    for_each = { for task in var.tasks : task.name => task }
+
+    content {
+      target_group_arn = var.target_group_arn
+      container_name   = load_balancer.value.name
+      container_port   = load_balancer.value.port
+    }
+  }
+}
