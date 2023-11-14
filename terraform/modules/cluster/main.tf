@@ -47,3 +47,16 @@ resource "aws_iam_role_policy_attachment" "allow_ecs_task_execution_role" {
   role       = aws_iam_role.task_executer.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
+
+# ECRからイメージをpullする際に必要
+resource "aws_iam_role_policy_attachment" "s3_read_only" {
+  role       = aws_iam_role.task_executer.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
+}
+
+# AmazonECSTaskExecutionRolePolicy はロググループの作成権限がないため
+# TODO: logs:CreateLogGroup のみ許可するポリシーを作成する
+resource "aws_iam_role_policy_attachment" "cloudwatch_logs_full_access" {
+  role       = aws_iam_role.task_executer.name
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
+}

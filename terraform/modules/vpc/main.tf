@@ -5,7 +5,9 @@ locals {
 # ネットワーク ACL はデフォルトのものを使用するため、Terraform での設定は不要
 
 resource "aws_vpc" "main" {
-  cidr_block = var.env == "prod" ? "10.0.0.0/16" : "10.1.0.0/16"
+  cidr_block           = var.env == "prod" ? "10.0.0.0/16" : "10.1.0.0/16"
+  enable_dns_support   = true # プライベートDNSの有効化
+  enable_dns_hostnames = true # ホスト名の自動設定
 
   tags = {
     Name = "${local.service}-${var.env}-vpc"
@@ -84,4 +86,18 @@ resource "aws_route_table_association" "public1" {
 resource "aws_route_table_association" "public2" {
   subnet_id      = aws_subnet.public2.id
   route_table_id = aws_route_table.main.id
+}
+
+resource "aws_route_table" "private" {
+  vpc_id = aws_vpc.main.id
+}
+
+resource "aws_route_table_association" "private1" {
+  subnet_id      = aws_subnet.private1.id
+  route_table_id = aws_route_table.private.id
+}
+
+resource "aws_route_table_association" "private2" {
+  subnet_id      = aws_subnet.private2.id
+  route_table_id = aws_route_table.private.id
 }

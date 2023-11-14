@@ -31,6 +31,8 @@ provider "aws" {
 locals {
   domain = "tune-trail.com"
 
+  vpc_endpoint_count = 1
+
   web = {
     name              = "web"
     port              = 3000
@@ -91,6 +93,53 @@ module "ecr_web" {
   artifact_name = local.web.name
 }
 
+## TODO: VPC Endpoint のセキュリティグループを作成する
+## TODO: importする
+
+# ECRのAPIを呼び出すためのVPCエンドポイント
+# イメージのメタデータを取得したり、イメージの認証トークンを取得するために使用される。
+resource "aws_vpc_endpoint" "ecr_api" {
+  count               = local.vpc_endpoint_count
+  vpc_id              = module.vpc.vpc_id
+  service_name        = "com.amazonaws.ap-northeast-1.ecr.api"
+  vpc_endpoint_type   = "Interface"
+  subnet_ids          = [module.vpc.subnet.private1_id, module.vpc.subnet.private2_id]
+  security_group_ids  = [module.ecs_service_web.security_group_id]
+  private_dns_enabled = true
+}
+
+# Dockerイメージのプッシュ/プルを行うためのVPCエンドポイント
+resource "aws_vpc_endpoint" "ecr_dkr" {
+  count               = local.vpc_endpoint_count
+  vpc_id              = module.vpc.vpc_id
+  service_name        = "com.amazonaws.ap-northeast-1.ecr.dkr"
+  vpc_endpoint_type   = "Interface"
+  subnet_ids          = [module.vpc.subnet.private1_id, module.vpc.subnet.private2_id]
+  security_group_ids  = [module.ecs_service_web.security_group_id]
+  private_dns_enabled = true
+}
+
+# S3用のVPCエンドポイント
+# ECRのイメージをプッシュ/プルする際に、S3のバケットを使用するために必要。
+resource "aws_vpc_endpoint" "s3" {
+  count             = local.vpc_endpoint_count
+  vpc_id            = module.vpc.vpc_id
+  service_name      = "com.amazonaws.ap-northeast-1.s3"
+  vpc_endpoint_type = "Gateway"
+  route_table_ids   = [module.vpc.route_table.private_id]
+}
+
+# CloudWatch Logs用のVPCエンドポイント
+resource "aws_vpc_endpoint" "cloudwatch_logs" {
+  count               = local.vpc_endpoint_count
+  vpc_id              = module.vpc.vpc_id
+  service_name        = "com.amazonaws.ap-northeast-1.logs"
+  vpc_endpoint_type   = "Interface"
+  subnet_ids          = [module.vpc.subnet.private1_id, module.vpc.subnet.private2_id]
+  security_group_ids  = [module.ecs_service_web.security_group_id]
+  private_dns_enabled = true
+}
+
 module "ecs_service_web" {
   source                  = "../../modules/service"
   env                     = var.env
@@ -98,6 +147,7 @@ module "ecs_service_web" {
   vpc_id                  = module.vpc.vpc_id
   service_name            = local.web.name
   cluster_id              = module.ecs_cluster.id
+  target_group_arn        = module.alb.target_group_arn
   task_execution_role_arn = module.ecs_cluster.task_execution_role_arn
 
   subnet_ids = [
