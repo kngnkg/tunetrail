@@ -50,7 +50,6 @@ resource "aws_lb" "this" {
   security_groups    = [aws_security_group.main.id]
   subnets            = var.public_subnet_ids
 
-
   access_logs {
     enabled = true
     bucket  = aws_s3_bucket.alb_logs.bucket
@@ -132,15 +131,14 @@ resource "aws_lb_target_group" "web" {
   name             = "${local.service}-${var.env}-web-tg"
   vpc_id           = var.vpc_id
   target_type      = "ip"
-  protocol_version = "HTTP2"
-  # protocol_version = "HTTP1"
-  port     = var.web.port
-  protocol = "HTTP"
+  protocol_version = "HTTP1"
+  port             = var.web.port
+  protocol         = "HTTP"
 
   health_check {
     enabled             = true
-    healthy_threshold   = 5
-    unhealthy_threshold = 2
+    healthy_threshold   = 2
+    unhealthy_threshold = 5
     interval            = 60
     matcher             = "200"
     path                = var.web.health_check_path

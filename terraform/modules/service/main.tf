@@ -47,10 +47,10 @@ resource "aws_security_group" "main" {
 resource "aws_ecs_task_definition" "this" {
   container_definitions = jsonencode([for task in var.tasks :
     {
-      name      = task.name
-      image     = "${task.image.uri}:${task.image.tag}"
-      cpu       = 0
-      essential = true
+      name  = task.name
+      image = "${task.image.uri}:${task.image.tag}"
+      # cpu       = 0
+      # essential = true
 
       portMappings = [
         {
@@ -136,11 +136,12 @@ resource "aws_iam_role" "main" {
 }
 
 resource "aws_ecs_service" "this" {
-  name            = "${local.service}-${var.env}-${var.service_name}-service"
-  cluster         = var.cluster_id
-  task_definition = aws_ecs_task_definition.this.arn
-  desired_count   = 2
-  launch_type     = "FARGATE"
+  name                              = "${local.service}-${var.env}-${var.service_name}-service"
+  cluster                           = var.cluster_id
+  task_definition                   = aws_ecs_task_definition.this.arn
+  desired_count                     = 2
+  launch_type                       = "FARGATE"
+  health_check_grace_period_seconds = 180
 
   network_configuration {
     subnets = var.subnet_ids
