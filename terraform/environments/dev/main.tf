@@ -53,18 +53,6 @@ module "vpc" {
   env    = var.env
 }
 
-# TODO: 動作確認が終了したら削除する
-module "route53" {
-  source = "../../modules/route53"
-  env    = var.env
-  domain = local.domain
-
-  alb = {
-    dns_name = module.alb.dns_name
-    zone_id  = module.alb.zone_id
-  }
-}
-
 module "alb" {
   source              = "../../modules/alb"
   env                 = var.env
