@@ -29,8 +29,7 @@ provider "aws" {
 }
 
 locals {
-  domain = "tune-trail.com"
-
+  service            = "foderee"
   vpc_endpoint_count = 1
 
   web = {
@@ -75,59 +74,6 @@ module "ecs_cluster" {
   env    = var.env
 }
 
-module "ecr_web" {
-  source        = "../../modules/ecr"
-  env           = var.env
-  artifact_name = local.web.name
-}
-
-## TODO: VPC Endpoint のセキュリティグループを作成する
-## TODO: importする
-
-# ECRのAPIを呼び出すためのVPCエンドポイント
-# イメージのメタデータを取得したり、イメージの認証トークンを取得するために使用される。
-resource "aws_vpc_endpoint" "ecr_api" {
-  count               = local.vpc_endpoint_count
-  vpc_id              = module.vpc.vpc_id
-  service_name        = "com.amazonaws.ap-northeast-1.ecr.api"
-  vpc_endpoint_type   = "Interface"
-  subnet_ids          = [module.vpc.subnet.private1_id, module.vpc.subnet.private2_id]
-  security_group_ids  = [module.ecs_service_web.security_group_id]
-  private_dns_enabled = true
-}
-
-# Dockerイメージのプッシュ/プルを行うためのVPCエンドポイント
-resource "aws_vpc_endpoint" "ecr_dkr" {
-  count               = local.vpc_endpoint_count
-  vpc_id              = module.vpc.vpc_id
-  service_name        = "com.amazonaws.ap-northeast-1.ecr.dkr"
-  vpc_endpoint_type   = "Interface"
-  subnet_ids          = [module.vpc.subnet.private1_id, module.vpc.subnet.private2_id]
-  security_group_ids  = [module.ecs_service_web.security_group_id]
-  private_dns_enabled = true
-}
-
-# S3用のVPCエンドポイント
-# ECRのイメージをプッシュ/プルする際に、S3のバケットを使用するために必要。
-resource "aws_vpc_endpoint" "s3" {
-  count             = local.vpc_endpoint_count
-  vpc_id            = module.vpc.vpc_id
-  service_name      = "com.amazonaws.ap-northeast-1.s3"
-  vpc_endpoint_type = "Gateway"
-  route_table_ids   = [module.vpc.route_table.private_id]
-}
-
-# CloudWatch Logs用のVPCエンドポイント
-resource "aws_vpc_endpoint" "cloudwatch_logs" {
-  count               = local.vpc_endpoint_count
-  vpc_id              = module.vpc.vpc_id
-  service_name        = "com.amazonaws.ap-northeast-1.logs"
-  vpc_endpoint_type   = "Interface"
-  subnet_ids          = [module.vpc.subnet.private1_id, module.vpc.subnet.private2_id]
-  security_group_ids  = [module.ecs_service_web.security_group_id]
-  private_dns_enabled = true
-}
-
 module "ecs_service_web" {
   source                  = "../../modules/service"
   env                     = var.env
@@ -155,4 +101,82 @@ module "ecs_service_web" {
       }
     }
   ]
+}
+
+module "ecr_web" {
+  source        = "../../modules/ecr"
+  env           = var.env
+  artifact_name = local.web.name
+}
+
+# VPC Endpoint に適用するセキュリティグループ
+resource "aws_security_group" "vpc_endpoint" {
+  name        = "${local.service}-${var.env}-vpcep-sg"
+  description = "Security Group for VPC Endpoint"
+  vpc_id      = module.vpc.vpc_id
+
+  ingress {
+    description = "For VPC Endpoint"
+    cidr_blocks = [
+      var.env == "prod" ? "10.0.0.0/16" : "10.1.0.0/16",
+    ]
+    from_port = 443
+    to_port   = 443
+    protocol  = "tcp"
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    "Name" = "${local.service}-${var.env}-vpcep-sg"
+  }
+}
+
+# ECRのAPIを呼び出すためのVPCエンドポイント
+# イメージのメタデータを取得したり、イメージの認証トークンを取得するために使用される。
+resource "aws_vpc_endpoint" "ecr_api" {
+  count               = local.vpc_endpoint_count
+  vpc_id              = module.vpc.vpc_id
+  service_name        = "com.amazonaws.ap-northeast-1.ecr.api"
+  vpc_endpoint_type   = "Interface"
+  subnet_ids          = [module.vpc.subnet.private1_id, module.vpc.subnet.private2_id]
+  security_group_ids  = [resource.aws_security_group.vpc_endpoint.id]
+  private_dns_enabled = true
+}
+
+# Dockerイメージのプッシュ/プルを行うためのVPCエンドポイント
+resource "aws_vpc_endpoint" "ecr_dkr" {
+  count               = local.vpc_endpoint_count
+  vpc_id              = module.vpc.vpc_id
+  service_name        = "com.amazonaws.ap-northeast-1.ecr.dkr"
+  vpc_endpoint_type   = "Interface"
+  subnet_ids          = [module.vpc.subnet.private1_id, module.vpc.subnet.private2_id]
+  security_group_ids  = [resource.aws_security_group.vpc_endpoint.id]
+  private_dns_enabled = true
+}
+
+# S3用のVPCエンドポイント
+# ECRのイメージをプッシュ/プルする際に、S3のバケットを使用するために必要。
+resource "aws_vpc_endpoint" "s3" {
+  count             = local.vpc_endpoint_count
+  vpc_id            = module.vpc.vpc_id
+  service_name      = "com.amazonaws.ap-northeast-1.s3"
+  vpc_endpoint_type = "Gateway"
+  route_table_ids   = [module.vpc.route_table.private_id]
+}
+
+# CloudWatch Logs用のVPCエンドポイント
+resource "aws_vpc_endpoint" "cloudwatch_logs" {
+  count               = local.vpc_endpoint_count
+  vpc_id              = module.vpc.vpc_id
+  service_name        = "com.amazonaws.ap-northeast-1.logs"
+  vpc_endpoint_type   = "Interface"
+  subnet_ids          = [module.vpc.subnet.private1_id, module.vpc.subnet.private2_id]
+  security_group_ids  = [resource.aws_security_group.vpc_endpoint.id]
+  private_dns_enabled = true
 }

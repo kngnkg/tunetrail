@@ -8,16 +8,6 @@ resource "aws_security_group" "main" {
   description = "Security Group for ${var.service_name}"
   vpc_id      = var.vpc_id
 
-  ingress {
-    description = "For VPC Endpoint"
-    cidr_blocks = [
-      var.env == "prod" ? "10.0.0.0/16" : "10.1.0.0/16",
-    ]
-    from_port = 443
-    to_port   = 443
-    protocol  = "tcp"
-  }
-
   dynamic "ingress" {
     for_each = var.tasks
     content {
