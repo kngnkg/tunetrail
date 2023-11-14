@@ -4,10 +4,25 @@ output "vpc_id" {
 
 output "subnet" {
   value = {
-    public1_id  = aws_subnet.public1.id
-    public2_id  = aws_subnet.public2.id
-    private1_id = aws_subnet.private1.id
-    private2_id = aws_subnet.private2.id
+    public1 = {
+      id   = aws_subnet.public1.id
+      cidr = aws_subnet.public1.cidr_block
+    }
+
+    public2 = {
+      id   = aws_subnet.public2.id
+      cidr = aws_subnet.public2.cidr_block
+    }
+
+    private1 = {
+      id   = aws_subnet.private1.id
+      cidr = aws_subnet.private1.cidr_block
+    }
+
+    private2 = {
+      id   = aws_subnet.private2.id
+      cidr = aws_subnet.private2.cidr_block
+    }
   }
 }
 

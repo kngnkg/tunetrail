@@ -59,10 +59,7 @@ module "alb" {
   region              = var.aws_region
   vpc_id              = module.vpc.vpc_id
   acm_certificate_arn = var.acm_certificate_arn
-  public_subnet_ids = [
-    module.vpc.subnet.public1_id,
-    module.vpc.subnet.public2_id,
-  ]
+  public_subnet_ids   = [module.vpc.subnet.public1.id, module.vpc.subnet.public2.id]
 
   web = {
     port              = local.web.port
@@ -86,10 +83,7 @@ module "ecs_service_web" {
   task_execution_role_arn = module.ecs_cluster.task_execution_role_arn
   desired_count           = local.web.desired_count
 
-  subnet_ids = [
-    module.vpc.subnet.private1_id,
-    module.vpc.subnet.private2_id,
-  ]
+  subnet_ids = [module.vpc.subnet.private1.id, module.vpc.subnet.private2.id]
 
   tasks = [
     {
@@ -109,6 +103,20 @@ module "ecr_web" {
   source        = "../../modules/ecr"
   env           = var.env
   artifact_name = local.web.name
+}
+
+# RDS
+module "rds" {
+  source   = "../../modules/rds"
+  env      = var.env
+  vpc_id   = module.vpc.vpc_id
+  username = var.rds.username
+  password = var.rds.password
+
+  private_subnets = [
+    module.vpc.subnet.private1,
+    module.vpc.subnet.private2,
+  ]
 }
 
 # VPC Endpoint に適用するセキュリティグループ
@@ -146,7 +154,7 @@ resource "aws_vpc_endpoint" "ecr_api" {
   vpc_id              = module.vpc.vpc_id
   service_name        = "com.amazonaws.ap-northeast-1.ecr.api"
   vpc_endpoint_type   = "Interface"
-  subnet_ids          = [module.vpc.subnet.private1_id, module.vpc.subnet.private2_id]
+  subnet_ids          = [module.vpc.subnet.private1.id, module.vpc.subnet.private2.id]
   security_group_ids  = [resource.aws_security_group.vpc_endpoint.id]
   private_dns_enabled = true
 }
@@ -157,7 +165,7 @@ resource "aws_vpc_endpoint" "ecr_dkr" {
   vpc_id              = module.vpc.vpc_id
   service_name        = "com.amazonaws.ap-northeast-1.ecr.dkr"
   vpc_endpoint_type   = "Interface"
-  subnet_ids          = [module.vpc.subnet.private1_id, module.vpc.subnet.private2_id]
+  subnet_ids          = [module.vpc.subnet.private1.id, module.vpc.subnet.private2.id]
   security_group_ids  = [resource.aws_security_group.vpc_endpoint.id]
   private_dns_enabled = true
 }
@@ -178,7 +186,7 @@ resource "aws_vpc_endpoint" "cloudwatch_logs" {
   vpc_id              = module.vpc.vpc_id
   service_name        = "com.amazonaws.ap-northeast-1.logs"
   vpc_endpoint_type   = "Interface"
-  subnet_ids          = [module.vpc.subnet.private1_id, module.vpc.subnet.private2_id]
+  subnet_ids          = [module.vpc.subnet.private1.id, module.vpc.subnet.private2.id]
   security_group_ids  = [resource.aws_security_group.vpc_endpoint.id]
   private_dns_enabled = true
 }
