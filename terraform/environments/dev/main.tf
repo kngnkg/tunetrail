@@ -57,12 +57,9 @@ module "alb" {
   source              = "../../modules/alb"
   env                 = var.env
   region              = var.aws_region
-  vpc_id              = module.vpc.vpc_id
+  vpc_id              = module.vpc.vpc.id
   acm_certificate_arn = var.acm_certificate_arn
-  public_subnet_ids = [
-    module.vpc.subnet.public1_id,
-    module.vpc.subnet.public2_id,
-  ]
+  public_subnet_ids   = [module.vpc.subnet.public1.id, module.vpc.subnet.public2.id]
 
   web = {
     port              = local.web.port
@@ -79,17 +76,14 @@ module "ecs_service_web" {
   source                  = "../../modules/service"
   env                     = var.env
   region                  = var.aws_region
-  vpc_id                  = module.vpc.vpc_id
+  vpc                     = module.vpc.vpc
   service_name            = local.web.name
   cluster_id              = module.ecs_cluster.id
   target_group_arn        = module.alb.target_group_arn
   task_execution_role_arn = module.ecs_cluster.task_execution_role_arn
   desired_count           = local.web.desired_count
 
-  subnet_ids = [
-    module.vpc.subnet.private1_id,
-    module.vpc.subnet.private2_id,
-  ]
+  subnet_ids = [module.vpc.subnet.private1.id, module.vpc.subnet.private2.id]
 
   tasks = [
     {
@@ -111,20 +105,32 @@ module "ecr_web" {
   artifact_name = local.web.name
 }
 
+# RDS
+module "rds" {
+  source   = "../../modules/rds"
+  env      = var.env
+  vpc_id   = module.vpc.vpc.id
+  username = var.rds.username
+  password = var.rds.password
+
+  private_subnets = [
+    module.vpc.subnet.private1,
+    module.vpc.subnet.private2,
+  ]
+}
+
 # VPC Endpoint に適用するセキュリティグループ
 resource "aws_security_group" "vpc_endpoint" {
   name        = "${local.service}-${var.env}-vpcep-sg"
   description = "Security Group for VPC Endpoint"
-  vpc_id      = module.vpc.vpc_id
+  vpc_id      = module.vpc.vpc.id
 
   ingress {
     description = "For VPC Endpoint"
-    cidr_blocks = [
-      var.env == "prod" ? "10.0.0.0/16" : "10.1.0.0/16",
-    ]
-    from_port = 443
-    to_port   = 443
-    protocol  = "tcp"
+    cidr_blocks = [module.vpc.vpc.cidr_block]
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
   }
 
   egress {
@@ -143,10 +149,10 @@ resource "aws_security_group" "vpc_endpoint" {
 # イメージのメタデータを取得したり、イメージの認証トークンを取得するために使用される。
 resource "aws_vpc_endpoint" "ecr_api" {
   count               = local.vpc_endpoint_count
-  vpc_id              = module.vpc.vpc_id
+  vpc_id              = module.vpc.vpc.id
   service_name        = "com.amazonaws.ap-northeast-1.ecr.api"
   vpc_endpoint_type   = "Interface"
-  subnet_ids          = [module.vpc.subnet.private1_id, module.vpc.subnet.private2_id]
+  subnet_ids          = [module.vpc.subnet.private1.id, module.vpc.subnet.private2.id]
   security_group_ids  = [resource.aws_security_group.vpc_endpoint.id]
   private_dns_enabled = true
 }
@@ -154,10 +160,10 @@ resource "aws_vpc_endpoint" "ecr_api" {
 # Dockerイメージのプッシュ/プルを行うためのVPCエンドポイント
 resource "aws_vpc_endpoint" "ecr_dkr" {
   count               = local.vpc_endpoint_count
-  vpc_id              = module.vpc.vpc_id
+  vpc_id              = module.vpc.vpc.id
   service_name        = "com.amazonaws.ap-northeast-1.ecr.dkr"
   vpc_endpoint_type   = "Interface"
-  subnet_ids          = [module.vpc.subnet.private1_id, module.vpc.subnet.private2_id]
+  subnet_ids          = [module.vpc.subnet.private1.id, module.vpc.subnet.private2.id]
   security_group_ids  = [resource.aws_security_group.vpc_endpoint.id]
   private_dns_enabled = true
 }
@@ -166,7 +172,7 @@ resource "aws_vpc_endpoint" "ecr_dkr" {
 # ECRのイメージをプッシュ/プルする際に、S3のバケットを使用するために必要。
 resource "aws_vpc_endpoint" "s3" {
   count             = local.vpc_endpoint_count
-  vpc_id            = module.vpc.vpc_id
+  vpc_id            = module.vpc.vpc.id
   service_name      = "com.amazonaws.ap-northeast-1.s3"
   vpc_endpoint_type = "Gateway"
   route_table_ids   = [module.vpc.route_table.private_id]
@@ -175,10 +181,10 @@ resource "aws_vpc_endpoint" "s3" {
 # CloudWatch Logs用のVPCエンドポイント
 resource "aws_vpc_endpoint" "cloudwatch_logs" {
   count               = local.vpc_endpoint_count
-  vpc_id              = module.vpc.vpc_id
+  vpc_id              = module.vpc.vpc.id
   service_name        = "com.amazonaws.ap-northeast-1.logs"
   vpc_endpoint_type   = "Interface"
-  subnet_ids          = [module.vpc.subnet.private1_id, module.vpc.subnet.private2_id]
+  subnet_ids          = [module.vpc.subnet.private1.id, module.vpc.subnet.private2.id]
   security_group_ids  = [resource.aws_security_group.vpc_endpoint.id]
   private_dns_enabled = true
 }

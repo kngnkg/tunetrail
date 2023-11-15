@@ -18,3 +18,15 @@ variable "acm_certificate_arn" {
 variable "web_image_tag" {
   type = string
 }
+
+variable "grpc_image_tag" {
+  type = string
+}
+
+variable "rds" {
+  type = object({
+    port     = number
+    password = string
+    username = string
+  })
+}

@@ -10,8 +10,11 @@ variable "service_name" {
   type = string
 }
 
-variable "vpc_id" {
-  type = string
+variable "vpc" {
+  type = object({
+    id         = string
+    cidr_block = string
+  })
 }
 
 variable "subnet_ids" {
