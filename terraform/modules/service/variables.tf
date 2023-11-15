@@ -25,6 +25,10 @@ variable "cluster_id" {
   type = string
 }
 
+variable "env_bucket_arn" {
+  type = string
+}
+
 variable "desired_count" {
   type = number
 }

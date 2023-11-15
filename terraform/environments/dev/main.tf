@@ -38,6 +38,13 @@ locals {
     health_check_path = "/"
     desired_count     = var.create ? 2 : 0
   }
+
+  grpc = {
+    name          = "grpc"
+    port          = 50051
+    desired_count = var.create ? 2 : 0
+  }
+
 }
 
 # TODO: SMS の I AM ロールを作成する
@@ -72,6 +79,25 @@ module "ecs_cluster" {
   env    = var.env
 }
 
+# タスクに渡す環境変数ファイルを保存する S3 バケット
+resource "aws_s3_bucket" "env" {
+  bucket = "${local.service}-${var.env}-env"
+}
+
+resource "aws_s3_bucket_ownership_controls" "env" {
+  bucket = aws_s3_bucket.env.id
+
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
+}
+
+resource "aws_s3_bucket_acl" "env" {
+  depends_on = [aws_s3_bucket_ownership_controls.env]
+  bucket     = aws_s3_bucket.env.id
+  acl        = "private"
+}
+
 module "ecs_service_web" {
   source                  = "../../modules/service"
   env                     = var.env
@@ -79,6 +105,7 @@ module "ecs_service_web" {
   vpc                     = module.vpc.vpc
   service_name            = local.web.name
   cluster_id              = module.ecs_cluster.id
+  env_bucket_arn          = aws_s3_bucket.env.arn
   target_group_arn        = module.alb.target_group_arn
   task_execution_role_arn = module.ecs_cluster.task_execution_role_arn
   desired_count           = local.web.desired_count
@@ -105,18 +132,10 @@ module "ecr_web" {
   artifact_name = local.web.name
 }
 
-# RDS
-module "rds" {
-  source   = "../../modules/rds"
-  env      = var.env
-  vpc_id   = module.vpc.vpc.id
-  username = var.rds.username
-  password = var.rds.password
-
-  private_subnets = [
-    module.vpc.subnet.private1,
-    module.vpc.subnet.private2,
-  ]
+module "ecr_grpc" {
+  source        = "../../modules/ecr"
+  env           = var.env
+  artifact_name = local.grpc.name
 }
 
 # VPC Endpoint に適用するセキュリティグループ
@@ -187,4 +206,18 @@ resource "aws_vpc_endpoint" "cloudwatch_logs" {
   subnet_ids          = [module.vpc.subnet.private1.id, module.vpc.subnet.private2.id]
   security_group_ids  = [resource.aws_security_group.vpc_endpoint.id]
   private_dns_enabled = true
+}
+
+# RDS
+module "rds" {
+  source   = "../../modules/rds"
+  env      = var.env
+  vpc_id   = module.vpc.vpc.id
+  username = var.rds.username
+  password = var.rds.password
+
+  private_subnets = [
+    module.vpc.subnet.private1,
+    module.vpc.subnet.private2,
+  ]
 }

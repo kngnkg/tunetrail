@@ -48,15 +48,25 @@ resource "aws_ecs_task_definition" "this" {
         }
       ]
 
-      environment      = []
-      environmentFiles = []
+      environmentFiles = [
+        {
+          "value" = "${var.env_bucket_arn}/${task.name}/.env"
+          "type"  = "s3"
+        }
+      ]
+      environment = null
 
       mountPoints = []
       ulimits     = []
       volumesFrom = []
 
       healthCheck = {
-        command     = ["CMD-SHELL", "curl -f http://localhost:${task.port} || exit 1"]
+        command = [
+          "CMD-SHELL",
+          task.protocol == "http" ?
+          "curl -f http://localhost:${task.port} || exit 1"
+          : "/bin/grpc_health_probe -addr=localhost:${task.port} || exit 1"
+        ]
         interval    = 60
         timeout     = 5
         retries     = 3
@@ -142,7 +152,10 @@ resource "aws_ecs_service" "this" {
   # ロードバランサーの設定
   # ターゲットグループをアタッチすることで、ロードバランサーにターゲットとして登録される
   dynamic "load_balancer" {
-    for_each = { for task in var.tasks : task.name => task }
+    for_each = {
+      for task in var.tasks : task.name => task
+      if task.protocol == "http" # HTTP の場合のみロードバランサーにターゲットとして登録する
+    }
 
     content {
       target_group_arn = var.target_group_arn
