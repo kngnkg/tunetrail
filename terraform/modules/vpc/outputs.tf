@@ -28,10 +28,3 @@ output "subnet" {
     }
   }
 }
-
-output "route_table" {
-  value = {
-    public_id  = aws_route_table.main.id
-    private_id = aws_route_table.private.id
-  }
-}

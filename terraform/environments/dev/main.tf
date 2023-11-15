@@ -29,8 +29,7 @@ provider "aws" {
 }
 
 locals {
-  service            = "foderee"
-  vpc_endpoint_count = var.create ? 1 : 0
+  service = "foderee"
 
   web = {
     name              = "web"
@@ -44,7 +43,6 @@ locals {
     port          = 50051
     desired_count = var.create ? 2 : 0
   }
-
 }
 
 # TODO: SMS の I AM ロールを作成する
@@ -58,6 +56,7 @@ module "cognito" {
 module "vpc" {
   source = "../../modules/vpc"
   env    = var.env
+  create = var.create
 }
 
 module "alb" {
@@ -132,80 +131,37 @@ module "ecr_web" {
   artifact_name = local.web.name
 }
 
+module "ecs_service_grpc" {
+  source                  = "../../modules/service"
+  env                     = var.env
+  region                  = var.aws_region
+  vpc                     = module.vpc.vpc
+  service_name            = local.grpc.name
+  cluster_id              = module.ecs_cluster.id
+  env_bucket_arn          = aws_s3_bucket.env.arn
+  task_execution_role_arn = module.ecs_cluster.task_execution_role_arn
+  desired_count           = local.grpc.desired_count
+
+  subnet_ids = [module.vpc.subnet.private1.id, module.vpc.subnet.private2.id]
+
+  tasks = [
+    {
+      name     = local.grpc.name
+      protocol = "grpc"
+      port     = local.grpc.port
+
+      image = {
+        uri = module.ecr_grpc.repository_url
+        tag = var.grpc_image_tag
+      }
+    }
+  ]
+}
+
 module "ecr_grpc" {
   source        = "../../modules/ecr"
   env           = var.env
   artifact_name = local.grpc.name
-}
-
-# VPC Endpoint に適用するセキュリティグループ
-resource "aws_security_group" "vpc_endpoint" {
-  name        = "${local.service}-${var.env}-vpcep-sg"
-  description = "Security Group for VPC Endpoint"
-  vpc_id      = module.vpc.vpc.id
-
-  ingress {
-    description = "For VPC Endpoint"
-    cidr_blocks = [module.vpc.vpc.cidr_block]
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = {
-    "Name" = "${local.service}-${var.env}-vpcep-sg"
-  }
-}
-
-# ECRのAPIを呼び出すためのVPCエンドポイント
-# イメージのメタデータを取得したり、イメージの認証トークンを取得するために使用される。
-resource "aws_vpc_endpoint" "ecr_api" {
-  count               = local.vpc_endpoint_count
-  vpc_id              = module.vpc.vpc.id
-  service_name        = "com.amazonaws.ap-northeast-1.ecr.api"
-  vpc_endpoint_type   = "Interface"
-  subnet_ids          = [module.vpc.subnet.private1.id, module.vpc.subnet.private2.id]
-  security_group_ids  = [resource.aws_security_group.vpc_endpoint.id]
-  private_dns_enabled = true
-}
-
-# Dockerイメージのプッシュ/プルを行うためのVPCエンドポイント
-resource "aws_vpc_endpoint" "ecr_dkr" {
-  count               = local.vpc_endpoint_count
-  vpc_id              = module.vpc.vpc.id
-  service_name        = "com.amazonaws.ap-northeast-1.ecr.dkr"
-  vpc_endpoint_type   = "Interface"
-  subnet_ids          = [module.vpc.subnet.private1.id, module.vpc.subnet.private2.id]
-  security_group_ids  = [resource.aws_security_group.vpc_endpoint.id]
-  private_dns_enabled = true
-}
-
-# S3用のVPCエンドポイント
-# ECRのイメージをプッシュ/プルする際に、S3のバケットを使用するために必要。
-resource "aws_vpc_endpoint" "s3" {
-  count             = local.vpc_endpoint_count
-  vpc_id            = module.vpc.vpc.id
-  service_name      = "com.amazonaws.ap-northeast-1.s3"
-  vpc_endpoint_type = "Gateway"
-  route_table_ids   = [module.vpc.route_table.private_id]
-}
-
-# CloudWatch Logs用のVPCエンドポイント
-resource "aws_vpc_endpoint" "cloudwatch_logs" {
-  count               = local.vpc_endpoint_count
-  vpc_id              = module.vpc.vpc.id
-  service_name        = "com.amazonaws.ap-northeast-1.logs"
-  vpc_endpoint_type   = "Interface"
-  subnet_ids          = [module.vpc.subnet.private1.id, module.vpc.subnet.private2.id]
-  security_group_ids  = [resource.aws_security_group.vpc_endpoint.id]
-  private_dns_enabled = true
 }
 
 # RDS
