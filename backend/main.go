@@ -21,6 +21,7 @@ import (
 	"github.com/kngnkg/tunetrail/backend/usecase"
 	"github.com/kngnkg/tunetrail/backend/validator"
 	"google.golang.org/grpc"
+	healthpb "google.golang.org/grpc/health/grpc_health_v1"
 )
 
 func main() {
@@ -79,6 +80,9 @@ func main() {
 			grpc_recovery.UnaryServerInterceptor(opts...),
 		),
 	)
+
+	healthServer := server.NewHealthServer()
+	healthpb.RegisterHealthServer(s, healthServer)
 
 	v := validator.New()
 
