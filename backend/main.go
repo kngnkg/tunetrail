@@ -22,6 +22,7 @@ import (
 	"github.com/kngnkg/tunetrail/backend/validator"
 	"google.golang.org/grpc"
 	healthpb "google.golang.org/grpc/health/grpc_health_v1"
+	"google.golang.org/grpc/reflection"
 )
 
 func main() {
@@ -94,6 +95,8 @@ func main() {
 
 	reviewServer := server.NewReviewServer(au, v, reviewUc)
 	review.RegisterReviewServiceServer(s, reviewServer)
+
+	reflection.Register(s)
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%v", cfg.Port))
 	if err != nil {
