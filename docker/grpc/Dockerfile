@@ -25,7 +25,8 @@ RUN apt-get update && apt-get install -y postgresql-client && \
     go install github.com/k0kubun/sqldef/cmd/psqldef@latest && \
     go install github.com/cosmtrek/air@latest && \
     go install google.golang.org/protobuf/cmd/protoc-gen-go@latest && \
-    go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+    go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest && \
+    go install github.com/fullstorydev/grpcurl/cmd/grpcurl@latest
 
 # $GOPATH/bin を PATH に追加
 ENV PATH $PATH:/go/bin
