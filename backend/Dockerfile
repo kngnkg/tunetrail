@@ -1,3 +1,29 @@
+# リリース用のビルドを行うコンテナイメージを作成するステージ
+FROM --platform=linux/x86_64 golang:1.21-bullseye as deploy-builder
+
+WORKDIR /app
+
+# grpc_health_probeのダウンロード
+RUN GRPC_HEALTH_PROBE_VERSION=v0.4.13 && \
+    wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-linux-amd64 && \
+    chmod +x /bin/grpc_health_probe
+
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . .
+RUN go build -trimpath -ldflags "-w -s" -o app
+
+# リリース用のコンテナイメージを作成するステージ
+FROM --platform=linux/x86_64 debian:bullseye-slim as deploy
+
+COPY --from=deploy-builder /app/app .
+
+COPY --from=deploy-builder /bin/grpc_health_probe /bin/grpc_health_probe
+
+ENTRYPOINT ["./app"]
+
+# 開発用のコンテナイメージを作成するステージ
 FROM golang:1.21-bullseye as dev
 
 ENV GO111MODULE on
@@ -12,6 +38,11 @@ RUN curl -L https://github.com/protocolbuffers/protobuf/releases/download/v${PRO
     unzip protoc.zip && \
     mv bin/* /usr/local/bin/ && \
     mv include/* /usr/local/include/
+
+# grpc_health_probeのダウンロード
+RUN GRPC_HEALTH_PROBE_VERSION=v0.4.13 && \
+    wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-linux-amd64 && \
+    chmod +x /bin/grpc_health_probe
 
 WORKDIR /workspace/backend
 
