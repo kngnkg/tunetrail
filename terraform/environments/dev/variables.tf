@@ -19,6 +19,10 @@ variable "web_image_tag" {
   type = string
 }
 
+variable "grpc_image_tag" {
+  type = string
+}
+
 variable "rds" {
   type = object({
     port     = number

@@ -6,18 +6,16 @@ locals {
 resource "aws_security_group" "main" {
   name        = "${local.service}-${var.env}-${var.service_name}-sg"
   description = "Security Group for ${var.service_name}"
-  vpc_id      = var.vpc_id
+  vpc_id      = var.vpc.id
 
   dynamic "ingress" {
     for_each = var.tasks
     content {
       description = "Inbound traffic to access ${ingress.value.name}"
-      cidr_blocks = [
-        var.env == "prod" ? "10.0.0.0/16" : "10.1.0.0/16",
-      ]
-      from_port = ingress.value.port
-      to_port   = ingress.value.port
-      protocol  = "tcp"
+      cidr_blocks = [var.vpc.cidr_block]
+      from_port   = ingress.value.port
+      to_port     = ingress.value.port
+      protocol    = "tcp"
     }
   }
 

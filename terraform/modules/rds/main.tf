@@ -1,7 +1,7 @@
 locals {
   service    = "foderee"
   subnet_ids = [for subnet in var.private_subnets : subnet.id]
-  cidrs      = [for subnet in var.private_subnets : subnet.cidr]
+  cidrs      = [for subnet in var.private_subnets : subnet.cidr_block]
 }
 
 # RDS用のセキュリティグループ

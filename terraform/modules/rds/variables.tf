@@ -10,8 +10,8 @@ variable "vpc_id" {
 
 variable "private_subnets" {
   type = list(object({
-    id   = string
-    cidr = string
+    id         = string
+    cidr_block = string
   }))
 }
 
