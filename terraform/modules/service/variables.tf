@@ -10,6 +10,10 @@ variable "service_name" {
   type = string
 }
 
+variable "is_server_service" {
+  type = bool
+}
+
 variable "vpc" {
   type = object({
     id         = string
@@ -22,6 +26,10 @@ variable "subnet_ids" {
 }
 
 variable "cluster_id" {
+  type = string
+}
+
+variable "cloudmap_namespace_arn" {
   type = string
 }
 
@@ -47,7 +55,8 @@ variable "tasks" {
 }
 
 variable "target_group_arn" {
-  type = string
+  type    = string
+  default = ""
 }
 
 variable "task_execution_role_arn" {

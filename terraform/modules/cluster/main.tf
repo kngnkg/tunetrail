@@ -5,6 +5,10 @@ locals {
 resource "aws_ecs_cluster" "this" {
   name = "${local.service}-${var.env}-cluster"
 
+  service_connect_defaults {
+    namespace = aws_service_discovery_http_namespace.main.arn
+  }
+
   configuration {
     execute_command_configuration {
       logging = "DEFAULT"
@@ -13,6 +17,15 @@ resource "aws_ecs_cluster" "this" {
 
   tags = {
     Name = "${local.service}-${var.env}-cluster"
+  }
+}
+
+# Service Connect で使用する CloudMap の名前空間
+resource "aws_service_discovery_http_namespace" "main" {
+  name = "${local.service}-${var.env}-internal"
+
+  tags = {
+    Name = "${local.service}-${var.env}-namespace-internal"
   }
 }
 

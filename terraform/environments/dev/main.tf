@@ -34,7 +34,7 @@ locals {
   web = {
     name              = "web"
     port              = 3000
-    health_check_path = "/"
+    health_check_path = "/health"
     desired_count     = var.create ? 2 : 0
   }
 
@@ -76,6 +76,7 @@ module "alb" {
 module "ecs_cluster" {
   source = "../../modules/cluster"
   env    = var.env
+  vpc_id = module.vpc.vpc.id
 }
 
 # タスクに渡す環境変数ファイルを保存する S3 バケット
@@ -103,7 +104,9 @@ module "ecs_service_web" {
   region                  = var.aws_region
   vpc                     = module.vpc.vpc
   service_name            = local.web.name
+  is_server_service       = false
   cluster_id              = module.ecs_cluster.id
+  cloudmap_namespace_arn  = module.ecs_cluster.cloudmap_namespace_arn
   env_bucket_arn          = aws_s3_bucket.env.arn
   target_group_arn        = module.alb.target_group_arn
   task_execution_role_arn = module.ecs_cluster.task_execution_role_arn
@@ -137,7 +140,9 @@ module "ecs_service_grpc" {
   region                  = var.aws_region
   vpc                     = module.vpc.vpc
   service_name            = local.grpc.name
+  is_server_service       = true
   cluster_id              = module.ecs_cluster.id
+  cloudmap_namespace_arn  = module.ecs_cluster.cloudmap_namespace_arn
   env_bucket_arn          = aws_s3_bucket.env.arn
   task_execution_role_arn = module.ecs_cluster.task_execution_role_arn
   desired_count           = local.grpc.desired_count
