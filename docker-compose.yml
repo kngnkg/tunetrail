@@ -7,7 +7,7 @@ services:
     build:
       context: .
       target: dev
-      dockerfile: ./docker/frontend/Dockerfile
+      dockerfile: ./frontend/Dockerfile
     tty: true
     volumes:
       # `.git` や `*.proto` などもコンテナ内で参照できるようにするため、
@@ -57,7 +57,7 @@ services:
     build:
       context: .
       target: dev
-      dockerfile: ./docker/grpc/Dockerfile
+      dockerfile: ./backend/Dockerfile
     tty: true
     volumes:
       - .:/workspace:cached

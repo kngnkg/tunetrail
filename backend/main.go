@@ -21,6 +21,8 @@ import (
 	"github.com/kngnkg/tunetrail/backend/usecase"
 	"github.com/kngnkg/tunetrail/backend/validator"
 	"google.golang.org/grpc"
+	healthpb "google.golang.org/grpc/health/grpc_health_v1"
+	"google.golang.org/grpc/reflection"
 )
 
 func main() {
@@ -34,8 +36,8 @@ func main() {
 	}
 
 	sslMode := "require"
-	if cfg.Env == "dev" {
-		sslMode = "disable" // 開発環境の場合はSSL通信を無効にする
+	if cfg.Env == "local" {
+		sslMode = "disable" // ローカル環境の場合はSSL通信を無効にする
 	}
 	db, close, err := repository.NewDB(&repository.DBConfig{
 		Host:     cfg.DBHost,
@@ -80,6 +82,9 @@ func main() {
 		),
 	)
 
+	healthServer := server.NewHealthServer()
+	healthpb.RegisterHealthServer(s, healthServer)
+
 	v := validator.New()
 
 	helloworldServer := server.NewHelloworldServer(au)
@@ -90,6 +95,8 @@ func main() {
 
 	reviewServer := server.NewReviewServer(au, v, reviewUc)
 	review.RegisterReviewServiceServer(s, reviewServer)
+
+	reflection.Register(s)
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%v", cfg.Port))
 	if err != nil {
