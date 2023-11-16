@@ -8,6 +8,12 @@ RUN GRPC_HEALTH_PROBE_VERSION=v0.4.13 && \
     wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-linux-amd64 && \
     chmod +x /bin/grpc_health_probe
 
+# ca-certificatesをインストール
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates
+
+RUN update-ca-certificates
+
 COPY go.mod go.sum ./
 RUN go mod download
 
@@ -20,6 +26,8 @@ FROM --platform=linux/x86_64 debian:bullseye-slim as deploy
 COPY --from=deploy-builder /app/app .
 
 COPY --from=deploy-builder /bin/grpc_health_probe /bin/grpc_health_probe
+
+COPY --from=deploy-builder /etc/ssl/certs/ /etc/ssl/certs/
 
 ENTRYPOINT ["./app"]
 
