@@ -36,8 +36,8 @@ func main() {
 	}
 
 	sslMode := "require"
-	if cfg.Env == "dev" {
-		sslMode = "disable" // 開発環境の場合はSSL通信を無効にする
+	if cfg.Env == "local" {
+		sslMode = "disable" // ローカル環境の場合はSSL通信を無効にする
 	}
 	db, close, err := repository.NewDB(&repository.DBConfig{
 		Host:     cfg.DBHost,
