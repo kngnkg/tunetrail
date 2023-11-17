@@ -67,7 +67,7 @@ resource "aws_db_instance" "this" {
 # サブネットグループ
 resource "aws_db_subnet_group" "main" {
   subnet_ids  = local.subnet_ids
-  description = "foderee dev rds subnet group"
+  description = "foderee ${var.env} rds subnet group"
 
   tags = {
     Name = "${local.service}-${var.env}-rds-subg"
