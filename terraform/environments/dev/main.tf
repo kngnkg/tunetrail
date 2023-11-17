@@ -29,7 +29,8 @@ provider "aws" {
 }
 
 locals {
-  service = "foderee"
+  service   = "foderee"
+  replicate = true
 
   web = {
     name              = "web"
@@ -167,6 +168,19 @@ module "ecr_grpc" {
   source        = "../../modules/ecr"
   env           = var.env
   artifact_name = local.grpc.name
+}
+
+# ElastiCache for Redis
+module "elasticache" {
+  source    = "../../modules/elasticache"
+  env       = var.env
+  replicate = local.replicate
+  vpc_id    = module.vpc.vpc.id
+
+  private_subnets = [
+    module.vpc.subnet.private1,
+    module.vpc.subnet.private2,
+  ]
 }
 
 # RDS
