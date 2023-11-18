@@ -29,8 +29,9 @@ provider "aws" {
 }
 
 locals {
-  service   = "foderee"
-  replicate = true
+  service         = "foderee"
+  replicate       = true
+  create_jumphost = true
 
   web = {
     name              = "web"
@@ -43,6 +44,12 @@ locals {
     name          = "grpc"
     port          = 50051
     desired_count = var.create ? 2 : 0
+  }
+
+  jumphost = {
+    name          = "jumphost"
+    image_tag     = "sample3"
+    desired_count = var.create && local.create_jumphost ? 1 : 0
   }
 }
 
@@ -108,7 +115,7 @@ module "ecs_service_web" {
   is_server_service       = false
   cluster_id              = module.ecs_cluster.id
   cloudmap_namespace_arn  = module.ecs_cluster.cloudmap_namespace_arn
-  env_bucket_arn          = aws_s3_bucket.env.arn
+  env_file                = "${aws_s3_bucket.env.arn}/${local.web.name}/.env"
   target_group_arn        = module.alb.target_group_arn
   task_execution_role_arn = module.ecs_cluster.task_execution_role_arn
   desired_count           = local.web.desired_count
@@ -117,9 +124,10 @@ module "ecs_service_web" {
 
   tasks = [
     {
-      name     = local.web.name
-      protocol = "http"
-      port     = local.web.port
+      name                = local.web.name
+      protocol            = "http"
+      port                = local.web.port
+      healthcheck_enabled = true
 
       image = {
         uri = module.ecr_web.repository_url
@@ -144,7 +152,7 @@ module "ecs_service_grpc" {
   is_server_service       = true
   cluster_id              = module.ecs_cluster.id
   cloudmap_namespace_arn  = module.ecs_cluster.cloudmap_namespace_arn
-  env_bucket_arn          = aws_s3_bucket.env.arn
+  env_file                = "${aws_s3_bucket.env.arn}/${local.grpc.name}/.env"
   task_execution_role_arn = module.ecs_cluster.task_execution_role_arn
   desired_count           = local.grpc.desired_count
 
@@ -152,9 +160,10 @@ module "ecs_service_grpc" {
 
   tasks = [
     {
-      name     = local.grpc.name
-      protocol = "grpc"
-      port     = local.grpc.port
+      name                = local.grpc.name
+      protocol            = "grpc"
+      port                = local.grpc.port
+      healthcheck_enabled = true
 
       image = {
         uri = module.ecr_grpc.repository_url
@@ -168,6 +177,42 @@ module "ecr_grpc" {
   source        = "../../modules/ecr"
   env           = var.env
   artifact_name = local.grpc.name
+}
+
+module "ecs_service_jumphost" {
+  source                  = "../../modules/service"
+  env                     = var.env
+  region                  = var.aws_region
+  vpc                     = module.vpc.vpc
+  service_name            = local.jumphost.name
+  is_server_service       = false
+  cluster_id              = module.ecs_cluster.id
+  cloudmap_namespace_arn  = module.ecs_cluster.cloudmap_namespace_arn
+  env_file                = "${aws_s3_bucket.env.arn}/${local.grpc.name}/.env"
+  task_execution_role_arn = module.ecs_cluster.task_execution_role_arn
+  desired_count           = local.grpc.desired_count
+
+  subnet_ids = [module.vpc.subnet.private1.id]
+
+  tasks = [
+    {
+      name                = local.jumphost.name
+      protocol            = "http"
+      port                = 80
+      healthcheck_enabled = false
+
+      image = {
+        uri = module.ecr_jumphost.repository_url
+        tag = local.jumphost.image_tag
+      }
+    }
+  ]
+}
+
+module "ecr_jumphost" {
+  source        = "../../modules/ecr"
+  env           = var.env
+  artifact_name = local.jumphost.name
 }
 
 # ElastiCache for Redis
