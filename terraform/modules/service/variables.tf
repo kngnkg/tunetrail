@@ -33,7 +33,7 @@ variable "cloudmap_namespace_arn" {
   type = string
 }
 
-variable "env_bucket_arn" {
+variable "env_file" {
   type = string
 }
 
@@ -43,9 +43,10 @@ variable "desired_count" {
 
 variable "tasks" {
   type = list(object({
-    name     = string
-    protocol = string
-    port     = number
+    name                = string
+    protocol            = string
+    port                = number
+    healthcheck_enabled = bool
 
     image = object({
       uri = string

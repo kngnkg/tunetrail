@@ -52,7 +52,7 @@ resource "aws_ecs_task_definition" "this" {
 
       environmentFiles = [
         {
-          "value" = "${var.env_bucket_arn}/${task.name}/.env"
+          "value" = var.env_file
           "type"  = "s3"
         }
       ]
@@ -62,7 +62,7 @@ resource "aws_ecs_task_definition" "this" {
       ulimits     = []
       volumesFrom = []
 
-      healthCheck = {
+      healthCheck = task.healthcheck_enabled ? {
         command = [
           "CMD-SHELL",
           task.protocol == "http" ?
@@ -73,7 +73,7 @@ resource "aws_ecs_task_definition" "this" {
         timeout     = 5
         retries     = 3
         startPeriod = 0
-      }
+      } : null
 
       logConfiguration = {
         logDriver     = "awslogs"
