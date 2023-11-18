@@ -2,12 +2,9 @@ package main
 
 import (
 	"context"
-	"errors"
-	"log"
+	"flag"
 	"log/slog"
 
-	"github.com/joho/godotenv"
-	"github.com/kngnkg/tunetrail/backend/config"
 	"github.com/kngnkg/tunetrail/backend/entity"
 	"github.com/kngnkg/tunetrail/backend/infra/repository"
 	"github.com/kngnkg/tunetrail/backend/logger"
@@ -133,35 +130,40 @@ func (s *seeder) exec(ctx context.Context) error {
 	return nil
 }
 
-// 開発環境用のデータを生成する
+type seederOptions struct {
+	Host     string
+	Port     int
+	User     string
+	Password string
+	DBName   string
+	SSLMode  string // "disable" or "require"
+}
+
+// シードデータを DB に投入する
 func main() {
 	l := logger.New(&logger.LoggerOptions{
 		Level: slog.LevelDebug,
 	})
 	ctx := logger.WithContext(context.Background(), l)
 
-	// .envファイルを読み込む
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
+	opts := seederOptions{}
 
-	cfg, err := config.New()
-	if err != nil {
-		l.Fatal("failed to load config.", err)
-	}
+	flag.StringVar(&opts.Host, "host", "localhost", "データベースホスト")
+	flag.IntVar(&opts.Port, "port", 5432, "データベースポート")
+	flag.StringVar(&opts.User, "user", "", "データベースユーザー")
+	flag.StringVar(&opts.Password, "password", "", "データベースパスワード")
+	flag.StringVar(&opts.DBName, "dbname", "", "データベース名")
+	flag.StringVar(&opts.SSLMode, "sslmode", "disabled", "SSLモード")
 
-	if cfg.Env != "dev" {
-		l.Fatal("this command is only for development.", errors.New("invalid env"))
-	}
+	flag.Parse()
 
 	db, close, err := repository.NewDB(&repository.DBConfig{
-		Host:     cfg.DBHost,
-		Port:     cfg.DBPort,
-		User:     cfg.DBUser,
-		Password: cfg.DBPassword,
-		DBName:   cfg.DBName,
-		SSLMode:  "disable",
+		Host:     opts.Host,
+		Port:     opts.Port,
+		User:     opts.User,
+		Password: opts.Password,
+		DBName:   opts.DBName,
+		SSLMode:  opts.SSLMode,
 	})
 	if err != nil {
 		l.Fatal("failed to connect to db.", err)

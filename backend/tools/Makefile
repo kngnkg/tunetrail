@@ -1,11 +1,3 @@
-.PHONY: test
-test:
-	go test -race -shuffle=on -cover ./...
-
-.PHONY: gen
-gen: ## Generate mocks and test boilerplate
-	go generate ./...
-
 .PHONY: dry-migrate
 dry-migrate: ## Try migration
 	psqldef --dry-run \
@@ -29,10 +21,10 @@ migrate:  ## Execute migration
 
 .PHONY: seed
 seed: ## Seed data
-	go run ./tools/seeder/main.go \
+	./seeder \
 		--host=${TUNETRAIL_DB_HOST} \
 		--port=${TUNETRAIL_DB_PORT} \
 		--user=${TUNETRAIL_DB_USER} \
 		--password=${TUNETRAIL_DB_PASSWORD} \
 		--dbname=${TUNETRAIL_DB_NAME} \
-		--sslmode=disable
+		--sslmode=require
