@@ -2,12 +2,7 @@ import { notFound } from "next/navigation"
 
 import { getCurrentUser } from "@/lib/session"
 import { WelcomeForm } from "@/components/users/welcome-form"
-
-export type Phase = "username" | "profile" | "complete"
-
-export const isPhase = (phase: string): phase is Phase => {
-  return ["username", "profile", "complete"].includes(phase)
-}
+import { Phase, isPhase } from "@/components/users/welcome-phase"
 
 interface WelcomePageProps {
   searchParams: { [key: string]: Phase | undefined }
