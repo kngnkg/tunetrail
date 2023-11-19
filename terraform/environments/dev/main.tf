@@ -59,6 +59,10 @@ module "cognito" {
   source      = "../../modules/cognito"
   env         = var.env
   client_name = "TuneTrail Dev"
+  callback_urls = [
+    "http://localhost:3000/api/auth/callback/cognito",
+    "https://dev.foderee.com/api/auth/callback/cognito",
+  ]
 }
 
 module "vpc" {
