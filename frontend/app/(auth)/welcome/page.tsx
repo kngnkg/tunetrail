@@ -22,7 +22,7 @@ export default async function WelcomePage({ searchParams }: WelcomePageProps) {
   return (
     <>
       <section>
-        <p>TuneTrail へようこそ!</p>
+        <p>Foderee へようこそ!</p>
         <WelcomeForm user={user} phase={phase} />
       </section>
     </>
