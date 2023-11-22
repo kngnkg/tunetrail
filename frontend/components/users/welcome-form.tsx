@@ -51,7 +51,7 @@ export const WelcomeForm: React.FC<WelcomeFormProps> = ({
           <div>
             <p>プロフィールの登録が完了しました!</p>
           </div>
-          <div>
+          <div className="flex justify-end">
             <Button
               className="bg-primary dark:bg-primary hover:bg-white dark:hover:bg-white"
               onClick={onClickFinish}

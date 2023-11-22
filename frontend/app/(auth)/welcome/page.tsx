@@ -21,9 +21,15 @@ export default async function WelcomePage({ searchParams }: WelcomePageProps) {
 
   return (
     <>
-      <section>
-        <p>Foderee へようこそ!</p>
-        <WelcomeForm user={user} phase={phase} />
+      <section className="flex flex-col gap-8">
+        <div className="mt-8">
+          <p className="scroll-m-20 text-2xl lg:text-3xl font-extrabold tracking-tight">
+            Foderee へようこそ!
+          </p>
+        </div>
+        <div>
+          <WelcomeForm user={user} phase={phase} />
+        </div>
       </section>
     </>
   )

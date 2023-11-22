@@ -34,7 +34,7 @@ export const ReviewContent: React.FC<ReviewContentProps> = ({ review }) => {
       </section>
       {/* タイトル */}
       <section className="my-4">
-        <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
+        <h1 className="scroll-m-20 text-3xl lg:text-5xl font-extrabold tracking-tight">
           {review.title}
         </h1>
       </section>

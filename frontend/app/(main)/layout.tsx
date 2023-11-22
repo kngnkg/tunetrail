@@ -18,8 +18,10 @@ export default function Layout({ children }: LayoutProps) {
         <MainNav />
       </Header>
       <main className="container flex-1">
-        <MenuTabs tabs={tabs} />
-        <div className="border-solid border-b border-zinc-700 dark:border-zinc-700" />
+        <div className="sticky top-12 z-10 bg-background">
+          <MenuTabs tabs={tabs} />
+          <div className="border-solid border-b border-zinc-700 dark:border-zinc-700" />
+        </div>
         <div className="sm:w-4/6 mx-auto">{children}</div>
       </main>
     </div>
