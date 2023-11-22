@@ -4,7 +4,7 @@ import { Review } from "@/types"
 import { FollowButton } from "../follow-button"
 import { TimeStamp } from "../timestamp"
 import { UserAvatar } from "../user-avatar"
-import { AlbumArt } from "./album"
+import { AlbumArt } from "./album-art"
 import { Content } from "./content"
 
 interface ReviewContentProps {

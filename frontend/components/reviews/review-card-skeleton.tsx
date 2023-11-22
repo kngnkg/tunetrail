@@ -5,10 +5,10 @@ export const ReviewCardSkeleton: React.FC = () => {
   return (
     <Card>
       <CardContent className="flex p-4 sm:p-8">
-        <div className="flex flex-col mr-4 sm:mr-12">
-          <Skeleton className="rounded-none w-28 h-28 sm:w-48 sm:h-48" />
+        <div className="basis-2/5 flex flex-col mr-4 sm:mr-12">
+          <Skeleton className="rounded-none w-24 h-24 sm:w-48 sm:h-48" />
         </div>
-        <div className="sm:pt-2">
+        <div className="basis-3/5 sm:pt-2">
           <div className="mb-2">
             <Skeleton className="w-48 h-6" />
           </div>
