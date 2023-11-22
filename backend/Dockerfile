@@ -61,7 +61,7 @@ RUN apt-get update && apt-get install -y postgresql-client && \
     go install github.com/stamblerre/gocode@latest && \
     go install golang.org/x/tools/gopls@latest && \
     go install honnef.co/go/tools/cmd/staticcheck@latest && \
-    go install github.com/k0kubun/sqldef/cmd/psqldef@latest && \
+    go install github.com/sqldef/sqldef/cmd/psqldef@latest && \
     go install github.com/cosmtrek/air@latest && \
     go install google.golang.org/protobuf/cmd/protoc-gen-go@latest && \
     go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest && \
