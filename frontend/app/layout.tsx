@@ -14,7 +14,7 @@ const notojp = Noto_Sans_JP({
 })
 
 export const metadata: Metadata = {
-  title: "TuneTrail",
+  title: "Foderee",
   description: "",
 }
 

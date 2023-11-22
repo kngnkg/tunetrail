@@ -17,7 +17,7 @@ import { Icon } from "../icon"
 import { SearchBar } from "../search-bar"
 import { Button } from "../ui/button"
 import { ScrollArea } from "../ui/scroll-area"
-import { AlbumArt } from "./album"
+import { AlbumArt } from "./album-art"
 import { AlbumList } from "./album-list"
 
 interface AlbumSelectProps {

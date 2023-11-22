@@ -100,7 +100,7 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
             </FormItem>
           )}
         />
-        <div>
+        <div className="flex justify-end">
           <Button type="submit">決定</Button>
         </div>
       </form>

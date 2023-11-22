@@ -4,7 +4,7 @@ import { Review } from "@/types"
 import { FollowButton } from "../follow-button"
 import { TimeStamp } from "../timestamp"
 import { UserAvatar } from "../user-avatar"
-import { AlbumArt } from "./album"
+import { AlbumArt } from "./album-art"
 import { Content } from "./content"
 
 interface ReviewContentProps {
@@ -34,7 +34,7 @@ export const ReviewContent: React.FC<ReviewContentProps> = ({ review }) => {
       </section>
       {/* タイトル */}
       <section className="my-4">
-        <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
+        <h1 className="scroll-m-20 text-3xl lg:text-5xl font-extrabold tracking-tight">
           {review.title}
         </h1>
       </section>

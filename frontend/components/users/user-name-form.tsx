@@ -79,7 +79,7 @@ export const UserNameForm: React.FC<UserNameFormProps> = ({
           name="username"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Username</FormLabel>
+              <FormLabel>ユーザー名</FormLabel>
               <FormControl>
                 <Input placeholder="Username" {...field} />
               </FormControl>
@@ -87,7 +87,7 @@ export const UserNameForm: React.FC<UserNameFormProps> = ({
             </FormItem>
           )}
         />
-        <div>
+        <div className="flex justify-end">
           <Button type="submit">決定</Button>
         </div>
       </form>

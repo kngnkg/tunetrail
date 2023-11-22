@@ -1,6 +1,4 @@
-import { NextRequest, NextResponse } from "next/server"
-
-export default async function LoginPage(req: NextRequest, res: NextResponse) {
+export default async function LoginPage() {
   return (
     <>
       <section>

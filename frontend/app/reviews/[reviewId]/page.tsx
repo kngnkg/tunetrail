@@ -64,7 +64,7 @@ export default async function ReviewPage({ params }: ReviewPageProps) {
         <section>コメント欄(sheet)</section>
       </div>
       <div className="fixed flex flex-col bottom-0 w-full sm:w-3/12 sm:sticky sm:top-0 sm:h-screen sm:pl-8 pr-0 pt-16">
-        <div className="h-16 sm:h-20 flex items-center justify-center bg-background border-t sm:border sm:rounded-md border-zinc-700 dark:border-zinc-700">
+        <div className="z-10 h-16 sm:h-20 flex items-center justify-center bg-background border-t sm:border sm:rounded-md border-zinc-700 dark:border-zinc-700">
           いいね、コメントボタン
         </div>
       </div>

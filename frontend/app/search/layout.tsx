@@ -13,7 +13,7 @@ export default function SearchLayout({ children }: SearchLayoutProps) {
         <MainNav />
       </Header>
       <main className="container flex-1">
-        <div className="border-solid border-b border-zinc-700 dark:border-zinc-700" />
+        <div className="sticky top-14 z-10 border-solid border-b border-zinc-700 dark:border-zinc-700" />
         <div className="sm:w-4/6 mx-auto mt-12">
           <Search />
           {children}

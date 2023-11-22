@@ -4,7 +4,7 @@ import * as React from "react"
 import { AlbumInfo, AlbumWithPagination } from "@/types"
 
 import { Skeleton } from "../ui/skeleton"
-import { AlbumArt } from "./album"
+import { AlbumArt } from "./album-art"
 
 interface AlbumListProps {
   setAlbum: (album: AlbumInfo) => void
