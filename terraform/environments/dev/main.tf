@@ -53,16 +53,18 @@ locals {
   }
 }
 
-# TODO: SMS の I AM ロールを作成する
-# TODO: サービス名を変更する
 module "cognito" {
   source      = "../../modules/cognito"
   env         = var.env
-  client_name = "TuneTrail Dev"
+  client_name = "Foderee Dev"
   callback_urls = [
     "http://localhost:3000/api/auth/callback/cognito",
     "https://dev.foderee.com/api/auth/callback/cognito",
   ]
+  google = {
+    client_id     = var.google.client_id
+    client_secret = var.google.client_secret
+  }
 }
 
 module "vpc" {
