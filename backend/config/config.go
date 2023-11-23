@@ -8,11 +8,11 @@ import (
 type Config struct {
 	Env                     string `env:"ENV"`
 	Port                    int    `env:"PORT"`
-	DBHost                  string `env:"TUNETRAIL_DB_HOST"`
-	DBPort                  int    `env:"TUNETRAIL_DB_PORT"`
-	DBUser                  string `env:"TUNETRAIL_DB_USER"`
-	DBPassword              string `env:"TUNETRAIL_DB_PASSWORD"`
-	DBName                  string `env:"TUNETRAIL_DB_NAME"`
+	DBHost                  string `env:"DB_HOST"`
+	DBPort                  int    `env:"DB_PORT"`
+	DBUser                  string `env:"DB_USER"`
+	DBPassword              string `env:"DB_PASSWORD"`
+	DBName                  string `env:"DB_NAME"`
 	SpotifyId               string `env:"SPOTIFY_ID"`
 	SpotifySecret           string `env:"SPOTIFY_SECRET"`
 	CognitoJWKUrl           string `env:"COGNITO_JWK_URL"`
