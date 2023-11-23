@@ -1,5 +1,5 @@
 {
-    "name": "tunetrail-grpc",
+    "name": "foderee-grpc",
     "dockerComposeFile": [
         "../../docker-compose.yml"
     ],

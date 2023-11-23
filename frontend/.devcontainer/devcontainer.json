@@ -1,5 +1,5 @@
 {
-  "name": "tunetrail-frontend",
+  "name": "foderee-frontend",
   "dockerComposeFile": ["../../docker-compose.yml"],
   "service": "frontend",
   "workspaceFolder": "/workspace/frontend",
