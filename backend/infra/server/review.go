@@ -14,14 +14,24 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
+type reviewUseCase interface {
+	ListReviews(ctx context.Context, reviewId string, limit int) (*usecase.ReviewListResponse, error)
+	ListMyReviews(ctx context.Context, authorId entity.ImmutableId, reviewId string, limit int) (*usecase.ReviewListResponse, error)
+	GetReviewById(ctx context.Context, reviewId string) (*entity.Review, error)
+	GetMyReviewById(ctx context.Context, reviewId string) (*entity.Review, error)
+	StoreReview(ctx context.Context, authorId entity.ImmutableId, albumId, title string, content json.RawMessage, publishedStatus entity.PublishedStatus) (*entity.Review, error)
+	UpdateReview(ctx context.Context, authorId entity.ImmutableId, reviewId, albumId, title string, content json.RawMessage, publishedStatus entity.PublishedStatus) (*entity.Review, error)
+	DeleteReview(ctx context.Context, reviewId string) error
+}
+
 type reviewServer struct {
 	review.UnimplementedReviewServiceServer
 	auth      *Auth
 	validator *validator.Validator
-	uc        *usecase.ReviewUseCase
+	uc        reviewUseCase
 }
 
-func NewReviewServer(a *Auth, v *validator.Validator, uc *usecase.ReviewUseCase) review.ReviewServiceServer {
+func NewReviewServer(a *Auth, v *validator.Validator, uc reviewUseCase) review.ReviewServiceServer {
 	return &reviewServer{
 		auth:      a,
 		validator: v,

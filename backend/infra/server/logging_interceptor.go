@@ -31,12 +31,16 @@ func (i *LoggingInterceptor) UnaryLoggingInterceptor(ctx context.Context, req in
 		),
 	)
 
+	logger.FromContext(ctx).Debug("start")
+
 	// 本来の処理を実行
 	res, err := handler(ctx, req)
 
 	if err != nil {
 		logger.FromContext(ctx).Error("error", err)
 	}
+
+	logger.FromContext(ctx).Debug("end")
 
 	return res, err
 }
