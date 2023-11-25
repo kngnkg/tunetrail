@@ -62,14 +62,17 @@ export default async function UserLayout({
       <main className="container flex-1">
         <div className="sm:w-4/6 mx-auto">
           {/* ユーザー情報 */}
-          <div className="m-8 flex gap-12">
-            <UserAvatar user={user} className="sm:w-36 sm:h-36" />
+          <div className="m-2 sm:m-8 flex flex-col sm:flex-row gap-6 sm:gap-12">
+            <UserAvatar user={user} className="w-24 h-24 sm:w-36 sm:h-36" />
             {/* ユーザー名とフォローボタン */}
             <div className="flex flex-col gap-6">
-              <div className="flex gap-16 items-center">
-                <div>
-                  <h1 className="text-2xl font-bold">{user.displayName}</h1>
-                  <p className="text-zinc-500 dark:text-zinc-400">
+              {/* todo */}
+              <div className="flex justify-between sm:justify-center sm:gap-16 items-center">
+                <div className="flex flex-col gap-1">
+                  <h1 className="sm:text-lg sm:text-2xl font-bold">
+                    {user.displayName}
+                  </h1>
+                  <p className="text-sm sm:text-base text-zinc-500 dark:text-zinc-400">
                     {user.username}
                   </p>
                 </div>
