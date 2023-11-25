@@ -5,8 +5,8 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/kngnkg/tunetrail/backend/entity"
-	"github.com/kngnkg/tunetrail/backend/logger"
+	"github.com/kngnkg/foderee/backend/entity"
+	"github.com/kngnkg/foderee/backend/logger"
 )
 
 type ReviewRepository struct{}

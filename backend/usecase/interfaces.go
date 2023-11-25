@@ -3,8 +3,8 @@ package usecase
 import (
 	"context"
 
-	"github.com/kngnkg/tunetrail/backend/entity"
-	"github.com/kngnkg/tunetrail/backend/infra/repository"
+	"github.com/kngnkg/foderee/backend/entity"
+	"github.com/kngnkg/foderee/backend/infra/repository"
 )
 
 //go:generate go run github.com/matryer/moq -out moq_test.go . UserRepository

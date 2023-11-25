@@ -10,7 +10,7 @@ BASE_OUT_DIR="./backend/gen"
 # proto ファイルのパス
 PROTO_PATH="./proto"
 
-MODULE_BASE="github.com/kngnkg/tunetrail/backend/gen"
+MODULE_BASE="github.com/kngnkg/foderee/backend/gen"
 
 cd ${WORK_DIR}
 

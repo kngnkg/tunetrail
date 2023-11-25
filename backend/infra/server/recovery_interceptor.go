@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/kngnkg/tunetrail/backend/logger"
+	"github.com/kngnkg/foderee/backend/logger"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

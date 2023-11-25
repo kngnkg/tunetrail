@@ -5,8 +5,8 @@ import (
 
 	"log/slog"
 
-	"github.com/kngnkg/tunetrail/backend/helper"
-	"github.com/kngnkg/tunetrail/backend/logger"
+	"github.com/kngnkg/foderee/backend/helper"
+	"github.com/kngnkg/foderee/backend/logger"
 	"google.golang.org/grpc"
 )
 

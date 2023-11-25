@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package helloworld;
 
-option go_package = "github.com/kngnkg/tunetrail/backend/gen/helloworld";
+option go_package = "github.com/kngnkg/foderee/backend/gen/helloworld";
 
 service Greeter {
   rpc SayHello(HelloRequest) returns (HelloReply) {}

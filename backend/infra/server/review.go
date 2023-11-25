@@ -6,11 +6,11 @@ import (
 	"errors"
 
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/auth"
-	"github.com/kngnkg/tunetrail/backend/entity"
-	"github.com/kngnkg/tunetrail/backend/gen/review"
-	"github.com/kngnkg/tunetrail/backend/helper"
-	"github.com/kngnkg/tunetrail/backend/usecase"
-	"github.com/kngnkg/tunetrail/backend/validator"
+	"github.com/kngnkg/foderee/backend/entity"
+	"github.com/kngnkg/foderee/backend/gen/review"
+	"github.com/kngnkg/foderee/backend/helper"
+	"github.com/kngnkg/foderee/backend/usecase"
+	"github.com/kngnkg/foderee/backend/validator"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 

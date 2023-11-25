@@ -1,4 +1,4 @@
-module github.com/kngnkg/tunetrail/backend
+module github.com/kngnkg/foderee/backend
 
 go 1.21.1
 

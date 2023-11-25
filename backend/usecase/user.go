@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/kngnkg/tunetrail/backend/entity"
-	"github.com/kngnkg/tunetrail/backend/infra/repository"
-	"github.com/kngnkg/tunetrail/backend/logger"
+	"github.com/kngnkg/foderee/backend/entity"
+	"github.com/kngnkg/foderee/backend/infra/repository"
+	"github.com/kngnkg/foderee/backend/logger"
 )
 
 var ErrorUsernameAlreadyExists = errors.New("usecase: username already exists")
