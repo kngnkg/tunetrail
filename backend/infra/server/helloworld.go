@@ -5,8 +5,8 @@ import (
 	"log/slog"
 
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/auth"
-	helloworld "github.com/kngnkg/tunetrail/backend/gen/helloworld"
-	"github.com/kngnkg/tunetrail/backend/logger"
+	helloworld "github.com/kngnkg/foderee/backend/gen/helloworld"
+	"github.com/kngnkg/foderee/backend/logger"
 )
 
 // helloworldServerはhelloworld.GreeterServerインターフェースを満たす必要がある

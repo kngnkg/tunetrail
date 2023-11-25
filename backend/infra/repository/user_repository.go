@@ -6,8 +6,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/kngnkg/tunetrail/backend/entity"
-	"github.com/kngnkg/tunetrail/backend/helper"
+	"github.com/kngnkg/foderee/backend/entity"
+	"github.com/kngnkg/foderee/backend/helper"
 	"github.com/lib/pq"
 )
 

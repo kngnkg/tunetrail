@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package user;
 
-option go_package = "github.com/kngnkg/tunetrail/backend/gen/user";
+option go_package = "github.com/kngnkg/foderee/backend/gen/user";
 import "google/protobuf/empty.proto";
 
 service UserService {

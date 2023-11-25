@@ -5,8 +5,8 @@ import (
 	"log/slog"
 
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/auth"
-	"github.com/kngnkg/tunetrail/backend/entity"
-	"github.com/kngnkg/tunetrail/backend/logger"
+	"github.com/kngnkg/foderee/backend/entity"
+	"github.com/kngnkg/foderee/backend/logger"
 )
 
 type contextKeyTokenInfo string

@@ -4,8 +4,8 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/kngnkg/tunetrail/backend/entity"
-	"github.com/kngnkg/tunetrail/backend/testutil"
+	"github.com/kngnkg/foderee/backend/entity"
+	"github.com/kngnkg/foderee/backend/testutil"
 )
 
 func User(u *entity.User) *entity.User {

@@ -5,11 +5,11 @@ import (
 	"flag"
 	"log/slog"
 
-	"github.com/kngnkg/tunetrail/backend/entity"
-	"github.com/kngnkg/tunetrail/backend/infra/repository"
-	"github.com/kngnkg/tunetrail/backend/logger"
-	"github.com/kngnkg/tunetrail/backend/testutil/fixture"
-	"github.com/kngnkg/tunetrail/backend/validator"
+	"github.com/kngnkg/foderee/backend/entity"
+	"github.com/kngnkg/foderee/backend/infra/repository"
+	"github.com/kngnkg/foderee/backend/logger"
+	"github.com/kngnkg/foderee/backend/testutil/fixture"
+	"github.com/kngnkg/foderee/backend/validator"
 )
 
 type seeder struct {
