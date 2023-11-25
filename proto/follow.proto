@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package follow;
+
+option go_package = "github.com/kngnkg/foderee/backend/gen/follow";
+
+enum Relationship {
+  NONE = 0; // 既定値
+  FOLLOWING = 1;
+  FOLLOWED_BY = 2;
+}
+
+service FollowService {
+  rpc LookupRelationships(LookupRelationshipRequest)
+      returns (LookupRelationshipResponse);
+}
+
+message LookupRelationshipRequest {
+  string immutableId = 1;
+  repeated string targetIds = 2;
+}
+
+message LookupRelationshipResponse {
+  string username = 1;
+  string immutableId = 2;
+  string displayName = 3;
+  repeated Relationship relationships = 4;
+}
