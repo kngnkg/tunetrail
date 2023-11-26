@@ -68,6 +68,35 @@ func (r *UserRepository) ListUsersById(ctx context.Context, db Executor, userIds
 	return users, nil
 }
 
+func (r *UserRepository) ListUsersByUsername(ctx context.Context, db Executor, usernames []entity.Username) ([]*entity.User, error) {
+	query := `
+		SELECT user_id, username, display_name, avatar_url, bio, created_at, updated_at
+		FROM users WHERE 1 = 1`
+
+	placeholderNum := 1
+	args := []interface{}{}
+
+	if len(usernames) > 0 {
+		query += " AND username IN("
+		for _, id := range usernames {
+			query += fmt.Sprintf(" $%d,", placeholderNum)
+			args = append(args, id)
+			placeholderNum++
+		}
+		query = helper.RemoveLastComma(query) + ")"
+	}
+
+	query += " ORDER BY created_at DESC"
+
+	users := []*entity.User{}
+	err := db.SelectContext(ctx, &users, query, args...)
+	if err != nil {
+		return nil, err
+	}
+
+	return users, nil
+}
+
 func (r *UserRepository) GetUserByUsername(ctx context.Context, db Executor, username entity.Username) (*entity.User, error) {
 	query := `
 		SELECT user_id, username, display_name, avatar_url, bio, created_at, updated_at
