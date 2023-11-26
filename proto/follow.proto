@@ -12,17 +12,18 @@ enum Relationship {
 
 service FollowService {
   rpc LookupRelationships(LookupRelationshipRequest)
-      returns (LookupRelationshipResponse);
+      returns (RelationshipResponseList);
 }
 
-message LookupRelationshipRequest {
-  string immutableId = 1;
-  repeated string targetIds = 2;
-}
+message LookupRelationshipRequest { repeated string usernames = 1; }
 
-message LookupRelationshipResponse {
+message RelationshipResponse {
   string username = 1;
   string immutableId = 2;
   string displayName = 3;
   repeated Relationship relationships = 4;
+}
+
+message RelationshipResponseList {
+  repeated RelationshipResponse relationships = 1;
 }

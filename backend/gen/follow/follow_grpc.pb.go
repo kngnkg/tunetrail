@@ -26,7 +26,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type FollowServiceClient interface {
-	LookupRelationships(ctx context.Context, in *LookupRelationshipRequest, opts ...grpc.CallOption) (*LookupRelationshipResponse, error)
+	LookupRelationships(ctx context.Context, in *LookupRelationshipRequest, opts ...grpc.CallOption) (*RelationshipResponseList, error)
 }
 
 type followServiceClient struct {
@@ -37,8 +37,8 @@ func NewFollowServiceClient(cc grpc.ClientConnInterface) FollowServiceClient {
 	return &followServiceClient{cc}
 }
 
-func (c *followServiceClient) LookupRelationships(ctx context.Context, in *LookupRelationshipRequest, opts ...grpc.CallOption) (*LookupRelationshipResponse, error) {
-	out := new(LookupRelationshipResponse)
+func (c *followServiceClient) LookupRelationships(ctx context.Context, in *LookupRelationshipRequest, opts ...grpc.CallOption) (*RelationshipResponseList, error) {
+	out := new(RelationshipResponseList)
 	err := c.cc.Invoke(ctx, FollowService_LookupRelationships_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -50,7 +50,7 @@ func (c *followServiceClient) LookupRelationships(ctx context.Context, in *Looku
 // All implementations must embed UnimplementedFollowServiceServer
 // for forward compatibility
 type FollowServiceServer interface {
-	LookupRelationships(context.Context, *LookupRelationshipRequest) (*LookupRelationshipResponse, error)
+	LookupRelationships(context.Context, *LookupRelationshipRequest) (*RelationshipResponseList, error)
 	mustEmbedUnimplementedFollowServiceServer()
 }
 
@@ -58,7 +58,7 @@ type FollowServiceServer interface {
 type UnimplementedFollowServiceServer struct {
 }
 
-func (UnimplementedFollowServiceServer) LookupRelationships(context.Context, *LookupRelationshipRequest) (*LookupRelationshipResponse, error) {
+func (UnimplementedFollowServiceServer) LookupRelationships(context.Context, *LookupRelationshipRequest) (*RelationshipResponseList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method LookupRelationships not implemented")
 }
 func (UnimplementedFollowServiceServer) mustEmbedUnimplementedFollowServiceServer() {}

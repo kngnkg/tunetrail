@@ -15,15 +15,15 @@ function deserialize_follow_LookupRelationshipRequest(buffer_arg) {
   return follow_pb.LookupRelationshipRequest.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
-function serialize_follow_LookupRelationshipResponse(arg) {
-  if (!(arg instanceof follow_pb.LookupRelationshipResponse)) {
-    throw new Error('Expected argument of type follow.LookupRelationshipResponse');
+function serialize_follow_RelationshipResponseList(arg) {
+  if (!(arg instanceof follow_pb.RelationshipResponseList)) {
+    throw new Error('Expected argument of type follow.RelationshipResponseList');
   }
   return Buffer.from(arg.serializeBinary());
 }
 
-function deserialize_follow_LookupRelationshipResponse(buffer_arg) {
-  return follow_pb.LookupRelationshipResponse.deserializeBinary(new Uint8Array(buffer_arg));
+function deserialize_follow_RelationshipResponseList(buffer_arg) {
+  return follow_pb.RelationshipResponseList.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
 
@@ -33,11 +33,11 @@ var FollowServiceService = exports.FollowServiceService = {
     requestStream: false,
     responseStream: false,
     requestType: follow_pb.LookupRelationshipRequest,
-    responseType: follow_pb.LookupRelationshipResponse,
+    responseType: follow_pb.RelationshipResponseList,
     requestSerialize: serialize_follow_LookupRelationshipRequest,
     requestDeserialize: deserialize_follow_LookupRelationshipRequest,
-    responseSerialize: serialize_follow_LookupRelationshipResponse,
-    responseDeserialize: deserialize_follow_LookupRelationshipResponse,
+    responseSerialize: serialize_follow_RelationshipResponseList,
+    responseDeserialize: deserialize_follow_RelationshipResponseList,
   },
 };
 

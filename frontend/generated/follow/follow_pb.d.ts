@@ -4,13 +4,10 @@
 import * as jspb from "google-protobuf";
 
 export class LookupRelationshipRequest extends jspb.Message {
-  getImmutableid(): string;
-  setImmutableid(value: string): void;
-
-  clearTargetidsList(): void;
-  getTargetidsList(): Array<string>;
-  setTargetidsList(value: Array<string>): void;
-  addTargetids(value: string, index?: number): string;
+  clearUsernamesList(): void;
+  getUsernamesList(): Array<string>;
+  setUsernamesList(value: Array<string>): void;
+  addUsernames(value: string, index?: number): string;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): LookupRelationshipRequest.AsObject;
@@ -24,12 +21,11 @@ export class LookupRelationshipRequest extends jspb.Message {
 
 export namespace LookupRelationshipRequest {
   export type AsObject = {
-    immutableid: string,
-    targetidsList: Array<string>,
+    usernamesList: Array<string>,
   }
 }
 
-export class LookupRelationshipResponse extends jspb.Message {
+export class RelationshipResponse extends jspb.Message {
   getUsername(): string;
   setUsername(value: string): void;
 
@@ -45,21 +41,43 @@ export class LookupRelationshipResponse extends jspb.Message {
   addRelationships(value: RelationshipMap[keyof RelationshipMap], index?: number): RelationshipMap[keyof RelationshipMap];
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): LookupRelationshipResponse.AsObject;
-  static toObject(includeInstance: boolean, msg: LookupRelationshipResponse): LookupRelationshipResponse.AsObject;
+  toObject(includeInstance?: boolean): RelationshipResponse.AsObject;
+  static toObject(includeInstance: boolean, msg: RelationshipResponse): RelationshipResponse.AsObject;
   static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
   static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: LookupRelationshipResponse, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): LookupRelationshipResponse;
-  static deserializeBinaryFromReader(message: LookupRelationshipResponse, reader: jspb.BinaryReader): LookupRelationshipResponse;
+  static serializeBinaryToWriter(message: RelationshipResponse, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): RelationshipResponse;
+  static deserializeBinaryFromReader(message: RelationshipResponse, reader: jspb.BinaryReader): RelationshipResponse;
 }
 
-export namespace LookupRelationshipResponse {
+export namespace RelationshipResponse {
   export type AsObject = {
     username: string,
     immutableid: string,
     displayname: string,
     relationshipsList: Array<RelationshipMap[keyof RelationshipMap]>,
+  }
+}
+
+export class RelationshipResponseList extends jspb.Message {
+  clearRelationshipsList(): void;
+  getRelationshipsList(): Array<RelationshipResponse>;
+  setRelationshipsList(value: Array<RelationshipResponse>): void;
+  addRelationships(value?: RelationshipResponse, index?: number): RelationshipResponse;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): RelationshipResponseList.AsObject;
+  static toObject(includeInstance: boolean, msg: RelationshipResponseList): RelationshipResponseList.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: RelationshipResponseList, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): RelationshipResponseList;
+  static deserializeBinaryFromReader(message: RelationshipResponseList, reader: jspb.BinaryReader): RelationshipResponseList;
+}
+
+export namespace RelationshipResponseList {
+  export type AsObject = {
+    relationshipsList: Array<RelationshipResponse.AsObject>,
   }
 }
 
