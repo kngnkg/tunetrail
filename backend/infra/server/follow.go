@@ -12,6 +12,7 @@ import (
 
 type followUseCase interface {
 	LookupRelationShips(ctx context.Context, immutableId entity.ImmutableId, usernames []entity.Username) ([]*usecase.RelationShipsResponse, error)
+	Follow(ctx context.Context, immutableId entity.ImmutableId, username entity.Username) (*usecase.RelationShipsResponse, error)
 }
 
 type followServer struct {
@@ -31,7 +32,8 @@ func NewFollowServer(a *Auth, v *validator.Validator, uc followUseCase) follow.F
 
 // 認証を必要とするメソッドを定義
 var authRequiredMethodsFollow = map[string]bool{
-	"/follow.FollowService/LookupRelationShips": true,
+	"/follow.FollowService/LookupRelationships": true,
+	"/follow.FollowService/Follow":              true,
 }
 
 func (s *followServer) AuthFuncOverride(ctx context.Context, fullMethodName string) (context.Context, error) {
@@ -45,7 +47,7 @@ func (s *followServer) AuthFuncOverride(ctx context.Context, fullMethodName stri
 
 var _ grpc_auth.ServiceAuthFuncOverride = (*followServer)(nil)
 
-func (s *followServer) LookupRelationShips(ctx context.Context, in *follow.LookupRelationshipRequest) (*follow.RelationshipResponseList, error) {
+func (s *followServer) LookupRelationships(ctx context.Context, in *follow.LookupRelationshipRequest) (*follow.RelationshipResponseList, error) {
 	req := struct {
 		Usernames []string `validate:"required,min=1,max=50,dive,username"`
 	}{
@@ -77,6 +79,27 @@ func (s *followServer) LookupRelationShips(ctx context.Context, in *follow.Looku
 	return &follow.RelationshipResponseList{
 		Relationships: responses,
 	}, nil
+}
+
+func (s *followServer) Follow(ctx context.Context, in *follow.FollowRequest) (*follow.RelationshipResponse, error) {
+	req := struct {
+		Username string `validate:"required,username"`
+	}{
+		Username: in.Username,
+	}
+
+	if err := s.v.Validate(req); err != nil {
+		return nil, invalidArgument(ctx, err)
+	}
+
+	immutableId := GetImmutableId(ctx)
+
+	resp, err := s.uc.Follow(ctx, immutableId, entity.Username(in.Username))
+	if err != nil {
+		return nil, internal(ctx, err)
+	}
+
+	return toRelationshipResponse(resp.User, resp.Relationships), nil
 }
 
 func toRelationshipResponse(u *entity.User, rs []entity.Relationship) *follow.RelationshipResponse {
