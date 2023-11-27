@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	"log/slog"
+	"math/rand"
 
 	"github.com/kngnkg/foderee/backend/entity"
 	"github.com/kngnkg/foderee/backend/infra/repository"
@@ -17,6 +18,7 @@ type seeder struct {
 	db repository.DBAccesser
 	rr *repository.ReviewRepository
 	ur *repository.UserRepository
+	fr *repository.FollowRepository
 }
 
 // DBの初期化
@@ -48,7 +50,8 @@ func (s *seeder) storeRandomUsers(ctx context.Context, tx repository.DBAccesser)
 			return nil, err
 		}
 
-		users = append(users, u)
+		// idを更新する
+		user.ImmutableId = u.ImmutableId
 	}
 
 	return users, nil
@@ -85,6 +88,44 @@ func (s *seeder) storeRandomReviews(ctx context.Context, tx repository.DBAccesse
 	}
 
 	return reviews, nil
+}
+
+func (s *seeder) storeRandomFollows(ctx context.Context, tx repository.DBAccesser, immutableIds []entity.ImmutableId) error {
+	sourceIds := immutableIds
+
+	for _, sourceId := range sourceIds {
+		var targetIds []entity.ImmutableId
+		// 自分自身を含めない
+		for i, id := range immutableIds {
+			if id == sourceId {
+				continue
+			}
+
+			targetIds = append(targetIds, immutableIds[i])
+		}
+
+		// スライスをシャッフルする
+		rand.Shuffle(len(targetIds), func(i, j int) {
+			targetIds[i], targetIds[j] = targetIds[j], targetIds[i]
+		})
+
+		// 25人フォローする
+		targetIds = targetIds[:25]
+
+		for _, targetId := range targetIds {
+			f := fixture.Follow(&entity.Follow{
+				ImmutableId:         sourceId,
+				FolloweeImmutableId: targetId,
+			})
+
+			_, err := s.fr.StoreFollow(ctx, tx, f)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
 }
 
 func (s *seeder) exec(ctx context.Context) error {
@@ -124,6 +165,12 @@ func (s *seeder) exec(ctx context.Context) error {
 			// tx.Rollback()
 			return err
 		}
+	}
+
+	logger.FromContext(ctx).Info("storing random follows...")
+	if err := s.storeRandomFollows(ctx, s.db, authorIds); err != nil {
+		// tx.Rollback()
+		return err
 	}
 
 	// return tx.Commit()
@@ -172,6 +219,7 @@ func main() {
 
 	ur := &repository.UserRepository{}
 	rr := &repository.ReviewRepository{}
+	fr := &repository.FollowRepository{}
 
 	v := validator.New()
 
@@ -180,6 +228,7 @@ func main() {
 		db: db,
 		ur: ur,
 		rr: rr,
+		fr: fr,
 	}
 
 	if err = seeder.exec(ctx); err != nil {

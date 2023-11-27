@@ -19,6 +19,21 @@ CREATE TABLE users (
 );
 
 /*
+ * フォロー
+ */
+CREATE TABLE follows(
+    user_id UUID NOT NULL,
+    follow_user_id UUID NOT NULL,
+    created_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP NOT NULL,
+    CONSTRAINT follows_pkey PRIMARY KEY (user_id, follow_user_id),
+    CONSTRAINT follows_user_id_fkey FOREIGN KEY (user_id)
+        REFERENCES users(user_id) ON DELETE CASCADE,
+    CONSTRAINT follows_follow_user_id_fkey FOREIGN KEY (follow_user_id)
+        REFERENCES users(user_id) ON DELETE CASCADE
+);
+
+/*
  * レビュー
  */
 CREATE TABLE reviews (

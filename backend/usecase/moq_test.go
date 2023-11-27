@@ -32,6 +32,9 @@ var _ UserRepository = &UserRepositoryMock{}
 //			ListUsersByIdFunc: func(ctx context.Context, db repository.Executor, userIds []entity.ImmutableId) ([]*entity.User, error) {
 //				panic("mock out the ListUsersById method")
 //			},
+//			ListUsersByUsernameFunc: func(ctx context.Context, db repository.Executor, usernames []entity.Username) ([]*entity.User, error) {
+//				panic("mock out the ListUsersByUsername method")
+//			},
 //			StoreUserFunc: func(ctx context.Context, db repository.Executor, user *entity.User) (*entity.User, error) {
 //				panic("mock out the StoreUser method")
 //			},
@@ -56,6 +59,9 @@ type UserRepositoryMock struct {
 
 	// ListUsersByIdFunc mocks the ListUsersById method.
 	ListUsersByIdFunc func(ctx context.Context, db repository.Executor, userIds []entity.ImmutableId) ([]*entity.User, error)
+
+	// ListUsersByUsernameFunc mocks the ListUsersByUsername method.
+	ListUsersByUsernameFunc func(ctx context.Context, db repository.Executor, usernames []entity.Username) ([]*entity.User, error)
 
 	// StoreUserFunc mocks the StoreUser method.
 	StoreUserFunc func(ctx context.Context, db repository.Executor, user *entity.User) (*entity.User, error)
@@ -103,6 +109,15 @@ type UserRepositoryMock struct {
 			// UserIds is the userIds argument value.
 			UserIds []entity.ImmutableId
 		}
+		// ListUsersByUsername holds details about calls to the ListUsersByUsername method.
+		ListUsersByUsername []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Db is the db argument value.
+			Db repository.Executor
+			// Usernames is the usernames argument value.
+			Usernames []entity.Username
+		}
 		// StoreUser holds details about calls to the StoreUser method.
 		StoreUser []struct {
 			// Ctx is the ctx argument value.
@@ -126,6 +141,7 @@ type UserRepositoryMock struct {
 	lockGetUserByUsername    sync.RWMutex
 	lockListUsers            sync.RWMutex
 	lockListUsersById        sync.RWMutex
+	lockListUsersByUsername  sync.RWMutex
 	lockStoreUser            sync.RWMutex
 	lockUpdateUser           sync.RWMutex
 }
@@ -291,6 +307,46 @@ func (mock *UserRepositoryMock) ListUsersByIdCalls() []struct {
 	mock.lockListUsersById.RLock()
 	calls = mock.calls.ListUsersById
 	mock.lockListUsersById.RUnlock()
+	return calls
+}
+
+// ListUsersByUsername calls ListUsersByUsernameFunc.
+func (mock *UserRepositoryMock) ListUsersByUsername(ctx context.Context, db repository.Executor, usernames []entity.Username) ([]*entity.User, error) {
+	if mock.ListUsersByUsernameFunc == nil {
+		panic("UserRepositoryMock.ListUsersByUsernameFunc: method is nil but UserRepository.ListUsersByUsername was just called")
+	}
+	callInfo := struct {
+		Ctx       context.Context
+		Db        repository.Executor
+		Usernames []entity.Username
+	}{
+		Ctx:       ctx,
+		Db:        db,
+		Usernames: usernames,
+	}
+	mock.lockListUsersByUsername.Lock()
+	mock.calls.ListUsersByUsername = append(mock.calls.ListUsersByUsername, callInfo)
+	mock.lockListUsersByUsername.Unlock()
+	return mock.ListUsersByUsernameFunc(ctx, db, usernames)
+}
+
+// ListUsersByUsernameCalls gets all the calls that were made to ListUsersByUsername.
+// Check the length with:
+//
+//	len(mockedUserRepository.ListUsersByUsernameCalls())
+func (mock *UserRepositoryMock) ListUsersByUsernameCalls() []struct {
+	Ctx       context.Context
+	Db        repository.Executor
+	Usernames []entity.Username
+} {
+	var calls []struct {
+		Ctx       context.Context
+		Db        repository.Executor
+		Usernames []entity.Username
+	}
+	mock.lockListUsersByUsername.RLock()
+	calls = mock.calls.ListUsersByUsername
+	mock.lockListUsersByUsername.RUnlock()
 	return calls
 }
 

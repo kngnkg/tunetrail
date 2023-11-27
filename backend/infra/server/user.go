@@ -13,14 +13,22 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
+type userUseCase interface {
+	ListUsers(ctx context.Context, immutableId entity.ImmutableId, limit int) (*usecase.UserListResponse, error)
+	GetByUsername(ctx context.Context, username entity.Username) (*entity.User, error)
+	GetMe(ctx context.Context, immutableId entity.ImmutableId) (*entity.User, error)
+	Store(ctx context.Context, immutableId entity.ImmutableId, email string) (*entity.User, error)
+	UpdateUser(ctx context.Context, username entity.Username, immutableId entity.ImmutableId, displayName, avatarUrl, bio string) (*entity.User, error)
+}
+
 type userServer struct {
 	user.UnimplementedUserServiceServer
 	auth      *Auth
 	validator *validator.Validator
-	usecase   *usecase.UserUseCase
+	usecase   userUseCase
 }
 
-func NewUserServer(a *Auth, v *validator.Validator, uc *usecase.UserUseCase) user.UserServiceServer {
+func NewUserServer(a *Auth, v *validator.Validator, uc userUseCase) user.UserServiceServer {
 	return &userServer{
 		auth:      a,
 		validator: v,

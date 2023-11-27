@@ -11,6 +11,7 @@ import (
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/auth"
 	"github.com/kngnkg/foderee/backend/config"
+	"github.com/kngnkg/foderee/backend/gen/follow"
 	helloworld "github.com/kngnkg/foderee/backend/gen/helloworld"
 	"github.com/kngnkg/foderee/backend/gen/review"
 	user "github.com/kngnkg/foderee/backend/gen/user"
@@ -54,9 +55,11 @@ func main() {
 
 	ur := &repository.UserRepository{}
 	rr := &repository.ReviewRepository{}
+	fr := &repository.FollowRepository{}
 
 	userUc := usecase.NewUserUseCase(db, ur)
 	reviewUc := usecase.NewReviewUseCase(db, rr, ur)
+	followUc := usecase.NewFollowUseCase(db, ur, fr)
 
 	li := server.NewLoggingInterceptor(l)
 
@@ -95,6 +98,9 @@ func main() {
 
 	reviewServer := server.NewReviewServer(au, v, reviewUc)
 	review.RegisterReviewServiceServer(s, reviewServer)
+
+	followServer := server.NewFollowServer(au, v, followUc)
+	follow.RegisterFollowServiceServer(s, followServer)
 
 	reflection.Register(s)
 
