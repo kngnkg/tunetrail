@@ -72,6 +72,17 @@ var FollowServiceService = exports.FollowServiceService = {
     responseSerialize: serialize_follow_RelationshipResponse,
     responseDeserialize: deserialize_follow_RelationshipResponse,
   },
+  unfollow: {
+    path: '/follow.FollowService/Unfollow',
+    requestStream: false,
+    responseStream: false,
+    requestType: follow_pb.FollowRequest,
+    responseType: follow_pb.RelationshipResponse,
+    requestSerialize: serialize_follow_FollowRequest,
+    requestDeserialize: deserialize_follow_FollowRequest,
+    responseSerialize: serialize_follow_RelationshipResponse,
+    responseDeserialize: deserialize_follow_RelationshipResponse,
+  },
 };
 
 exports.FollowServiceClient = grpc.makeGenericClientConstructor(FollowServiceService);

@@ -129,3 +129,62 @@ func (uc *FollowUseCase) Follow(ctx context.Context, immutableId entity.Immutabl
 		Relationships: rs,
 	}, nil
 }
+
+func (uc *FollowUseCase) Unfollow(ctx context.Context, immutableId entity.ImmutableId, targetUsername entity.Username) (*RelationShipsResponse, error) {
+	// ユーザーの取得
+	targetUser, err := uc.ur.GetUserByUsername(ctx, uc.DB, targetUsername)
+	if err != nil {
+		return nil, err
+	}
+	if targetUser == nil {
+		return nil, fmt.Errorf("user not found: username=%s", targetUsername)
+	}
+	if targetUser.ImmutableId == immutableId {
+		return nil, fmt.Errorf("cannot unfollow myself: username=%s", targetUsername)
+	}
+
+	tx, err := uc.DB.BeginTxx(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	// フォローを削除する
+	_, err = uc.fr.DeleteFollow(ctx, tx, &entity.Follow{
+		ImmutableId:         immutableId,
+		FolloweeImmutableId: targetUser.ImmutableId,
+	})
+	if err != nil {
+		defer func() {
+			if err := tx.Rollback(); err != nil {
+				logger.FromContext(ctx).Error("failed to rollback transaction: %v", err)
+			}
+		}()
+
+		return nil, err
+	}
+
+	if err = tx.Commit(); err != nil {
+		return nil, err
+	}
+
+	var rs []entity.Relationship
+
+	// フォローされているか確認する
+	followed, err := uc.fr.IsFollowing(ctx, uc.DB, targetUser.ImmutableId, immutableId)
+	if err != nil {
+		return nil, err
+	}
+
+	if followed {
+		rs = append(rs, entity.RelationshipFollowedBy)
+	}
+
+	if len(rs) == 0 {
+		rs = append(rs, entity.RelationshipNone)
+	}
+
+	return &RelationShipsResponse{
+		User:          targetUser,
+		Relationships: rs,
+	}, nil
+}

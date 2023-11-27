@@ -13,6 +13,7 @@ import (
 type followUseCase interface {
 	LookupRelationShips(ctx context.Context, immutableId entity.ImmutableId, usernames []entity.Username) ([]*usecase.RelationShipsResponse, error)
 	Follow(ctx context.Context, immutableId entity.ImmutableId, username entity.Username) (*usecase.RelationShipsResponse, error)
+	Unfollow(ctx context.Context, immutableId entity.ImmutableId, username entity.Username) (*usecase.RelationShipsResponse, error)
 }
 
 type followServer struct {
@@ -34,6 +35,7 @@ func NewFollowServer(a *Auth, v *validator.Validator, uc followUseCase) follow.F
 var authRequiredMethodsFollow = map[string]bool{
 	"/follow.FollowService/LookupRelationships": true,
 	"/follow.FollowService/Follow":              true,
+	"/follow.FollowService/Unfollow":            true,
 }
 
 func (s *followServer) AuthFuncOverride(ctx context.Context, fullMethodName string) (context.Context, error) {
@@ -95,6 +97,27 @@ func (s *followServer) Follow(ctx context.Context, in *follow.FollowRequest) (*f
 	immutableId := GetImmutableId(ctx)
 
 	resp, err := s.uc.Follow(ctx, immutableId, entity.Username(in.Username))
+	if err != nil {
+		return nil, internal(ctx, err)
+	}
+
+	return toRelationshipResponse(resp.User, resp.Relationships), nil
+}
+
+func (s *followServer) Unfollow(ctx context.Context, in *follow.FollowRequest) (*follow.RelationshipResponse, error) {
+	req := struct {
+		Username string `validate:"required,username"`
+	}{
+		Username: in.Username,
+	}
+
+	if err := s.v.Validate(req); err != nil {
+		return nil, invalidArgument(ctx, err)
+	}
+
+	immutableId := GetImmutableId(ctx)
+
+	resp, err := s.uc.Unfollow(ctx, immutableId, entity.Username(in.Username))
 	if err != nil {
 		return nil, internal(ctx, err)
 	}

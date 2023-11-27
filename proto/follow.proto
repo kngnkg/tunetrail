@@ -14,6 +14,7 @@ service FollowService {
   rpc LookupRelationships(LookupRelationshipRequest)
       returns (RelationshipResponseList);
   rpc Follow(FollowRequest) returns (RelationshipResponse);
+  rpc Unfollow(FollowRequest) returns (RelationshipResponse);
 }
 
 message LookupRelationshipRequest { repeated string usernames = 1; }
