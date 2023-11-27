@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion7
 
 const (
 	FollowService_LookupRelationships_FullMethodName = "/follow.FollowService/LookupRelationships"
+	FollowService_Follow_FullMethodName              = "/follow.FollowService/Follow"
 )
 
 // FollowServiceClient is the client API for FollowService service.
@@ -27,6 +28,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type FollowServiceClient interface {
 	LookupRelationships(ctx context.Context, in *LookupRelationshipRequest, opts ...grpc.CallOption) (*RelationshipResponseList, error)
+	Follow(ctx context.Context, in *FollowRequest, opts ...grpc.CallOption) (*RelationshipResponse, error)
 }
 
 type followServiceClient struct {
@@ -46,11 +48,21 @@ func (c *followServiceClient) LookupRelationships(ctx context.Context, in *Looku
 	return out, nil
 }
 
+func (c *followServiceClient) Follow(ctx context.Context, in *FollowRequest, opts ...grpc.CallOption) (*RelationshipResponse, error) {
+	out := new(RelationshipResponse)
+	err := c.cc.Invoke(ctx, FollowService_Follow_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // FollowServiceServer is the server API for FollowService service.
 // All implementations must embed UnimplementedFollowServiceServer
 // for forward compatibility
 type FollowServiceServer interface {
 	LookupRelationships(context.Context, *LookupRelationshipRequest) (*RelationshipResponseList, error)
+	Follow(context.Context, *FollowRequest) (*RelationshipResponse, error)
 	mustEmbedUnimplementedFollowServiceServer()
 }
 
@@ -60,6 +72,9 @@ type UnimplementedFollowServiceServer struct {
 
 func (UnimplementedFollowServiceServer) LookupRelationships(context.Context, *LookupRelationshipRequest) (*RelationshipResponseList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method LookupRelationships not implemented")
+}
+func (UnimplementedFollowServiceServer) Follow(context.Context, *FollowRequest) (*RelationshipResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Follow not implemented")
 }
 func (UnimplementedFollowServiceServer) mustEmbedUnimplementedFollowServiceServer() {}
 
@@ -92,6 +107,24 @@ func _FollowService_LookupRelationships_Handler(srv interface{}, ctx context.Con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _FollowService_Follow_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FollowRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FollowServiceServer).Follow(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FollowService_Follow_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FollowServiceServer).Follow(ctx, req.(*FollowRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // FollowService_ServiceDesc is the grpc.ServiceDesc for FollowService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -102,6 +135,10 @@ var FollowService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "LookupRelationships",
 			Handler:    _FollowService_LookupRelationships_Handler,
+		},
+		{
+			MethodName: "Follow",
+			Handler:    _FollowService_Follow_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

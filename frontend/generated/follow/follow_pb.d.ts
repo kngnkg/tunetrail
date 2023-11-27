@@ -25,6 +25,26 @@ export namespace LookupRelationshipRequest {
   }
 }
 
+export class FollowRequest extends jspb.Message {
+  getUsername(): string;
+  setUsername(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): FollowRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: FollowRequest): FollowRequest.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: FollowRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): FollowRequest;
+  static deserializeBinaryFromReader(message: FollowRequest, reader: jspb.BinaryReader): FollowRequest;
+}
+
+export namespace FollowRequest {
+  export type AsObject = {
+    username: string,
+  }
+}
+
 export class RelationshipResponse extends jspb.Message {
   getUsername(): string;
   setUsername(value: string): void;

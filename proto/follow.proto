@@ -13,9 +13,12 @@ enum Relationship {
 service FollowService {
   rpc LookupRelationships(LookupRelationshipRequest)
       returns (RelationshipResponseList);
+  rpc Follow(FollowRequest) returns (RelationshipResponse);
 }
 
 message LookupRelationshipRequest { repeated string usernames = 1; }
+
+message FollowRequest { string username = 1; }
 
 message RelationshipResponse {
   string username = 1;
