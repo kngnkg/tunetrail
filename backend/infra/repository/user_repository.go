@@ -47,17 +47,22 @@ func (r *UserRepository) ListUsersById(ctx context.Context, db Executor, userIds
 	placeholderNum := 1
 	args := []interface{}{}
 
-	if len(userIds) > 0 {
-		query += " AND user_id IN("
-		for _, id := range userIds {
-			query += fmt.Sprintf(" $%d,", placeholderNum)
-			args = append(args, id)
-			placeholderNum++
-		}
-		query = helper.RemoveLastComma(query) + ")"
+	query += " AND user_id IN("
+	for _, id := range userIds {
+		query += fmt.Sprintf(" $%d,", placeholderNum)
+		args = append(args, id)
+		placeholderNum++
 	}
+	query = helper.RemoveLastComma(query) + ")"
 
-	query += " ORDER BY created_at DESC"
+	// 並び順を指定
+	query += " ORDER BY ARRAY_POSITION(ARRAY["
+	for _, id := range userIds {
+		query += fmt.Sprintf(" $%d::UUID,", placeholderNum)
+		args = append(args, id)
+		placeholderNum++
+	}
+	query = helper.RemoveLastComma(query) + "], user_id)"
 
 	users := []*entity.User{}
 	err := db.SelectContext(ctx, &users, query, args...)
@@ -76,17 +81,22 @@ func (r *UserRepository) ListUsersByUsername(ctx context.Context, db Executor, u
 	placeholderNum := 1
 	args := []interface{}{}
 
-	if len(usernames) > 0 {
-		query += " AND username IN("
-		for _, id := range usernames {
-			query += fmt.Sprintf(" $%d,", placeholderNum)
-			args = append(args, id)
-			placeholderNum++
-		}
-		query = helper.RemoveLastComma(query) + ")"
+	query += " AND username IN("
+	for _, id := range usernames {
+		query += fmt.Sprintf(" $%d,", placeholderNum)
+		args = append(args, id)
+		placeholderNum++
 	}
+	query = helper.RemoveLastComma(query) + ")"
 
-	query += " ORDER BY created_at DESC"
+	// 並び順を指定
+	query += " ORDER BY ARRAY_POSITION(ARRAY["
+	for _, id := range usernames {
+		query += fmt.Sprintf(" $%d,", placeholderNum)
+		args = append(args, id)
+		placeholderNum++
+	}
+	query = helper.RemoveLastComma(query) + "], username)"
 
 	users := []*entity.User{}
 	err := db.SelectContext(ctx, &users, query, args...)
