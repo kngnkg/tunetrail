@@ -23,57 +23,36 @@ func NewFollowUseCase(db repository.DBAccesser, ur UserRepository, fr FollowRepo
 	}
 }
 
-type RelationShipsResponse struct {
-	User          *entity.User
-	Relationships []entity.Relationship
+type FollowResponse struct {
+	User        *entity.User
+	IsFollowing bool
 }
 
-func (uc *FollowUseCase) LookupRelationShips(ctx context.Context, immutableId entity.ImmutableId, usernames []entity.Username) ([]*RelationShipsResponse, error) {
+func (uc *FollowUseCase) ListFollows(ctx context.Context, immutableId entity.ImmutableId, usernames []entity.Username) ([]*FollowResponse, error) {
 	us, err := uc.ur.ListUsersByUsername(ctx, uc.DB, usernames)
 	if err != nil {
 		return nil, err
 	}
 
-	resps := make([]*RelationShipsResponse, 0, len(us))
+	resps := make([]*FollowResponse, 0, len(us))
 
 	for _, u := range us {
-		var rs []entity.Relationship
-
 		// フォローしているか確認する
-		follwing, err := uc.fr.IsFollowing(ctx, uc.DB, immutableId, u.ImmutableId)
+		isFollwing, err := uc.fr.IsFollowing(ctx, uc.DB, immutableId, u.ImmutableId)
 		if err != nil {
 			return nil, err
 		}
 
-		if follwing {
-			rs = append(rs, entity.RelationshipFollowing)
-		}
-
-		// フォローされているか確認する
-		followed, err := uc.fr.IsFollowing(ctx, uc.DB, u.ImmutableId, immutableId)
-		if err != nil {
-			return nil, err
-		}
-
-		if followed {
-			rs = append(rs, entity.RelationshipFollowedBy)
-		}
-
-		// どちらでもない場合
-		if len(rs) == 0 {
-			rs = append(rs, entity.RelationshipNone)
-		}
-
-		resps = append(resps, &RelationShipsResponse{
-			User:          u,
-			Relationships: rs,
+		resps = append(resps, &FollowResponse{
+			User:        u,
+			IsFollowing: isFollwing,
 		})
 	}
 
 	return resps, nil
 }
 
-func (uc *FollowUseCase) Follow(ctx context.Context, immutableId entity.ImmutableId, targetUsername entity.Username) (*RelationShipsResponse, error) {
+func (uc *FollowUseCase) Follow(ctx context.Context, immutableId entity.ImmutableId, targetUsername entity.Username) (*FollowResponse, error) {
 	// ユーザーの取得
 	targetUser, err := uc.ur.GetUserByUsername(ctx, uc.DB, targetUsername)
 	if err != nil {
@@ -110,27 +89,13 @@ func (uc *FollowUseCase) Follow(ctx context.Context, immutableId entity.Immutabl
 		return nil, err
 	}
 
-	var rs []entity.Relationship
-
-	rs = append(rs, entity.RelationshipFollowing)
-
-	// フォローされているか確認する
-	followed, err := uc.fr.IsFollowing(ctx, uc.DB, targetUser.ImmutableId, immutableId)
-	if err != nil {
-		return nil, err
-	}
-
-	if followed {
-		rs = append(rs, entity.RelationshipFollowedBy)
-	}
-
-	return &RelationShipsResponse{
-		User:          targetUser,
-		Relationships: rs,
+	return &FollowResponse{
+		User:        targetUser,
+		IsFollowing: true,
 	}, nil
 }
 
-func (uc *FollowUseCase) Unfollow(ctx context.Context, immutableId entity.ImmutableId, targetUsername entity.Username) (*RelationShipsResponse, error) {
+func (uc *FollowUseCase) Unfollow(ctx context.Context, immutableId entity.ImmutableId, targetUsername entity.Username) (*FollowResponse, error) {
 	// ユーザーの取得
 	targetUser, err := uc.ur.GetUserByUsername(ctx, uc.DB, targetUsername)
 	if err != nil {
@@ -167,24 +132,8 @@ func (uc *FollowUseCase) Unfollow(ctx context.Context, immutableId entity.Immuta
 		return nil, err
 	}
 
-	var rs []entity.Relationship
-
-	// フォローされているか確認する
-	followed, err := uc.fr.IsFollowing(ctx, uc.DB, targetUser.ImmutableId, immutableId)
-	if err != nil {
-		return nil, err
-	}
-
-	if followed {
-		rs = append(rs, entity.RelationshipFollowedBy)
-	}
-
-	if len(rs) == 0 {
-		rs = append(rs, entity.RelationshipNone)
-	}
-
-	return &RelationShipsResponse{
-		User:          targetUser,
-		Relationships: rs,
+	return &FollowResponse{
+		User:        targetUser,
+		IsFollowing: false,
 	}, nil
 }

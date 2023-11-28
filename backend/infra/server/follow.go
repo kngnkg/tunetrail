@@ -11,9 +11,9 @@ import (
 )
 
 type followUseCase interface {
-	LookupRelationShips(ctx context.Context, immutableId entity.ImmutableId, usernames []entity.Username) ([]*usecase.RelationShipsResponse, error)
-	Follow(ctx context.Context, immutableId entity.ImmutableId, username entity.Username) (*usecase.RelationShipsResponse, error)
-	Unfollow(ctx context.Context, immutableId entity.ImmutableId, username entity.Username) (*usecase.RelationShipsResponse, error)
+	ListFollows(ctx context.Context, immutableId entity.ImmutableId, usernames []entity.Username) ([]*usecase.FollowResponse, error)
+	Follow(ctx context.Context, immutableId entity.ImmutableId, username entity.Username) (*usecase.FollowResponse, error)
+	Unfollow(ctx context.Context, immutableId entity.ImmutableId, username entity.Username) (*usecase.FollowResponse, error)
 }
 
 type followServer struct {
@@ -33,9 +33,9 @@ func NewFollowServer(a *Auth, v *validator.Validator, uc followUseCase) follow.F
 
 // 認証を必要とするメソッドを定義
 var authRequiredMethodsFollow = map[string]bool{
-	"/follow.FollowService/LookupRelationships": true,
-	"/follow.FollowService/Follow":              true,
-	"/follow.FollowService/Unfollow":            true,
+	"/follow.FollowService/ListFollows": true,
+	"/follow.FollowService/Follow":      true,
+	"/follow.FollowService/Unfollow":    true,
 }
 
 func (s *followServer) AuthFuncOverride(ctx context.Context, fullMethodName string) (context.Context, error) {
@@ -49,7 +49,7 @@ func (s *followServer) AuthFuncOverride(ctx context.Context, fullMethodName stri
 
 var _ grpc_auth.ServiceAuthFuncOverride = (*followServer)(nil)
 
-func (s *followServer) LookupRelationships(ctx context.Context, in *follow.LookupRelationshipRequest) (*follow.RelationshipResponseList, error) {
+func (s *followServer) ListFollows(ctx context.Context, in *follow.ListFollowsRequest) (*follow.FollowResponseList, error) {
 	req := struct {
 		Usernames []string `validate:"required,min=1,max=50,dive,username"`
 	}{
@@ -57,7 +57,7 @@ func (s *followServer) LookupRelationships(ctx context.Context, in *follow.Looku
 	}
 
 	if err := s.v.Validate(req); err != nil {
-		return nil, err
+		return nil, invalidArgument(ctx, err)
 	}
 
 	usernames := make([]entity.Username, len(in.Usernames))
@@ -68,22 +68,27 @@ func (s *followServer) LookupRelationships(ctx context.Context, in *follow.Looku
 	// ユーザーの取得
 	immutableId := GetImmutableId(ctx)
 
-	resps, err := s.uc.LookupRelationShips(ctx, immutableId, usernames)
+	resp, err := s.uc.ListFollows(ctx, immutableId, usernames)
 	if err != nil {
-		return nil, err
+		return nil, internal(ctx, err)
 	}
 
-	var responses []*follow.RelationshipResponse
-	for _, resp := range resps {
-		responses = append(responses, toRelationshipResponse(resp.User, resp.Relationships))
+	resps := make([]*follow.FollowResponse, len(resp))
+	for i, r := range resp {
+		resps[i] = &follow.FollowResponse{
+			Username:    string(r.User.Username),
+			ImmutableId: string(r.User.ImmutableId),
+			DisplayName: r.User.DisplayName,
+			IsFollowing: r.IsFollowing,
+		}
 	}
 
-	return &follow.RelationshipResponseList{
-		Relationships: responses,
+	return &follow.FollowResponseList{
+		FollowResponses: resps,
 	}, nil
 }
 
-func (s *followServer) Follow(ctx context.Context, in *follow.FollowRequest) (*follow.RelationshipResponse, error) {
+func (s *followServer) Follow(ctx context.Context, in *follow.FollowRequest) (*follow.FollowResponse, error) {
 	req := struct {
 		Username string `validate:"required,username"`
 	}{
@@ -101,10 +106,15 @@ func (s *followServer) Follow(ctx context.Context, in *follow.FollowRequest) (*f
 		return nil, internal(ctx, err)
 	}
 
-	return toRelationshipResponse(resp.User, resp.Relationships), nil
+	return &follow.FollowResponse{
+		Username:    string(resp.User.Username),
+		ImmutableId: string(resp.User.ImmutableId),
+		DisplayName: resp.User.DisplayName,
+		IsFollowing: resp.IsFollowing,
+	}, nil
 }
 
-func (s *followServer) Unfollow(ctx context.Context, in *follow.FollowRequest) (*follow.RelationshipResponse, error) {
+func (s *followServer) Unfollow(ctx context.Context, in *follow.FollowRequest) (*follow.FollowResponse, error) {
 	req := struct {
 		Username string `validate:"required,username"`
 	}{
@@ -122,33 +132,10 @@ func (s *followServer) Unfollow(ctx context.Context, in *follow.FollowRequest) (
 		return nil, internal(ctx, err)
 	}
 
-	return toRelationshipResponse(resp.User, resp.Relationships), nil
-}
-
-func toRelationshipResponse(u *entity.User, rs []entity.Relationship) *follow.RelationshipResponse {
-	return &follow.RelationshipResponse{
-		Username:      string(u.Username),
-		ImmutableId:   string(u.ImmutableId),
-		DisplayName:   u.DisplayName,
-		Relationships: toRelationships(rs),
-	}
-}
-
-func toRelationships(rs []entity.Relationship) []follow.Relationship {
-	res := make([]follow.Relationship, len(rs))
-
-	for i, r := range rs {
-		switch r {
-		case entity.RelationshipNone:
-			res[i] = follow.Relationship_NONE
-		case entity.RelationshipFollowing:
-			res[i] = follow.Relationship_FOLLOWING
-		case entity.RelationshipFollowedBy:
-			res[i] = follow.Relationship_FOLLOWED_BY
-		default:
-			panic("invalid relationship")
-		}
-	}
-
-	return res
+	return &follow.FollowResponse{
+		Username:    string(resp.User.Username),
+		ImmutableId: string(resp.User.ImmutableId),
+		DisplayName: resp.User.DisplayName,
+		IsFollowing: resp.IsFollowing,
+	}, nil
 }

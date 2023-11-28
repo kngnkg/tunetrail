@@ -4,30 +4,21 @@ package follow;
 
 option go_package = "github.com/kngnkg/foderee/backend/gen/follow";
 
-enum Relationship {
-  NONE = 0; // 既定値
-  FOLLOWING = 1;
-  FOLLOWED_BY = 2;
-}
-
 service FollowService {
-  rpc LookupRelationships(LookupRelationshipRequest)
-      returns (RelationshipResponseList);
-  rpc Follow(FollowRequest) returns (RelationshipResponse);
-  rpc Unfollow(FollowRequest) returns (RelationshipResponse);
+  rpc ListFollows(ListFollowsRequest) returns (FollowResponseList);
+  rpc Follow(FollowRequest) returns (FollowResponse);
+  rpc Unfollow(FollowRequest) returns (FollowResponse);
 }
 
-message LookupRelationshipRequest { repeated string usernames = 1; }
+message ListFollowsRequest { repeated string usernames = 1; }
 
 message FollowRequest { string username = 1; }
 
-message RelationshipResponse {
+message FollowResponse {
   string username = 1;
   string immutableId = 2;
   string displayName = 3;
-  repeated Relationship relationships = 4;
+  bool isFollowing = 4;
 }
 
-message RelationshipResponseList {
-  repeated RelationshipResponse relationships = 1;
-}
+message FollowResponseList { repeated FollowResponse followResponses = 1; }

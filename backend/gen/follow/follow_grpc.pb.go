@@ -19,18 +19,18 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	FollowService_LookupRelationships_FullMethodName = "/follow.FollowService/LookupRelationships"
-	FollowService_Follow_FullMethodName              = "/follow.FollowService/Follow"
-	FollowService_Unfollow_FullMethodName            = "/follow.FollowService/Unfollow"
+	FollowService_ListFollows_FullMethodName = "/follow.FollowService/ListFollows"
+	FollowService_Follow_FullMethodName      = "/follow.FollowService/Follow"
+	FollowService_Unfollow_FullMethodName    = "/follow.FollowService/Unfollow"
 )
 
 // FollowServiceClient is the client API for FollowService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type FollowServiceClient interface {
-	LookupRelationships(ctx context.Context, in *LookupRelationshipRequest, opts ...grpc.CallOption) (*RelationshipResponseList, error)
-	Follow(ctx context.Context, in *FollowRequest, opts ...grpc.CallOption) (*RelationshipResponse, error)
-	Unfollow(ctx context.Context, in *FollowRequest, opts ...grpc.CallOption) (*RelationshipResponse, error)
+	ListFollows(ctx context.Context, in *ListFollowsRequest, opts ...grpc.CallOption) (*FollowResponseList, error)
+	Follow(ctx context.Context, in *FollowRequest, opts ...grpc.CallOption) (*FollowResponse, error)
+	Unfollow(ctx context.Context, in *FollowRequest, opts ...grpc.CallOption) (*FollowResponse, error)
 }
 
 type followServiceClient struct {
@@ -41,17 +41,17 @@ func NewFollowServiceClient(cc grpc.ClientConnInterface) FollowServiceClient {
 	return &followServiceClient{cc}
 }
 
-func (c *followServiceClient) LookupRelationships(ctx context.Context, in *LookupRelationshipRequest, opts ...grpc.CallOption) (*RelationshipResponseList, error) {
-	out := new(RelationshipResponseList)
-	err := c.cc.Invoke(ctx, FollowService_LookupRelationships_FullMethodName, in, out, opts...)
+func (c *followServiceClient) ListFollows(ctx context.Context, in *ListFollowsRequest, opts ...grpc.CallOption) (*FollowResponseList, error) {
+	out := new(FollowResponseList)
+	err := c.cc.Invoke(ctx, FollowService_ListFollows_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *followServiceClient) Follow(ctx context.Context, in *FollowRequest, opts ...grpc.CallOption) (*RelationshipResponse, error) {
-	out := new(RelationshipResponse)
+func (c *followServiceClient) Follow(ctx context.Context, in *FollowRequest, opts ...grpc.CallOption) (*FollowResponse, error) {
+	out := new(FollowResponse)
 	err := c.cc.Invoke(ctx, FollowService_Follow_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -59,8 +59,8 @@ func (c *followServiceClient) Follow(ctx context.Context, in *FollowRequest, opt
 	return out, nil
 }
 
-func (c *followServiceClient) Unfollow(ctx context.Context, in *FollowRequest, opts ...grpc.CallOption) (*RelationshipResponse, error) {
-	out := new(RelationshipResponse)
+func (c *followServiceClient) Unfollow(ctx context.Context, in *FollowRequest, opts ...grpc.CallOption) (*FollowResponse, error) {
+	out := new(FollowResponse)
 	err := c.cc.Invoke(ctx, FollowService_Unfollow_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -72,9 +72,9 @@ func (c *followServiceClient) Unfollow(ctx context.Context, in *FollowRequest, o
 // All implementations must embed UnimplementedFollowServiceServer
 // for forward compatibility
 type FollowServiceServer interface {
-	LookupRelationships(context.Context, *LookupRelationshipRequest) (*RelationshipResponseList, error)
-	Follow(context.Context, *FollowRequest) (*RelationshipResponse, error)
-	Unfollow(context.Context, *FollowRequest) (*RelationshipResponse, error)
+	ListFollows(context.Context, *ListFollowsRequest) (*FollowResponseList, error)
+	Follow(context.Context, *FollowRequest) (*FollowResponse, error)
+	Unfollow(context.Context, *FollowRequest) (*FollowResponse, error)
 	mustEmbedUnimplementedFollowServiceServer()
 }
 
@@ -82,13 +82,13 @@ type FollowServiceServer interface {
 type UnimplementedFollowServiceServer struct {
 }
 
-func (UnimplementedFollowServiceServer) LookupRelationships(context.Context, *LookupRelationshipRequest) (*RelationshipResponseList, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method LookupRelationships not implemented")
+func (UnimplementedFollowServiceServer) ListFollows(context.Context, *ListFollowsRequest) (*FollowResponseList, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListFollows not implemented")
 }
-func (UnimplementedFollowServiceServer) Follow(context.Context, *FollowRequest) (*RelationshipResponse, error) {
+func (UnimplementedFollowServiceServer) Follow(context.Context, *FollowRequest) (*FollowResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Follow not implemented")
 }
-func (UnimplementedFollowServiceServer) Unfollow(context.Context, *FollowRequest) (*RelationshipResponse, error) {
+func (UnimplementedFollowServiceServer) Unfollow(context.Context, *FollowRequest) (*FollowResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Unfollow not implemented")
 }
 func (UnimplementedFollowServiceServer) mustEmbedUnimplementedFollowServiceServer() {}
@@ -104,20 +104,20 @@ func RegisterFollowServiceServer(s grpc.ServiceRegistrar, srv FollowServiceServe
 	s.RegisterService(&FollowService_ServiceDesc, srv)
 }
 
-func _FollowService_LookupRelationships_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(LookupRelationshipRequest)
+func _FollowService_ListFollows_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListFollowsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(FollowServiceServer).LookupRelationships(ctx, in)
+		return srv.(FollowServiceServer).ListFollows(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: FollowService_LookupRelationships_FullMethodName,
+		FullMethod: FollowService_ListFollows_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FollowServiceServer).LookupRelationships(ctx, req.(*LookupRelationshipRequest))
+		return srv.(FollowServiceServer).ListFollows(ctx, req.(*ListFollowsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -166,8 +166,8 @@ var FollowService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*FollowServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "LookupRelationships",
-			Handler:    _FollowService_LookupRelationships_Handler,
+			MethodName: "ListFollows",
+			Handler:    _FollowService_ListFollows_Handler,
 		},
 		{
 			MethodName: "Follow",

@@ -3,23 +3,23 @@
 
 import * as jspb from "google-protobuf";
 
-export class LookupRelationshipRequest extends jspb.Message {
+export class ListFollowsRequest extends jspb.Message {
   clearUsernamesList(): void;
   getUsernamesList(): Array<string>;
   setUsernamesList(value: Array<string>): void;
   addUsernames(value: string, index?: number): string;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): LookupRelationshipRequest.AsObject;
-  static toObject(includeInstance: boolean, msg: LookupRelationshipRequest): LookupRelationshipRequest.AsObject;
+  toObject(includeInstance?: boolean): ListFollowsRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: ListFollowsRequest): ListFollowsRequest.AsObject;
   static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
   static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: LookupRelationshipRequest, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): LookupRelationshipRequest;
-  static deserializeBinaryFromReader(message: LookupRelationshipRequest, reader: jspb.BinaryReader): LookupRelationshipRequest;
+  static serializeBinaryToWriter(message: ListFollowsRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ListFollowsRequest;
+  static deserializeBinaryFromReader(message: ListFollowsRequest, reader: jspb.BinaryReader): ListFollowsRequest;
 }
 
-export namespace LookupRelationshipRequest {
+export namespace ListFollowsRequest {
   export type AsObject = {
     usernamesList: Array<string>,
   }
@@ -45,7 +45,7 @@ export namespace FollowRequest {
   }
 }
 
-export class RelationshipResponse extends jspb.Message {
+export class FollowResponse extends jspb.Message {
   getUsername(): string;
   setUsername(value: string): void;
 
@@ -55,57 +55,47 @@ export class RelationshipResponse extends jspb.Message {
   getDisplayname(): string;
   setDisplayname(value: string): void;
 
-  clearRelationshipsList(): void;
-  getRelationshipsList(): Array<RelationshipMap[keyof RelationshipMap]>;
-  setRelationshipsList(value: Array<RelationshipMap[keyof RelationshipMap]>): void;
-  addRelationships(value: RelationshipMap[keyof RelationshipMap], index?: number): RelationshipMap[keyof RelationshipMap];
+  getIsfollowing(): boolean;
+  setIsfollowing(value: boolean): void;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): RelationshipResponse.AsObject;
-  static toObject(includeInstance: boolean, msg: RelationshipResponse): RelationshipResponse.AsObject;
+  toObject(includeInstance?: boolean): FollowResponse.AsObject;
+  static toObject(includeInstance: boolean, msg: FollowResponse): FollowResponse.AsObject;
   static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
   static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: RelationshipResponse, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): RelationshipResponse;
-  static deserializeBinaryFromReader(message: RelationshipResponse, reader: jspb.BinaryReader): RelationshipResponse;
+  static serializeBinaryToWriter(message: FollowResponse, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): FollowResponse;
+  static deserializeBinaryFromReader(message: FollowResponse, reader: jspb.BinaryReader): FollowResponse;
 }
 
-export namespace RelationshipResponse {
+export namespace FollowResponse {
   export type AsObject = {
     username: string,
     immutableid: string,
     displayname: string,
-    relationshipsList: Array<RelationshipMap[keyof RelationshipMap]>,
+    isfollowing: boolean,
   }
 }
 
-export class RelationshipResponseList extends jspb.Message {
-  clearRelationshipsList(): void;
-  getRelationshipsList(): Array<RelationshipResponse>;
-  setRelationshipsList(value: Array<RelationshipResponse>): void;
-  addRelationships(value?: RelationshipResponse, index?: number): RelationshipResponse;
+export class FollowResponseList extends jspb.Message {
+  clearFollowresponsesList(): void;
+  getFollowresponsesList(): Array<FollowResponse>;
+  setFollowresponsesList(value: Array<FollowResponse>): void;
+  addFollowresponses(value?: FollowResponse, index?: number): FollowResponse;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): RelationshipResponseList.AsObject;
-  static toObject(includeInstance: boolean, msg: RelationshipResponseList): RelationshipResponseList.AsObject;
+  toObject(includeInstance?: boolean): FollowResponseList.AsObject;
+  static toObject(includeInstance: boolean, msg: FollowResponseList): FollowResponseList.AsObject;
   static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
   static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: RelationshipResponseList, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): RelationshipResponseList;
-  static deserializeBinaryFromReader(message: RelationshipResponseList, reader: jspb.BinaryReader): RelationshipResponseList;
+  static serializeBinaryToWriter(message: FollowResponseList, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): FollowResponseList;
+  static deserializeBinaryFromReader(message: FollowResponseList, reader: jspb.BinaryReader): FollowResponseList;
 }
 
-export namespace RelationshipResponseList {
+export namespace FollowResponseList {
   export type AsObject = {
-    relationshipsList: Array<RelationshipResponse.AsObject>,
+    followresponsesList: Array<FollowResponse.AsObject>,
   }
 }
-
-export interface RelationshipMap {
-  NONE: 0;
-  FOLLOWING: 1;
-  FOLLOWED_BY: 2;
-}
-
-export const Relationship: RelationshipMap;
 
