@@ -8,11 +8,3 @@ type Follow struct {
 	CreatedAt           time.Time   `db:"created_at"`
 	UpdatedAt           time.Time   `db:"updated_at"`
 }
-
-type Relationship int
-
-const (
-	RelationshipNone Relationship = iota
-	RelationshipFollowing
-	RelationshipFollowedBy
-)
