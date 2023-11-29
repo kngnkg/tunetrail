@@ -1,4 +1,4 @@
-import useSWR from "swr"
+import useSWR, { KeyedMutator } from "swr"
 
 import { env } from "@/env.mjs"
 import { clientFetcher } from "@/lib/fetcher"
@@ -6,6 +6,7 @@ import { clientFetcher } from "@/lib/fetcher"
 interface UseFollow {
   data: boolean | undefined
   error: any
+  mutate: KeyedMutator<boolean>
   isLoading: boolean
 }
 
@@ -24,7 +25,7 @@ const fetcher = async (
 }
 
 export const useFollow = (username: string): UseFollow => {
-  const { data, error, isLoading } = useSWR(
+  const { data, error, mutate, isLoading } = useSWR(
     `${env.NEXT_PUBLIC_API_ROOT}/users/${username}/following`,
     fetcher
   )
@@ -32,6 +33,7 @@ export const useFollow = (username: string): UseFollow => {
   return {
     data,
     error,
+    mutate,
     isLoading,
   }
 }

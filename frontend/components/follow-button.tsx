@@ -16,16 +16,32 @@ export const FollowButton: React.FC<FollowButtonProps> = ({
   user,
   variant = "default",
 }) => {
-  const { data: isFollowing, error, isLoading } = useFollow(user.username)
+  const {
+    data: isFollowing,
+    error,
+    mutate,
+    isLoading,
+  } = useFollow(user.username)
 
   // TODO: フォロー・フォロー解除の処理を書く
   // 該当のユーザーネームをフォローしているかどうかを確認する
   // ログイン状態でなければフォローできないようにする
 
+  const onClickFollow = () => {
+    alert("フォローしました")
+    mutate()
+  }
+
+  const onClickUnfollow = () => {
+    alert("フォロー解除しました")
+    mutate()
+  }
+
   return (
     <>
       {isFollowing ? (
         <Button
+          onClick={onClickUnfollow}
           variant={variant}
           size="sm"
           className={
@@ -38,6 +54,7 @@ export const FollowButton: React.FC<FollowButtonProps> = ({
         </Button>
       ) : (
         <Button
+          onClick={onClickFollow}
           variant={variant}
           size="sm"
           className={variant === "link" ? "text-primary dark:text-primary" : ""}
