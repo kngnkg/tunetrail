@@ -23,12 +23,10 @@ export async function GET(request: NextRequest, context: UserRouteContext) {
     }
 
     return NextResponse.json({
-      follows: resp.map((follow) => ({
-        username: follow.getUsername(),
-        immutableId: follow.getImmutableid(),
-        displayName: follow.getDisplayname(),
-        isFollowing: follow.getIsfollowing(),
-      })),
+      username: resp[0].getUsername(),
+      immutableId: resp[0].getImmutableid(),
+      displayName: resp[0].getDisplayname(),
+      isFollowing: resp[0].getIsfollowing(),
     })
   } catch (e) {
     console.error(e)

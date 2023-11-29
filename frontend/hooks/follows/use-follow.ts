@@ -16,7 +16,7 @@ const fetcher = async (
   try {
     const res = await clientFetcher(resource, init)
 
-    return res.followings[0].isFollowing
+    return res.isFollowing
   } catch (e) {
     console.error(e)
     return false
@@ -25,7 +25,7 @@ const fetcher = async (
 
 export const useFollow = (username: string): UseFollow => {
   const { data, error, isLoading } = useSWR(
-    `${env.NEXT_PUBLIC_API_ROOT}/lookup-following?usernames=${username}`,
+    `${env.NEXT_PUBLIC_API_ROOT}/users/${username}/following`,
     fetcher
   )
 
