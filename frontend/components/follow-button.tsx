@@ -3,6 +3,8 @@
 import * as React from "react"
 import { User } from "@/types"
 
+import { env } from "@/env.mjs"
+import { clientFetcher } from "@/lib/fetcher"
 import { useFollow } from "@/hooks/follows/use-follow"
 
 import { Button } from "./ui/button"
@@ -23,18 +25,49 @@ export const FollowButton: React.FC<FollowButtonProps> = ({
     isLoading,
   } = useFollow(user.username)
 
-  // TODO: フォロー・フォロー解除の処理を書く
-  // 該当のユーザーネームをフォローしているかどうかを確認する
-  // ログイン状態でなければフォローできないようにする
+  // TODO: ログイン状態でなければフォローできないようにする
+  const onClickFollow = async () => {
+    try {
+      const resp = await clientFetcher(
+        `${env.NEXT_PUBLIC_API_ROOT}/users/${user.username}/following`,
+        {
+          method: "POST",
+          body: JSON.stringify({
+            immutableId: user.immutableId,
+          }),
+        }
+      )
 
-  const onClickFollow = () => {
-    alert("フォローしました")
-    mutate()
+      if (!resp) {
+        throw new Error("フォローに失敗しました")
+      }
+
+      mutate()
+    } catch (e) {
+      alert("フォローに失敗しました")
+    }
   }
 
-  const onClickUnfollow = () => {
-    alert("フォロー解除しました")
-    mutate()
+  const onClickUnfollow = async () => {
+    try {
+      const resp = await clientFetcher(
+        `${env.NEXT_PUBLIC_API_ROOT}/users/${user.username}/following`,
+        {
+          method: "DELETE",
+          body: JSON.stringify({
+            immutableId: user.immutableId,
+          }),
+        }
+      )
+
+      if (!resp) {
+        throw new Error("フォロー解除に失敗しました")
+      }
+
+      mutate()
+    } catch (e) {
+      alert("フォロー解除に失敗しました")
+    }
   }
 
   return (
