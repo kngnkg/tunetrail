@@ -69,14 +69,14 @@ export default async function UserLayout({
               {/* todo */}
               <div className="flex justify-between sm:justify-center sm:gap-16 items-center">
                 <div className="flex flex-col gap-1">
-                  <h1 className="sm:text-lg sm:text-2xl font-bold">
+                  <h1 className="text-lg sm:text-2xl font-bold">
                     {user.displayName}
                   </h1>
                   <p className="text-sm sm:text-base text-zinc-500 dark:text-zinc-400">
                     {user.username}
                   </p>
                 </div>
-                <FollowButton user={user} following={false} />
+                <FollowButton user={user} />
               </div>
               {/* フォロー関連 */}
               <div className="flex gap-4 items-center">
