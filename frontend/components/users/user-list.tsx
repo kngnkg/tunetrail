@@ -30,8 +30,7 @@ export const UserList: React.FC<UserListProps> = ({
                   <Link href={`/${user.username}`}>{user.displayName}</Link>
                 </div>
               </div>
-              {/* TODO: フォローしているか確認するコードを書く */}
-              <FollowButton user={user} following={false} />
+              <FollowButton user={user} />
             </li>
           ))}
         </ul>

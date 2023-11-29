@@ -58,7 +58,7 @@ export default async function ReviewPage({ params }: ReviewPageProps) {
             </div>
           </div>
           <div className="ml-4">
-            <FollowButton user={review.author} following={false} />
+            <FollowButton user={review.author} />
           </div>
         </section>
         <section>コメント欄(sheet)</section>

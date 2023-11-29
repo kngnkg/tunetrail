@@ -19,6 +19,10 @@ export const errBadRequest = (message: string) => {
   return error(message, 400)
 }
 
+export const errUnauthorized = (message: string) => {
+  return error(message, 401)
+}
+
 export const errNotFound = (message: string) => {
   return error(message, 404)
 }
