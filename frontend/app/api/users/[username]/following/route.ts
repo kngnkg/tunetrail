@@ -2,26 +2,22 @@ import { NextRequest, NextResponse } from "next/server"
 import listFollows from "@/service/follow/list-follows"
 
 import { getServerSession } from "@/lib/session"
+import {
+  UserRouteContext,
+  userRouteContextSchema,
+} from "@/lib/validations/user"
 import { errBadRequest, errInternal, errUnauthorized } from "@/app/api/response"
 
-export async function GET(request: NextRequest) {
-  const searchParams = request.nextUrl.searchParams
-
-  const usernamesStr = searchParams.get("target_usernames")
-  if (!usernamesStr) {
-    return errBadRequest("invalid request")
-  }
-
-  // カンマ区切りの文字列を配列に変換
-  const usernames = usernamesStr.split(",")
-
+export async function GET(request: NextRequest, context: UserRouteContext) {
   try {
+    const { params } = userRouteContextSchema.parse(context)
+
     const session = await getServerSession()
     if (!session || !session.idToken) {
       return errUnauthorized("unauthorized")
     }
 
-    const resp = await listFollows(session.idToken, usernames)
+    const resp = await listFollows(session.idToken, [params.username])
     if (!resp) {
       return errInternal("internal error")
     }

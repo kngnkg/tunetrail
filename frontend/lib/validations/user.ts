@@ -42,3 +42,11 @@ export const userUpdateSchema = z.object({
   avatarUrl: avatarUrlSchema.optional(),
   bio: bioSchema.optional(),
 })
+
+export const userRouteContextSchema = z.object({
+  params: z.object({
+    username: userNameSchema,
+  }),
+})
+
+export type UserRouteContext = z.infer<typeof userRouteContextSchema>

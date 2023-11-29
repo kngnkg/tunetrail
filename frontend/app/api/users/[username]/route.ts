@@ -5,19 +5,15 @@ import { getServerSession } from "next-auth"
 import * as z from "zod"
 
 import { authOptions } from "@/lib/auth-options"
-import { userUpdateSchema } from "@/lib/validations/user"
-
-const routeContextSchema = z.object({
-  params: z.object({
-    username: z.string().min(4).max(20),
-  }),
-})
-
-type UserRouteContext = z.infer<typeof routeContextSchema>
+import {
+  UserRouteContext,
+  userRouteContextSchema,
+  userUpdateSchema,
+} from "@/lib/validations/user"
 
 export async function PATCH(req: Request, context: UserRouteContext) {
   try {
-    const { params } = routeContextSchema.parse(context)
+    const { params } = userRouteContextSchema.parse(context)
 
     const session = await getServerSession(authOptions)
     if (!session || !session.idToken) {
