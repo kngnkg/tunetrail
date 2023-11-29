@@ -7,7 +7,6 @@ import { errBadRequest, errInternal, errNotFound } from "../response"
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
 
-  // カンマ区切りの文字列を配列に変換
   const cursor = searchParams.get("cursor")
   const limitStr = searchParams.get("limit")
 
