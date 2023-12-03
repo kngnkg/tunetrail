@@ -3,9 +3,11 @@ syntax = "proto3";
 package follow;
 
 option go_package = "github.com/kngnkg/foderee/backend/gen/follow";
+import "user.proto";
 
 service FollowService {
   rpc ListFollows(ListFollowsRequest) returns (FollowResponseList);
+  rpc ListFollowings(user.ListUsersRequest) returns (user.UserList);
   rpc Follow(FollowRequest) returns (FollowResponse);
   rpc Unfollow(FollowRequest) returns (FollowResponse);
 }
