@@ -62,6 +62,7 @@ func (r *UserRepository) ListUsersById(ctx context.Context, db Executor, userIds
 		args = append(args, id)
 		placeholderNum++
 	}
+
 	query = helper.RemoveLastComma(query) + "], user_id)"
 
 	users := []*entity.User{}

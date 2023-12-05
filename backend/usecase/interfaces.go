@@ -29,7 +29,7 @@ type UserRepository interface {
 
 type FollowRepository interface {
 	IsFollowing(ctx context.Context, db repository.Executor, sourceId, targetId entity.ImmutableId) (bool, error)
+	ListFollowingsByUserId(ctx context.Context, db repository.Executor, immutableId, cursor entity.ImmutableId, limit int) ([]*entity.Follow, error)
 	StoreFollow(ctx context.Context, db repository.Executor, follow *entity.Follow) (*entity.Follow, error)
 	DeleteFollow(ctx context.Context, db repository.Executor, follow *entity.Follow) (*entity.Follow, error)
-	// GetUserFollowByUserIds(ctx context.Context, db repository.Executor, sourceId, targetId entity.UserId) ([]*entity.UserFollow, error)
 }
