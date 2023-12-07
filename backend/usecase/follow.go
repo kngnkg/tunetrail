@@ -84,6 +84,38 @@ func (uc *FollowUseCase) ListFollowings(ctx context.Context, immutableId, cursor
 	}, nil
 }
 
+func (uc *FollowUseCase) ListFollowers(ctx context.Context, immutableId, cursor entity.ImmutableId, limit int) (*UserListResponse, error) {
+	// 次のページがあるかどうかを判定するために、limit+1件取得する
+	fs, err := uc.fr.ListFollowersByUserId(ctx, uc.DB, immutableId, cursor, limit+1)
+	if err != nil {
+		return nil, err
+	}
+
+	nextCursor := ""
+	if len(fs) > limit {
+		// limit を超えた最初の要素の id を取得
+		nextCursor = string(fs[limit].ImmutableId)
+		// limit までの要素を取得
+		fs = fs[:limit]
+	}
+
+	userIds := make([]entity.ImmutableId, len(fs))
+	for i, f := range fs {
+		userIds[i] = f.ImmutableId
+	}
+
+	// ユーザー情報の取得
+	us, err := uc.ur.ListUsersById(ctx, uc.DB, userIds)
+	if err != nil {
+		return nil, err
+	}
+
+	return &UserListResponse{
+		Users:      us,
+		NextCursor: entity.ImmutableId(nextCursor),
+	}, nil
+}
+
 func (uc *FollowUseCase) Follow(ctx context.Context, immutableId entity.ImmutableId, targetUsername entity.Username) (*FollowResponse, error) {
 	// ユーザーの取得
 	targetUser, err := uc.ur.GetUserByUsername(ctx, uc.DB, targetUsername)

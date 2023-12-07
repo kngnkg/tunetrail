@@ -22,6 +22,7 @@ const _ = grpc.SupportPackageIsVersion7
 const (
 	FollowService_ListFollows_FullMethodName    = "/follow.FollowService/ListFollows"
 	FollowService_ListFollowings_FullMethodName = "/follow.FollowService/ListFollowings"
+	FollowService_ListFollowers_FullMethodName  = "/follow.FollowService/ListFollowers"
 	FollowService_Follow_FullMethodName         = "/follow.FollowService/Follow"
 	FollowService_Unfollow_FullMethodName       = "/follow.FollowService/Unfollow"
 )
@@ -32,6 +33,7 @@ const (
 type FollowServiceClient interface {
 	ListFollows(ctx context.Context, in *ListFollowsRequest, opts ...grpc.CallOption) (*FollowResponseList, error)
 	ListFollowings(ctx context.Context, in *user.ListUsersRequest, opts ...grpc.CallOption) (*user.UserList, error)
+	ListFollowers(ctx context.Context, in *user.ListUsersRequest, opts ...grpc.CallOption) (*user.UserList, error)
 	Follow(ctx context.Context, in *FollowRequest, opts ...grpc.CallOption) (*FollowResponse, error)
 	Unfollow(ctx context.Context, in *FollowRequest, opts ...grpc.CallOption) (*FollowResponse, error)
 }
@@ -62,6 +64,15 @@ func (c *followServiceClient) ListFollowings(ctx context.Context, in *user.ListU
 	return out, nil
 }
 
+func (c *followServiceClient) ListFollowers(ctx context.Context, in *user.ListUsersRequest, opts ...grpc.CallOption) (*user.UserList, error) {
+	out := new(user.UserList)
+	err := c.cc.Invoke(ctx, FollowService_ListFollowers_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *followServiceClient) Follow(ctx context.Context, in *FollowRequest, opts ...grpc.CallOption) (*FollowResponse, error) {
 	out := new(FollowResponse)
 	err := c.cc.Invoke(ctx, FollowService_Follow_FullMethodName, in, out, opts...)
@@ -86,6 +97,7 @@ func (c *followServiceClient) Unfollow(ctx context.Context, in *FollowRequest, o
 type FollowServiceServer interface {
 	ListFollows(context.Context, *ListFollowsRequest) (*FollowResponseList, error)
 	ListFollowings(context.Context, *user.ListUsersRequest) (*user.UserList, error)
+	ListFollowers(context.Context, *user.ListUsersRequest) (*user.UserList, error)
 	Follow(context.Context, *FollowRequest) (*FollowResponse, error)
 	Unfollow(context.Context, *FollowRequest) (*FollowResponse, error)
 	mustEmbedUnimplementedFollowServiceServer()
@@ -100,6 +112,9 @@ func (UnimplementedFollowServiceServer) ListFollows(context.Context, *ListFollow
 }
 func (UnimplementedFollowServiceServer) ListFollowings(context.Context, *user.ListUsersRequest) (*user.UserList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListFollowings not implemented")
+}
+func (UnimplementedFollowServiceServer) ListFollowers(context.Context, *user.ListUsersRequest) (*user.UserList, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListFollowers not implemented")
 }
 func (UnimplementedFollowServiceServer) Follow(context.Context, *FollowRequest) (*FollowResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Follow not implemented")
@@ -156,6 +171,24 @@ func _FollowService_ListFollowings_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _FollowService_ListFollowers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(user.ListUsersRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FollowServiceServer).ListFollowers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FollowService_ListFollowers_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FollowServiceServer).ListFollowers(ctx, req.(*user.ListUsersRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _FollowService_Follow_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(FollowRequest)
 	if err := dec(in); err != nil {
@@ -206,6 +239,10 @@ var FollowService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListFollowings",
 			Handler:    _FollowService_ListFollowings_Handler,
+		},
+		{
+			MethodName: "ListFollowers",
+			Handler:    _FollowService_ListFollowers_Handler,
 		},
 		{
 			MethodName: "Follow",

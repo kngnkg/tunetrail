@@ -95,6 +95,17 @@ var FollowServiceService = exports.FollowServiceService = {
     responseSerialize: serialize_user_UserList,
     responseDeserialize: deserialize_user_UserList,
   },
+  listFollowers: {
+    path: '/follow.FollowService/ListFollowers',
+    requestStream: false,
+    responseStream: false,
+    requestType: user_pb.ListUsersRequest,
+    responseType: user_pb.UserList,
+    requestSerialize: serialize_user_ListUsersRequest,
+    requestDeserialize: deserialize_user_ListUsersRequest,
+    responseSerialize: serialize_user_UserList,
+    responseDeserialize: deserialize_user_UserList,
+  },
   follow: {
     path: '/follow.FollowService/Follow',
     requestStream: false,
