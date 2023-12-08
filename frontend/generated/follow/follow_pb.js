@@ -21,6 +21,8 @@ var global = (function() {
   return Function('return this')();
 }.call(null));
 
+var user_pb = require('./user_pb.js');
+goog.object.extend(proto, user_pb);
 goog.exportSymbol('proto.follow.FollowRequest', null, global);
 goog.exportSymbol('proto.follow.FollowResponse', null, global);
 goog.exportSymbol('proto.follow.FollowResponseList', null, global);

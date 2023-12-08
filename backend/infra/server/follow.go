@@ -6,12 +6,16 @@ import (
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/auth"
 	"github.com/kngnkg/foderee/backend/entity"
 	"github.com/kngnkg/foderee/backend/gen/follow"
+	"github.com/kngnkg/foderee/backend/gen/user"
+	"github.com/kngnkg/foderee/backend/helper"
 	"github.com/kngnkg/foderee/backend/usecase"
 	"github.com/kngnkg/foderee/backend/validator"
 )
 
 type followUseCase interface {
 	ListFollows(ctx context.Context, immutableId entity.ImmutableId, usernames []entity.Username) ([]*usecase.FollowResponse, error)
+	ListFollowings(ctx context.Context, immutableId, cursor entity.ImmutableId, limit int) (*usecase.UserListResponse, error)
+	ListFollowers(ctx context.Context, immutableId, cursor entity.ImmutableId, limit int) (*usecase.UserListResponse, error)
 	Follow(ctx context.Context, immutableId entity.ImmutableId, username entity.Username) (*usecase.FollowResponse, error)
 	Unfollow(ctx context.Context, immutableId entity.ImmutableId, username entity.Username) (*usecase.FollowResponse, error)
 }
@@ -33,9 +37,11 @@ func NewFollowServer(a *Auth, v *validator.Validator, uc followUseCase) follow.F
 
 // 認証を必要とするメソッドを定義
 var authRequiredMethodsFollow = map[string]bool{
-	"/follow.FollowService/ListFollows": true,
-	"/follow.FollowService/Follow":      true,
-	"/follow.FollowService/Unfollow":    true,
+	"/follow.FollowService/ListFollows":    true,
+	"/follow.FollowService/ListFollowings": true,
+	"/follow.FollowService/ListFollowers":  true,
+	"/follow.FollowService/Follow":         true,
+	"/follow.FollowService/Unfollow":       true,
 }
 
 func (s *followServer) AuthFuncOverride(ctx context.Context, fullMethodName string) (context.Context, error) {
@@ -86,6 +92,86 @@ func (s *followServer) ListFollows(ctx context.Context, in *follow.ListFollowsRe
 	return &follow.FollowResponseList{
 		FollowResponses: resps,
 	}, nil
+}
+
+func (s *followServer) ListFollowings(ctx context.Context, in *user.ListUsersRequest) (*user.UserList, error) {
+	decoded, err := helper.DecodeCursor(in.Cursor)
+	if err != nil {
+		return nil, invalidArgument(ctx, err)
+	}
+
+	req := struct {
+		Cursor string `validate:"omitempty,uuid"`
+		Limit  int    `validate:"omitempty,max=50"`
+	}{
+		Cursor: decoded,
+		Limit:  int(in.Limit),
+	}
+
+	if err := s.v.Validate(req); err != nil {
+		return nil, invalidArgument(ctx, err)
+	}
+
+	var limit int
+	if req.Limit == 0 {
+		limit = DefaultLimit
+	} else {
+		limit = req.Limit
+	}
+
+	immutableId := GetImmutableId(ctx)
+
+	resp, err := s.uc.ListFollowings(ctx, immutableId, entity.ImmutableId(req.Cursor), limit)
+	if err != nil {
+		return nil, internal(ctx, err)
+	}
+
+	nextCursor := ""
+	if resp.NextCursor != "" {
+		nextCursor = helper.EncodeCursor(string(resp.NextCursor))
+	}
+
+	return toUserList(resp.Users, nextCursor), nil
+}
+
+func (s *followServer) ListFollowers(ctx context.Context, in *user.ListUsersRequest) (*user.UserList, error) {
+	decoded, err := helper.DecodeCursor(in.Cursor)
+	if err != nil {
+		return nil, invalidArgument(ctx, err)
+	}
+
+	req := struct {
+		Cursor string `validate:"omitempty,uuid"`
+		Limit  int    `validate:"omitempty,max=50"`
+	}{
+		Cursor: decoded,
+		Limit:  int(in.Limit),
+	}
+
+	if err := s.v.Validate(req); err != nil {
+		return nil, invalidArgument(ctx, err)
+	}
+
+	var limit int
+	if req.Limit == 0 {
+		limit = DefaultLimit
+	} else {
+		limit = req.Limit
+	}
+
+	immutableId := GetImmutableId(ctx)
+
+	resp, err := s.uc.ListFollowers(ctx, immutableId, entity.ImmutableId(req.Cursor), limit)
+	if err != nil {
+		return nil, internal(ctx, err)
+	}
+
+	nextCursor := ""
+	if resp.NextCursor != "" {
+		nextCursor = helper.EncodeCursor(string(resp.NextCursor))
+	}
+
+	return toUserList(resp.Users, nextCursor), nil
 }
 
 func (s *followServer) Follow(ctx context.Context, in *follow.FollowRequest) (*follow.FollowResponse, error) {
