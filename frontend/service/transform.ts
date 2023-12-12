@@ -1,5 +1,5 @@
-import * as PBReview from "@/generated/review/review_pb"
-import * as PBUser from "@/generated/user/user_pb"
+import * as PBReview from "@/generated/review_pb"
+import * as PBUser from "@/generated/user_pb"
 import {
   Album,
   AlbumInfo,

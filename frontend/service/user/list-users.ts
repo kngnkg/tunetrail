@@ -1,4 +1,4 @@
-import { ListUsersRequest, UserList } from "@/generated/user/user_pb"
+import { ListUsersRequest, UserList } from "@/generated/user_pb"
 
 import { client } from "./client"
 

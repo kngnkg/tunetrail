@@ -1,7 +1,4 @@
-import {
-  FollowResponse,
-  ListFollowsRequest,
-} from "@/generated/follow/follow_pb"
+import { FollowResponse, ListFollowsRequest } from "@/generated/follow_pb"
 
 import { getMetadata } from "@/lib/grpc"
 

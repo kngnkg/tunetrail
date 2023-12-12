@@ -1,4 +1,4 @@
-import { UpdateUserRequest, User } from "@/generated/user/user_pb"
+import { UpdateUserRequest, User } from "@/generated/user_pb"
 import * as grpc from "@grpc/grpc-js"
 
 import { getMetadata } from "@/lib/grpc"
