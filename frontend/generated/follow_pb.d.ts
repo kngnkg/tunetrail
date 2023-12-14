@@ -26,6 +26,32 @@ export namespace ListFollowsRequest {
   }
 }
 
+export class ListFollowingsRequest extends jspb.Message {
+  getUsername(): string;
+  setUsername(value: string): void;
+
+  hasPagenation(): boolean;
+  clearPagenation(): void;
+  getPagenation(): user_pb.ListUsersRequest | undefined;
+  setPagenation(value?: user_pb.ListUsersRequest): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ListFollowingsRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: ListFollowingsRequest): ListFollowingsRequest.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: ListFollowingsRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ListFollowingsRequest;
+  static deserializeBinaryFromReader(message: ListFollowingsRequest, reader: jspb.BinaryReader): ListFollowingsRequest;
+}
+
+export namespace ListFollowingsRequest {
+  export type AsObject = {
+    username: string,
+    pagenation?: user_pb.ListUsersRequest.AsObject,
+  }
+}
+
 export class FollowRequest extends jspb.Message {
   getUsername(): string;
   setUsername(value: string): void;

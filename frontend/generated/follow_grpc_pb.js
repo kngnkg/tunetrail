@@ -38,6 +38,17 @@ function deserialize_follow_FollowResponseList(buffer_arg) {
   return follow_pb.FollowResponseList.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
+function serialize_follow_ListFollowingsRequest(arg) {
+  if (!(arg instanceof follow_pb.ListFollowingsRequest)) {
+    throw new Error('Expected argument of type follow.ListFollowingsRequest');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_follow_ListFollowingsRequest(buffer_arg) {
+  return follow_pb.ListFollowingsRequest.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
 function serialize_follow_ListFollowsRequest(arg) {
   if (!(arg instanceof follow_pb.ListFollowsRequest)) {
     throw new Error('Expected argument of type follow.ListFollowsRequest');
@@ -47,17 +58,6 @@ function serialize_follow_ListFollowsRequest(arg) {
 
 function deserialize_follow_ListFollowsRequest(buffer_arg) {
   return follow_pb.ListFollowsRequest.deserializeBinary(new Uint8Array(buffer_arg));
-}
-
-function serialize_user_ListUsersRequest(arg) {
-  if (!(arg instanceof user_pb.ListUsersRequest)) {
-    throw new Error('Expected argument of type user.ListUsersRequest');
-  }
-  return Buffer.from(arg.serializeBinary());
-}
-
-function deserialize_user_ListUsersRequest(buffer_arg) {
-  return user_pb.ListUsersRequest.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
 function serialize_user_UserList(arg) {
@@ -84,14 +84,14 @@ var FollowServiceService = exports.FollowServiceService = {
     responseSerialize: serialize_follow_FollowResponseList,
     responseDeserialize: deserialize_follow_FollowResponseList,
   },
-  listFollowings: {
-    path: '/follow.FollowService/ListFollowings',
+  listFollowees: {
+    path: '/follow.FollowService/ListFollowees',
     requestStream: false,
     responseStream: false,
-    requestType: user_pb.ListUsersRequest,
+    requestType: follow_pb.ListFollowingsRequest,
     responseType: user_pb.UserList,
-    requestSerialize: serialize_user_ListUsersRequest,
-    requestDeserialize: deserialize_user_ListUsersRequest,
+    requestSerialize: serialize_follow_ListFollowingsRequest,
+    requestDeserialize: deserialize_follow_ListFollowingsRequest,
     responseSerialize: serialize_user_UserList,
     responseDeserialize: deserialize_user_UserList,
   },
@@ -99,10 +99,10 @@ var FollowServiceService = exports.FollowServiceService = {
     path: '/follow.FollowService/ListFollowers',
     requestStream: false,
     responseStream: false,
-    requestType: user_pb.ListUsersRequest,
+    requestType: follow_pb.ListFollowingsRequest,
     responseType: user_pb.UserList,
-    requestSerialize: serialize_user_ListUsersRequest,
-    requestDeserialize: deserialize_user_ListUsersRequest,
+    requestSerialize: serialize_follow_ListFollowingsRequest,
+    requestDeserialize: deserialize_follow_ListFollowingsRequest,
     responseSerialize: serialize_user_UserList,
     responseDeserialize: deserialize_user_UserList,
   },
