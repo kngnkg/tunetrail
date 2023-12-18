@@ -1,40 +1,51 @@
 import Link from "next/link"
 import { User } from "@/types"
 
+import { useUsers } from "@/hooks/users/use-users"
 import { FollowButton } from "@/components/follow-button"
 import { UserAvatar } from "@/components/user-avatar"
 
 interface UserListProps {
-  users: Pick<User, "username" | "immutableId" | "displayName">[]
-  isLoading?: boolean
-  isError?: boolean
+  endpoint: string
 }
 
-export const UserList: React.FC<UserListProps> = ({
-  users,
-  isLoading = false,
-  isError = false,
-}) => {
-  // TODO: suspense
+export const UserList: React.FC<UserListProps> = ({ endpoint }) => {
+  const { data, error, isLoading, isValidating, loadMore } = useUsers({
+    endpoint: endpoint,
+  })
+
+  if (error) {
+    console.error(error)
+    return <p>Something went wrong.</p>
+  }
+
   return (
-    <>
-      {users.length !== 0 && !isLoading && !isError && (
-        <ul className="flex flex-col gap-4">
-          {users.map((user, idx) => (
-            <li key={idx} className="flex items-center justify-between">
-              <div className="flex gap-2 items-center text-sm sm:text-md text-zinc-400 dark:text-zinc-400">
-                <Link href={`/${user.username}`}>
-                  <UserAvatar user={user} />
-                </Link>
-                <div className="flex flex-col">
-                  <Link href={`/${user.username}`}>{user.displayName}</Link>
+    <div className="flex flex-col gap-4">
+      {data ? (
+        <>
+          {data.map((userWP, idx) => (
+            <>
+              {userWP.users.map((user: User) => (
+                <div key={idx} className="flex items-center justify-between">
+                  <div className="flex gap-2 items-center text-sm sm:text-md text-zinc-400 dark:text-zinc-400">
+                    <Link href={`/${user.username}`}>
+                      <UserAvatar user={user} />
+                    </Link>
+                    <div className="flex flex-col">
+                      <Link href={`/${user.username}`}>{user.displayName}</Link>
+                    </div>
+                  </div>
+                  <FollowButton user={user} />
                 </div>
-              </div>
-              <FollowButton user={user} />
-            </li>
+              ))}
+            </>
           ))}
-        </ul>
+        </>
+      ) : (
+        <>
+          <p>todo</p>
+        </>
       )}
-    </>
+    </div>
   )
 }
