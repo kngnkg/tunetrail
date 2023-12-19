@@ -1,3 +1,4 @@
+import { Suspense } from "react"
 import Link from "next/link"
 import { User } from "@/types"
 
@@ -6,6 +7,8 @@ import { FollowButton } from "@/components/follow-button"
 import { UserAvatar } from "@/components/user-avatar"
 
 import { Button } from "../ui/button"
+import { UserListSkeleton } from "./user-list-skeleton"
+import { UserSkeleton } from "./user-skeleton"
 
 interface UserListProps {
   endpoint: string
@@ -29,24 +32,26 @@ export const UserList: React.FC<UserListProps> = ({ endpoint }) => {
             <>
               {userWP.users.map((user: User) => (
                 <div key={idx} className="flex items-center justify-between">
-                  <div className="flex gap-2 items-center text-sm sm:text-md text-zinc-400 dark:text-zinc-400">
-                    <Link href={`/${user.username}`}>
-                      <UserAvatar user={user} />
-                    </Link>
-                    <div className="flex flex-col">
-                      <Link href={`/${user.username}`}>{user.displayName}</Link>
+                  <Suspense fallback={<UserSkeleton />}>
+                    <div className="flex gap-2 items-center text-sm sm:text-md text-zinc-400 dark:text-zinc-400">
+                      <Link href={`/${user.username}`}>
+                        <UserAvatar user={user} />
+                      </Link>
+                      <div className="flex flex-col">
+                        <Link href={`/${user.username}`}>
+                          {user.displayName}
+                        </Link>
+                      </div>
                     </div>
-                  </div>
-                  <FollowButton user={user} />
+                    <FollowButton user={user} />
+                  </Suspense>
                 </div>
               ))}
             </>
           ))}
         </>
       ) : (
-        <>
-          <p>todo: isLoading</p>
-        </>
+        <>{isLoading ? <UserListSkeleton count={10} /> : <p>No Content.</p>}</>
       )}
       <div className="mb-20 flex flex-col items-center">
         <Button variant="ghost" size="lg" onClick={() => loadMore()}>
