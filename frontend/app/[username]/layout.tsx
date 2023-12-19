@@ -81,7 +81,7 @@ export default async function UserLayout({
               {/* フォロー関連 */}
               <div className="flex gap-4 items-center">
                 <UserListDialog type="followers" user={user} />
-                <UserListDialog type="following" user={user} />
+                <UserListDialog type="followees" user={user} />
               </div>
               <div>
                 <p className="text-zinc-500 dark:text-zinc-400">{user.bio}</p>

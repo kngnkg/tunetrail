@@ -2,12 +2,14 @@ package server
 
 import (
 	"context"
+	"log/slog"
 
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/auth"
 	"github.com/kngnkg/foderee/backend/entity"
 	"github.com/kngnkg/foderee/backend/gen/follow"
 	"github.com/kngnkg/foderee/backend/gen/user"
 	"github.com/kngnkg/foderee/backend/helper"
+	"github.com/kngnkg/foderee/backend/logger"
 	"github.com/kngnkg/foderee/backend/usecase"
 	"github.com/kngnkg/foderee/backend/validator"
 )
@@ -97,7 +99,10 @@ func (s *followServer) ListFollows(ctx context.Context, in *follow.ListFollowsRe
 func (s *followServer) ListFollowees(ctx context.Context, in *follow.ListFollowingsRequest) (*user.UserList, error) {
 	var decoded string
 	var limit int
-	if in.Pagenation != nil {
+	if in.Pagenation == nil || in.Pagenation.Cursor == "" || in.Pagenation.Limit == 0 {
+		decoded = ""
+		limit = DefaultLimit
+	} else {
 		var err error
 		decoded, err = helper.DecodeCursor(in.Pagenation.Cursor)
 		if err != nil {
@@ -105,9 +110,6 @@ func (s *followServer) ListFollowees(ctx context.Context, in *follow.ListFollowi
 		}
 
 		limit = int(in.Pagenation.Limit)
-	} else {
-		decoded = ""
-		limit = DefaultLimit
 	}
 
 	req := struct {
@@ -119,6 +121,8 @@ func (s *followServer) ListFollowees(ctx context.Context, in *follow.ListFollowi
 		Cursor:   decoded,
 		Limit:    limit,
 	}
+
+	logger.FromContext(ctx).Info("server", slog.Any("req", req))
 
 	if err := s.v.Validate(req); err != nil {
 		return nil, invalidArgument(ctx, err)

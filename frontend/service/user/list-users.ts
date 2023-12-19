@@ -1,11 +1,7 @@
 import { ListUsersRequest, UserList } from "@/generated/user_pb"
+import { ListUsersParams } from "@/types"
 
 import { client } from "./client"
-
-export interface ListUsersParams {
-  cursor: string | null
-  limit: number | null
-}
 
 export default function listUsers(
   params: ListUsersParams

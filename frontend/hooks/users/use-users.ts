@@ -1,3 +1,4 @@
+import { log } from "console"
 import { User } from "@/types"
 import useSWR from "swr"
 import useSWRInfinite from "swr/infinite"
@@ -29,7 +30,7 @@ const fetcher = async (
   init?: RequestInit
 ): Promise<UserWithPagination> => {
   const res = await clientFetcher(resource, init)
-  const users: User[] = res.reviews.map((user: any) => transformUser(user))
+  const users: User[] = res.users.map((user: any) => transformUser(user))
 
   return {
     users: users,

@@ -5,6 +5,8 @@ import { useUsers } from "@/hooks/users/use-users"
 import { FollowButton } from "@/components/follow-button"
 import { UserAvatar } from "@/components/user-avatar"
 
+import { Button } from "../ui/button"
+
 interface UserListProps {
   endpoint: string
 }
@@ -43,9 +45,14 @@ export const UserList: React.FC<UserListProps> = ({ endpoint }) => {
         </>
       ) : (
         <>
-          <p>todo</p>
+          <p>todo: isLoading</p>
         </>
       )}
+      <div className="mb-20 flex flex-col items-center">
+        <Button variant="ghost" size="lg" onClick={() => loadMore()}>
+          もっと見る
+        </Button>
+      </div>
     </div>
   )
 }
