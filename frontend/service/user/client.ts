@@ -1,4 +1,4 @@
-import { UserServiceClient } from "@/generated/user/user_grpc_pb"
+import { UserServiceClient } from "@/generated/user_grpc_pb"
 import * as grpc from "@grpc/grpc-js"
 
 import { env } from "@/env.mjs"

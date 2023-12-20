@@ -102,3 +102,8 @@ export type Track = {
   durationMs: number
   trackNumber: number
 }
+
+export type ListUsersParams = {
+  cursor: string | null
+  limit: number | null
+}

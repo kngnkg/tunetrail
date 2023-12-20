@@ -10,8 +10,8 @@ NODE_PROTOC="./frontend/node_modules/.bin/grpc_tools_node_protoc"
 # TypeScript 用のファイルを生成するためのプラグインのパス
 PROTOC_GEN_TS_PATH="./frontend/node_modules/.bin/protoc-gen-ts"
 
-# 生成ファイルを格納するフォルダのベースパス
-BASE_OUT_DIR="./frontend/generated"
+# 生成ファイルを格納するフォルダのパス
+OUT_DIR="./frontend/generated"
 
 # proto ファイルのパス
 PROTO_PATH="./proto"
@@ -20,8 +20,6 @@ cd ${WORK_DIR}
 
 # proto のコンパイル
 for PROTO_FILE in ${PROTO_PATH}/*.proto; do
-    OUT_DIR="${BASE_OUT_DIR}/$(basename ${PROTO_FILE} .proto)"
-
     mkdir -p ${OUT_DIR}
 
     $NODE_PROTOC \

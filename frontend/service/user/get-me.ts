@@ -1,4 +1,4 @@
-import { User } from "@/generated/user/user_pb"
+import { User } from "@/generated/user_pb"
 import * as grpc from "@grpc/grpc-js"
 import { Empty } from "google-protobuf/google/protobuf/empty_pb"
 

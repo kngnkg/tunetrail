@@ -1,4 +1,4 @@
-import { Review, UpdateReviewRequest } from "@/generated/review/review_pb"
+import { Review, UpdateReviewRequest } from "@/generated/review_pb"
 
 import { getMetadata } from "@/lib/grpc"
 

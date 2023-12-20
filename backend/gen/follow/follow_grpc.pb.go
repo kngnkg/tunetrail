@@ -20,11 +20,11 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	FollowService_ListFollows_FullMethodName    = "/follow.FollowService/ListFollows"
-	FollowService_ListFollowings_FullMethodName = "/follow.FollowService/ListFollowings"
-	FollowService_ListFollowers_FullMethodName  = "/follow.FollowService/ListFollowers"
-	FollowService_Follow_FullMethodName         = "/follow.FollowService/Follow"
-	FollowService_Unfollow_FullMethodName       = "/follow.FollowService/Unfollow"
+	FollowService_ListFollows_FullMethodName   = "/follow.FollowService/ListFollows"
+	FollowService_ListFollowees_FullMethodName = "/follow.FollowService/ListFollowees"
+	FollowService_ListFollowers_FullMethodName = "/follow.FollowService/ListFollowers"
+	FollowService_Follow_FullMethodName        = "/follow.FollowService/Follow"
+	FollowService_Unfollow_FullMethodName      = "/follow.FollowService/Unfollow"
 )
 
 // FollowServiceClient is the client API for FollowService service.
@@ -32,8 +32,8 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type FollowServiceClient interface {
 	ListFollows(ctx context.Context, in *ListFollowsRequest, opts ...grpc.CallOption) (*FollowResponseList, error)
-	ListFollowings(ctx context.Context, in *user.ListUsersRequest, opts ...grpc.CallOption) (*user.UserList, error)
-	ListFollowers(ctx context.Context, in *user.ListUsersRequest, opts ...grpc.CallOption) (*user.UserList, error)
+	ListFollowees(ctx context.Context, in *ListFollowingsRequest, opts ...grpc.CallOption) (*user.UserList, error)
+	ListFollowers(ctx context.Context, in *ListFollowingsRequest, opts ...grpc.CallOption) (*user.UserList, error)
 	Follow(ctx context.Context, in *FollowRequest, opts ...grpc.CallOption) (*FollowResponse, error)
 	Unfollow(ctx context.Context, in *FollowRequest, opts ...grpc.CallOption) (*FollowResponse, error)
 }
@@ -55,16 +55,16 @@ func (c *followServiceClient) ListFollows(ctx context.Context, in *ListFollowsRe
 	return out, nil
 }
 
-func (c *followServiceClient) ListFollowings(ctx context.Context, in *user.ListUsersRequest, opts ...grpc.CallOption) (*user.UserList, error) {
+func (c *followServiceClient) ListFollowees(ctx context.Context, in *ListFollowingsRequest, opts ...grpc.CallOption) (*user.UserList, error) {
 	out := new(user.UserList)
-	err := c.cc.Invoke(ctx, FollowService_ListFollowings_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, FollowService_ListFollowees_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *followServiceClient) ListFollowers(ctx context.Context, in *user.ListUsersRequest, opts ...grpc.CallOption) (*user.UserList, error) {
+func (c *followServiceClient) ListFollowers(ctx context.Context, in *ListFollowingsRequest, opts ...grpc.CallOption) (*user.UserList, error) {
 	out := new(user.UserList)
 	err := c.cc.Invoke(ctx, FollowService_ListFollowers_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -96,8 +96,8 @@ func (c *followServiceClient) Unfollow(ctx context.Context, in *FollowRequest, o
 // for forward compatibility
 type FollowServiceServer interface {
 	ListFollows(context.Context, *ListFollowsRequest) (*FollowResponseList, error)
-	ListFollowings(context.Context, *user.ListUsersRequest) (*user.UserList, error)
-	ListFollowers(context.Context, *user.ListUsersRequest) (*user.UserList, error)
+	ListFollowees(context.Context, *ListFollowingsRequest) (*user.UserList, error)
+	ListFollowers(context.Context, *ListFollowingsRequest) (*user.UserList, error)
 	Follow(context.Context, *FollowRequest) (*FollowResponse, error)
 	Unfollow(context.Context, *FollowRequest) (*FollowResponse, error)
 	mustEmbedUnimplementedFollowServiceServer()
@@ -110,10 +110,10 @@ type UnimplementedFollowServiceServer struct {
 func (UnimplementedFollowServiceServer) ListFollows(context.Context, *ListFollowsRequest) (*FollowResponseList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListFollows not implemented")
 }
-func (UnimplementedFollowServiceServer) ListFollowings(context.Context, *user.ListUsersRequest) (*user.UserList, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListFollowings not implemented")
+func (UnimplementedFollowServiceServer) ListFollowees(context.Context, *ListFollowingsRequest) (*user.UserList, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListFollowees not implemented")
 }
-func (UnimplementedFollowServiceServer) ListFollowers(context.Context, *user.ListUsersRequest) (*user.UserList, error) {
+func (UnimplementedFollowServiceServer) ListFollowers(context.Context, *ListFollowingsRequest) (*user.UserList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListFollowers not implemented")
 }
 func (UnimplementedFollowServiceServer) Follow(context.Context, *FollowRequest) (*FollowResponse, error) {
@@ -153,26 +153,26 @@ func _FollowService_ListFollows_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
-func _FollowService_ListFollowings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(user.ListUsersRequest)
+func _FollowService_ListFollowees_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListFollowingsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(FollowServiceServer).ListFollowings(ctx, in)
+		return srv.(FollowServiceServer).ListFollowees(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: FollowService_ListFollowings_FullMethodName,
+		FullMethod: FollowService_ListFollowees_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FollowServiceServer).ListFollowings(ctx, req.(*user.ListUsersRequest))
+		return srv.(FollowServiceServer).ListFollowees(ctx, req.(*ListFollowingsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _FollowService_ListFollowers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(user.ListUsersRequest)
+	in := new(ListFollowingsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -184,7 +184,7 @@ func _FollowService_ListFollowers_Handler(srv interface{}, ctx context.Context, 
 		FullMethod: FollowService_ListFollowers_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FollowServiceServer).ListFollowers(ctx, req.(*user.ListUsersRequest))
+		return srv.(FollowServiceServer).ListFollowers(ctx, req.(*ListFollowingsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -237,8 +237,8 @@ var FollowService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _FollowService_ListFollows_Handler,
 		},
 		{
-			MethodName: "ListFollowings",
-			Handler:    _FollowService_ListFollowings_Handler,
+			MethodName: "ListFollowees",
+			Handler:    _FollowService_ListFollowees_Handler,
 		},
 		{
 			MethodName: "ListFollowers",

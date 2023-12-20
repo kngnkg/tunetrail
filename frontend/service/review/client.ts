@@ -1,4 +1,4 @@
-import { ReviewServiceClient } from "@/generated/review/review_grpc_pb"
+import { ReviewServiceClient } from "@/generated/review_grpc_pb"
 import * as grpc from "@grpc/grpc-js"
 
 import { env } from "@/env.mjs"

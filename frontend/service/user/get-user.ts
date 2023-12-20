@@ -1,4 +1,4 @@
-import { GetUserByUsernameRequest, User } from "@/generated/user/user_pb"
+import { GetUserByUsernameRequest, User } from "@/generated/user_pb"
 
 import { client } from "./client"
 

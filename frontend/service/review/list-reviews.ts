@@ -1,8 +1,4 @@
-import {
-  ListReviewsRequest,
-  Review,
-  ReviewList,
-} from "@/generated/review/review_pb"
+import { ListReviewsRequest, Review, ReviewList } from "@/generated/review_pb"
 
 import { client } from "./client"
 

@@ -52,9 +52,14 @@ func (uc *FollowUseCase) ListFollows(ctx context.Context, immutableId entity.Imm
 	return resps, nil
 }
 
-func (uc *FollowUseCase) ListFollowings(ctx context.Context, immutableId, cursor entity.ImmutableId, limit int) (*UserListResponse, error) {
+func (uc *FollowUseCase) ListFollowees(ctx context.Context, username entity.Username, cursor entity.ImmutableId, limit int) (*UserListResponse, error) {
+	u, err := uc.ur.GetUserByUsername(ctx, uc.DB, username)
+	if err != nil {
+		return nil, err
+	}
+
 	// 次のページがあるかどうかを判定するために、limit+1件取得する
-	fs, err := uc.fr.ListFollowingsByUserId(ctx, uc.DB, immutableId, cursor, limit+1)
+	fs, err := uc.fr.ListFollowingsByUserId(ctx, uc.DB, u.ImmutableId, cursor, limit+1)
 	if err != nil {
 		return nil, err
 	}
@@ -84,9 +89,14 @@ func (uc *FollowUseCase) ListFollowings(ctx context.Context, immutableId, cursor
 	}, nil
 }
 
-func (uc *FollowUseCase) ListFollowers(ctx context.Context, immutableId, cursor entity.ImmutableId, limit int) (*UserListResponse, error) {
+func (uc *FollowUseCase) ListFollowers(ctx context.Context, username entity.Username, cursor entity.ImmutableId, limit int) (*UserListResponse, error) {
+	u, err := uc.ur.GetUserByUsername(ctx, uc.DB, username)
+	if err != nil {
+		return nil, err
+	}
+
 	// 次のページがあるかどうかを判定するために、limit+1件取得する
-	fs, err := uc.fr.ListFollowersByUserId(ctx, uc.DB, immutableId, cursor, limit+1)
+	fs, err := uc.fr.ListFollowersByUserId(ctx, uc.DB, u.ImmutableId, cursor, limit+1)
 	if err != nil {
 		return nil, err
 	}

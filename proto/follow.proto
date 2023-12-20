@@ -7,13 +7,18 @@ import "user.proto";
 
 service FollowService {
   rpc ListFollows(ListFollowsRequest) returns (FollowResponseList);
-  rpc ListFollowings(user.ListUsersRequest) returns (user.UserList);
-  rpc ListFollowers(user.ListUsersRequest) returns (user.UserList);
+  rpc ListFollowees(ListFollowingsRequest) returns (user.UserList);
+  rpc ListFollowers(ListFollowingsRequest) returns (user.UserList);
   rpc Follow(FollowRequest) returns (FollowResponse);
   rpc Unfollow(FollowRequest) returns (FollowResponse);
 }
 
 message ListFollowsRequest { repeated string usernames = 1; }
+
+message ListFollowingsRequest {
+  string username = 1;
+  user.ListUsersRequest pagenation = 2;
+}
 
 message FollowRequest { string username = 1; }
 

@@ -1,4 +1,4 @@
-import { FollowServiceClient } from "@/generated/follow/follow_grpc_pb"
+import { FollowServiceClient } from "@/generated/follow_grpc_pb"
 import * as grpc from "@grpc/grpc-js"
 
 import { env } from "@/env.mjs"

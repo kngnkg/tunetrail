@@ -90,7 +90,11 @@ export const FollowButton: React.FC<FollowButtonProps> = ({
           onClick={onClickFollow}
           variant={variant}
           size="sm"
-          className={variant === "link" ? "text-primary dark:text-primary" : ""}
+          className={
+            variant === "link"
+              ? "text-xs text-primary dark:text-primary"
+              : "text-xs"
+          }
         >
           フォローする
         </Button>
