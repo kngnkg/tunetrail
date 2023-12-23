@@ -34,3 +34,7 @@ type FollowRepository interface {
 	StoreFollow(ctx context.Context, db repository.Executor, follow *entity.Follow) (*entity.Follow, error)
 	DeleteFollow(ctx context.Context, db repository.Executor, follow *entity.Follow) (*entity.Follow, error)
 }
+
+type LikeRepository interface {
+	StoreLike(ctx context.Context, db repository.Executor, like *entity.Like) (*entity.Like, error)
+}

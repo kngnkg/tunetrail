@@ -5,8 +5,8 @@ import * as jspb from "google-protobuf";
 import * as review_pb from "./review_pb";
 
 export class LikeRequest extends jspb.Message {
-  getPostId(): string;
-  setPostId(value: string): void;
+  getReviewId(): string;
+  setReviewId(value: string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): LikeRequest.AsObject;
@@ -20,7 +20,7 @@ export class LikeRequest extends jspb.Message {
 
 export namespace LikeRequest {
   export type AsObject = {
-    postId: string,
+    reviewId: string,
   }
 }
 
@@ -51,8 +51,8 @@ export namespace ListLikedReviewsRequest {
 }
 
 export class LikeResponse extends jspb.Message {
-  getPostId(): string;
-  setPostId(value: string): void;
+  getReviewId(): string;
+  setReviewId(value: string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): LikeResponse.AsObject;
@@ -66,7 +66,7 @@ export class LikeResponse extends jspb.Message {
 
 export namespace LikeResponse {
   export type AsObject = {
-    postId: string,
+    reviewId: string,
   }
 }
 
