@@ -11,6 +11,7 @@ import (
 )
 
 type likeUseCase interface {
+	GetLike(ctx context.Context, immutableId entity.ImmutableId, reviewId string) (*usecase.LikeResponse, error)
 	Like(ctx context.Context, immutableId entity.ImmutableId, reviewId string) (*usecase.LikeResponse, error)
 }
 
@@ -31,7 +32,8 @@ func NewLikeServer(a *Auth, v *validator.Validator, uc likeUseCase) like.LikeSer
 
 // 認証を必要とするメソッドを定義
 var authRequiredMethodsLike = map[string]bool{
-	"/like.LikeService/Like": true,
+	"/like.LikeService/GetLike": true,
+	"/like.LikeService/Like":    true,
 }
 
 func (s *likeServer) AuthFuncOverride(ctx context.Context, fullMethodName string) (context.Context, error) {
@@ -44,6 +46,32 @@ func (s *likeServer) AuthFuncOverride(ctx context.Context, fullMethodName string
 }
 
 var _ grpc_auth.ServiceAuthFuncOverride = (*likeServer)(nil)
+
+func (s *likeServer) GetLike(ctx context.Context, in *like.LikeRequest) (*like.LikeResponse, error) {
+	req := struct {
+		ReviewId string `validate:"required"`
+	}{
+		ReviewId: in.ReviewId,
+	}
+
+	// バリデーション
+	if err := s.v.Validate(req); err != nil {
+		return nil, err
+	}
+
+	// ユーザーの取得
+	immutableId := GetImmutableId(ctx)
+
+	resp, err := s.uc.GetLike(ctx, immutableId, req.ReviewId)
+	if err != nil {
+		return nil, err
+	}
+
+	return &like.LikeResponse{
+		ReviewId: resp.Review.ReviewId,
+		IsLiked:  resp.IsLiked,
+	}, nil
+}
 
 func (s *likeServer) Like(ctx context.Context, in *like.LikeRequest) (*like.LikeResponse, error) {
 	req := struct {
@@ -67,5 +95,6 @@ func (s *likeServer) Like(ctx context.Context, in *like.LikeRequest) (*like.Like
 
 	return &like.LikeResponse{
 		ReviewId: resp.Review.ReviewId,
+		IsLiked:  resp.IsLiked,
 	}, nil
 }

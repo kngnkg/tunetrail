@@ -121,7 +121,7 @@ proto.like.LikeRequest.prototype.toObject = function(opt_includeInstance) {
  */
 proto.like.LikeRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
-    reviewId: jspb.Message.getFieldWithDefault(msg, 1, "")
+    reviewid: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
 
   if (includeInstance) {
@@ -160,7 +160,7 @@ proto.like.LikeRequest.deserializeBinaryFromReader = function(msg, reader) {
     switch (field) {
     case 1:
       var value = /** @type {string} */ (reader.readString());
-      msg.setReviewId(value);
+      msg.setReviewid(value);
       break;
     default:
       reader.skipField();
@@ -191,7 +191,7 @@ proto.like.LikeRequest.prototype.serializeBinary = function() {
  */
 proto.like.LikeRequest.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getReviewId();
+  f = message.getReviewid();
   if (f.length > 0) {
     writer.writeString(
       1,
@@ -202,10 +202,10 @@ proto.like.LikeRequest.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * optional string review_id = 1;
+ * optional string reviewId = 1;
  * @return {string}
  */
-proto.like.LikeRequest.prototype.getReviewId = function() {
+proto.like.LikeRequest.prototype.getReviewid = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
@@ -214,7 +214,7 @@ proto.like.LikeRequest.prototype.getReviewId = function() {
  * @param {string} value
  * @return {!proto.like.LikeRequest} returns this
  */
-proto.like.LikeRequest.prototype.setReviewId = function(value) {
+proto.like.LikeRequest.prototype.setReviewid = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
 };
 
@@ -432,7 +432,8 @@ proto.like.LikeResponse.prototype.toObject = function(opt_includeInstance) {
  */
 proto.like.LikeResponse.toObject = function(includeInstance, msg) {
   var f, obj = {
-    reviewId: jspb.Message.getFieldWithDefault(msg, 1, "")
+    reviewid: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    isliked: jspb.Message.getBooleanFieldWithDefault(msg, 2, false)
   };
 
   if (includeInstance) {
@@ -471,7 +472,11 @@ proto.like.LikeResponse.deserializeBinaryFromReader = function(msg, reader) {
     switch (field) {
     case 1:
       var value = /** @type {string} */ (reader.readString());
-      msg.setReviewId(value);
+      msg.setReviewid(value);
+      break;
+    case 2:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setIsliked(value);
       break;
     default:
       reader.skipField();
@@ -502,10 +507,17 @@ proto.like.LikeResponse.prototype.serializeBinary = function() {
  */
 proto.like.LikeResponse.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getReviewId();
+  f = message.getReviewid();
   if (f.length > 0) {
     writer.writeString(
       1,
+      f
+    );
+  }
+  f = message.getIsliked();
+  if (f) {
+    writer.writeBool(
+      2,
       f
     );
   }
@@ -513,10 +525,10 @@ proto.like.LikeResponse.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * optional string review_id = 1;
+ * optional string reviewId = 1;
  * @return {string}
  */
-proto.like.LikeResponse.prototype.getReviewId = function() {
+proto.like.LikeResponse.prototype.getReviewid = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
@@ -525,8 +537,26 @@ proto.like.LikeResponse.prototype.getReviewId = function() {
  * @param {string} value
  * @return {!proto.like.LikeResponse} returns this
  */
-proto.like.LikeResponse.prototype.setReviewId = function(value) {
+proto.like.LikeResponse.prototype.setReviewid = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+/**
+ * optional bool isLiked = 2;
+ * @return {boolean}
+ */
+proto.like.LikeResponse.prototype.getIsliked = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 2, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.like.LikeResponse} returns this
+ */
+proto.like.LikeResponse.prototype.setIsliked = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 2, value);
 };
 
 

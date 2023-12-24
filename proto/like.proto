@@ -12,11 +12,14 @@ service LikeService {
   rpc Unlike(LikeRequest) returns (LikeResponse) {}
 }
 
-message LikeRequest { string review_id = 1; }
+message LikeRequest { string reviewId = 1; }
 
 message ListLikedReviewsRequest {
   string username = 1;
   review.ListReviewsRequest pagenation = 2;
 }
 
-message LikeResponse { string review_id = 1; }
+message LikeResponse {
+  string reviewId = 1;
+  bool isLiked = 2;
+}

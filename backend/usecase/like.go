@@ -27,6 +27,25 @@ type LikeResponse struct {
 	IsLiked bool
 }
 
+func (uc *LikeUseCase) GetLike(ctx context.Context, immutableId entity.ImmutableId, reviewId string) (*LikeResponse, error) {
+	// レビューを取得
+	review, err := uc.rr.GetReviewById(ctx, uc.DB, reviewId)
+	if err != nil {
+		return nil, err
+	}
+
+	// いいねしているか確認する
+	isLiked, err := uc.lr.IsLiked(ctx, uc.DB, immutableId, reviewId)
+	if err != nil {
+		return nil, err
+	}
+
+	return &LikeResponse{
+		Review:  review,
+		IsLiked: isLiked,
+	}, nil
+}
+
 func (uc *LikeUseCase) Like(ctx context.Context, immutableId entity.ImmutableId, reviewId string) (*LikeResponse, error) {
 	// レビューを取得
 	review, err := uc.rr.GetReviewById(ctx, uc.DB, reviewId)
@@ -50,6 +69,10 @@ func (uc *LikeUseCase) Like(ctx context.Context, immutableId entity.ImmutableId,
 			}
 		}()
 
+		return nil, err
+	}
+
+	if err := tx.Commit(); err != nil {
 		return nil, err
 	}
 

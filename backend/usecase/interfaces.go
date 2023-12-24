@@ -36,5 +36,6 @@ type FollowRepository interface {
 }
 
 type LikeRepository interface {
+	IsLiked(ctx context.Context, db repository.Executor, immutableId entity.ImmutableId, reviewId string) (bool, error)
 	StoreLike(ctx context.Context, db repository.Executor, like *entity.Like) (*entity.Like, error)
 }

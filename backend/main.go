@@ -13,6 +13,7 @@ import (
 	"github.com/kngnkg/foderee/backend/config"
 	"github.com/kngnkg/foderee/backend/gen/follow"
 	helloworld "github.com/kngnkg/foderee/backend/gen/helloworld"
+	"github.com/kngnkg/foderee/backend/gen/like"
 	"github.com/kngnkg/foderee/backend/gen/review"
 	user "github.com/kngnkg/foderee/backend/gen/user"
 	"github.com/kngnkg/foderee/backend/infra/repository"
@@ -56,10 +57,12 @@ func main() {
 	ur := &repository.UserRepository{}
 	rr := &repository.ReviewRepository{}
 	fr := &repository.FollowRepository{}
+	lr := &repository.LikeRepository{}
 
 	userUc := usecase.NewUserUseCase(db, ur)
 	reviewUc := usecase.NewReviewUseCase(db, rr, ur)
 	followUc := usecase.NewFollowUseCase(db, ur, fr)
+	likeUc := usecase.NewLikeUseCase(db, rr, lr)
 
 	li := server.NewLoggingInterceptor(l)
 
@@ -101,6 +104,9 @@ func main() {
 
 	followServer := server.NewFollowServer(au, v, followUc)
 	follow.RegisterFollowServiceServer(s, followServer)
+
+	likeServer := server.NewLikeServer(au, v, likeUc)
+	like.RegisterLikeServiceServer(s, likeServer)
 
 	reflection.Register(s)
 
