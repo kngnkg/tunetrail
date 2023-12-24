@@ -81,3 +81,39 @@ func (uc *LikeUseCase) Like(ctx context.Context, immutableId entity.ImmutableId,
 		IsLiked: true,
 	}, nil
 }
+
+func (uc *LikeUseCase) Unlike(ctx context.Context, immutableId entity.ImmutableId, reviewId string) (*LikeResponse, error) {
+	// レビューを取得
+	review, err := uc.rr.GetReviewById(ctx, uc.DB, reviewId)
+	if err != nil {
+		return nil, err
+	}
+
+	tx, err := uc.DB.BeginTxx(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = uc.lr.DeleteLike(ctx, tx, &entity.Like{
+		ImmutableId: immutableId,
+		ReviewId:    reviewId,
+	})
+	if err != nil {
+		defer func() {
+			if err := tx.Rollback(); err != nil {
+				logger.FromContext(ctx).Error("failed to rollback transaction: %v", err)
+			}
+		}()
+
+		return nil, err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
+	return &LikeResponse{
+		Review:  review,
+		IsLiked: false,
+	}, nil
+}

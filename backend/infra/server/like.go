@@ -13,6 +13,7 @@ import (
 type likeUseCase interface {
 	GetLike(ctx context.Context, immutableId entity.ImmutableId, reviewId string) (*usecase.LikeResponse, error)
 	Like(ctx context.Context, immutableId entity.ImmutableId, reviewId string) (*usecase.LikeResponse, error)
+	Unlike(ctx context.Context, immutableId entity.ImmutableId, reviewId string) (*usecase.LikeResponse, error)
 }
 
 type likeServer struct {
@@ -34,6 +35,7 @@ func NewLikeServer(a *Auth, v *validator.Validator, uc likeUseCase) like.LikeSer
 var authRequiredMethodsLike = map[string]bool{
 	"/like.LikeService/GetLike": true,
 	"/like.LikeService/Like":    true,
+	"/like.LikeService/Unlike":  true,
 }
 
 func (s *likeServer) AuthFuncOverride(ctx context.Context, fullMethodName string) (context.Context, error) {
@@ -89,6 +91,32 @@ func (s *likeServer) Like(ctx context.Context, in *like.LikeRequest) (*like.Like
 	immutableId := GetImmutableId(ctx)
 
 	resp, err := s.uc.Like(ctx, immutableId, req.ReviewId)
+	if err != nil {
+		return nil, err
+	}
+
+	return &like.LikeResponse{
+		ReviewId: resp.Review.ReviewId,
+		IsLiked:  resp.IsLiked,
+	}, nil
+}
+
+func (s *likeServer) Unlike(ctx context.Context, in *like.LikeRequest) (*like.LikeResponse, error) {
+	req := struct {
+		ReviewId string `validate:"required"`
+	}{
+		ReviewId: in.ReviewId,
+	}
+
+	// バリデーション
+	if err := s.v.Validate(req); err != nil {
+		return nil, err
+	}
+
+	// ユーザーの取得
+	immutableId := GetImmutableId(ctx)
+
+	resp, err := s.uc.Unlike(ctx, immutableId, req.ReviewId)
 	if err != nil {
 		return nil, err
 	}

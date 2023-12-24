@@ -36,3 +36,17 @@ func (r *LikeRepository) StoreLike(ctx context.Context, db Executor, like *entit
 
 	return like, nil
 }
+
+func (r *LikeRepository) DeleteLike(ctx context.Context, db Executor, like *entity.Like) (*entity.Like, error) {
+	query := `
+		DELETE FROM likes
+		WHERE user_id = $1 AND review_id = $2
+		RETURNING user_id, review_id, created_at, updated_at;`
+
+	err := db.GetContext(ctx, like, query, like.ImmutableId, like.ReviewId)
+	if err != nil {
+		return nil, err
+	}
+
+	return like, nil
+}
