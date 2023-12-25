@@ -62,7 +62,7 @@ func main() {
 	userUc := usecase.NewUserUseCase(db, ur)
 	reviewUc := usecase.NewReviewUseCase(db, rr, ur)
 	followUc := usecase.NewFollowUseCase(db, ur, fr)
-	likeUc := usecase.NewLikeUseCase(db, rr, lr)
+	likeUc := usecase.NewLikeUseCase(db, ur, rr, lr)
 
 	li := server.NewLoggingInterceptor(l)
 
