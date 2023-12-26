@@ -19,6 +19,7 @@ type seeder struct {
 	rr *repository.ReviewRepository
 	ur *repository.UserRepository
 	fr *repository.FollowRepository
+	lr *repository.LikeRepository
 }
 
 // DBの初期化
@@ -79,12 +80,10 @@ func (s *seeder) storeRandomReviews(ctx context.Context, tx repository.DBAccesse
 			return nil, err
 		}
 
-		r, err := s.rr.StoreReview(ctx, tx, review)
+		_, err := s.rr.StoreReview(ctx, tx, review)
 		if err != nil {
 			return nil, err
 		}
-
-		reviews = append(reviews, r)
 	}
 
 	return reviews, nil
@@ -128,6 +127,24 @@ func (s *seeder) storeRandomFollows(ctx context.Context, tx repository.DBAccesse
 	return nil
 }
 
+func (s *seeder) storeRandomLikes(ctx context.Context, tx repository.DBAccesser, immutableIds []entity.ImmutableId, reviewIds []string) error {
+	for _, immutableId := range immutableIds {
+		for _, reviewId := range reviewIds {
+			l := fixture.Like(&entity.Like{
+				ImmutableId: immutableId,
+				ReviewId:    reviewId,
+			})
+
+			_, err := s.lr.StoreLike(ctx, tx, l)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
 func (s *seeder) exec(ctx context.Context) error {
 	// TODO: 適当なアルバムを取得する
 	var albumIds []string
@@ -158,17 +175,29 @@ func (s *seeder) exec(ctx context.Context) error {
 		authorIds = append(authorIds, user.ImmutableId)
 	}
 
+	logger.FromContext(ctx).Info("storing random follows...")
+	if err := s.storeRandomFollows(ctx, s.db, authorIds); err != nil {
+		// tx.Rollback()
+		return err
+	}
+
+	var reviewIds []string
+
 	logger.FromContext(ctx).Info("storing random reviews...")
 	for i := 0; i < 3; i++ {
-		_, err = s.storeRandomReviews(ctx, s.db, authorIds, albumIds)
+		reviews, err := s.storeRandomReviews(ctx, s.db, authorIds, albumIds)
 		if err != nil {
 			// tx.Rollback()
 			return err
 		}
+
+		for _, review := range reviews {
+			reviewIds = append(reviewIds, review.ReviewId)
+		}
 	}
 
-	logger.FromContext(ctx).Info("storing random follows...")
-	if err := s.storeRandomFollows(ctx, s.db, authorIds); err != nil {
+	logger.FromContext(ctx).Info("storing random likes...")
+	if err := s.storeRandomLikes(ctx, s.db, authorIds, reviewIds); err != nil {
 		// tx.Rollback()
 		return err
 	}
@@ -220,6 +249,7 @@ func main() {
 	ur := &repository.UserRepository{}
 	rr := &repository.ReviewRepository{}
 	fr := &repository.FollowRepository{}
+	lr := &repository.LikeRepository{}
 
 	v := validator.New()
 
@@ -229,6 +259,7 @@ func main() {
 		ur: ur,
 		rr: rr,
 		fr: fr,
+		lr: lr,
 	}
 
 	if err = seeder.exec(ctx); err != nil {
