@@ -51,3 +51,18 @@ CREATE TABLE reviews (
 );
 
 CREATE INDEX reviews_user_id_idx ON reviews (review_id);
+
+/*
+ * いいね
+ */
+CREATE TABLE likes (
+    user_id UUID NOT NULL,
+    review_id UUID NOT NULL,
+    created_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP NOT NULL,
+    CONSTRAINT likes_pkey PRIMARY KEY (user_id, review_id),
+    CONSTRAINT likes_user_id_fkey FOREIGN KEY (user_id)
+        REFERENCES users(user_id) ON DELETE CASCADE,
+    CONSTRAINT likes_review_id_fkey FOREIGN KEY (review_id)
+        REFERENCES reviews(review_id) ON DELETE CASCADE
+);

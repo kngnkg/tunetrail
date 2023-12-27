@@ -34,3 +34,10 @@ type FollowRepository interface {
 	StoreFollow(ctx context.Context, db repository.Executor, follow *entity.Follow) (*entity.Follow, error)
 	DeleteFollow(ctx context.Context, db repository.Executor, follow *entity.Follow) (*entity.Follow, error)
 }
+
+type LikeRepository interface {
+	IsLiked(ctx context.Context, db repository.Executor, immutableId entity.ImmutableId, reviewId string) (bool, error)
+	StoreLike(ctx context.Context, db repository.Executor, like *entity.Like) (*entity.Like, error)
+	DeleteLike(ctx context.Context, db repository.Executor, like *entity.Like) (*entity.Like, error)
+	ListLikedReviews(ctx context.Context, db repository.Executor, authorId entity.ImmutableId, reviewId string, limit int) ([]*entity.Review, error)
+}

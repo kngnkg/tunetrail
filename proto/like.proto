@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package like;
+
+option go_package = "github.com/kngnkg/foderee/backend/gen/like";
+import "review.proto";
+
+service LikeService {
+  rpc GetLike(LikeRequest) returns (LikeResponse) {}
+  rpc ListLikedReviews(ListLikedReviewsRequest) returns (review.ReviewList) {}
+  rpc Like(LikeRequest) returns (LikeResponse) {}
+  rpc Unlike(LikeRequest) returns (LikeResponse) {}
+}
+
+message LikeRequest { string reviewId = 1; }
+
+message ListLikedReviewsRequest {
+  string username = 1;
+  review.ListReviewsRequest pagenation = 2;
+}
+
+message LikeResponse {
+  string reviewId = 1;
+  bool isLiked = 2;
+}
