@@ -57,7 +57,24 @@ export const LikeButton: React.FC<LikeButtonProps> = ({
   }
 
   const onClickUnlike = async () => {
-    alert("いいね解除")
+    if (!loginUser) return
+
+    try {
+      const resp = await clientFetcher(
+        `${env.NEXT_PUBLIC_API_ROOT}/users/${loginUser.username}/likes/${review.reviewId}`,
+        {
+          method: "DELETE",
+        }
+      )
+
+      if (!resp) {
+        throw new Error("いいね解除に失敗しました")
+      }
+
+      mutate()
+    } catch (e) {
+      alert("いいね解除に失敗しました")
+    }
   }
 
   return (
