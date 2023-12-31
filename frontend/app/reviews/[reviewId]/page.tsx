@@ -5,7 +5,9 @@ import getReviewById from "@/service/review/get-review"
 import { toReview } from "@/service/transform"
 import { Review } from "@/types"
 
+import { getCurrentUser } from "@/lib/session"
 import { FollowButton } from "@/components/follow-button"
+import { LikeButton } from "@/components/reviews/like-button"
 import { ReviewContent } from "@/components/reviews/review-content"
 import { TimeStamp } from "@/components/timestamp"
 import { UserAvatar } from "@/components/user-avatar"
@@ -40,6 +42,8 @@ export default async function ReviewPage({ params }: ReviewPageProps) {
     notFound()
   }
 
+  const currentUser = await getCurrentUser()
+
   const pathToUser = `/${review.author.username}`
 
   return (
@@ -65,7 +69,10 @@ export default async function ReviewPage({ params }: ReviewPageProps) {
       </div>
       <div className="fixed flex flex-col bottom-0 w-full sm:w-3/12 sm:sticky sm:top-0 sm:h-screen sm:pl-8 pr-0 pt-16">
         <div className="z-10 h-16 sm:h-20 flex items-center justify-center bg-background border-t sm:border sm:rounded-md border-zinc-700 dark:border-zinc-700">
-          いいね、コメントボタン
+          <LikeButton
+            review={review}
+            loginUser={currentUser ? currentUser : undefined}
+          />
         </div>
       </div>
     </div>
