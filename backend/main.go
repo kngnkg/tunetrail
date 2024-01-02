@@ -60,7 +60,7 @@ func main() {
 	lr := &repository.LikeRepository{}
 
 	userUc := usecase.NewUserUseCase(db, ur)
-	reviewUc := usecase.NewReviewUseCase(db, rr, ur)
+	reviewUc := usecase.NewReviewUseCase(db, rr, ur, lr)
 	followUc := usecase.NewFollowUseCase(db, ur, fr)
 	likeUc := usecase.NewLikeUseCase(db, ur, rr, lr)
 

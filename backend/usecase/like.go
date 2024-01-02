@@ -166,11 +166,19 @@ func (uc *LikeUseCase) ListLikedReviews(ctx context.Context, username entity.Use
 		am[u.ImmutableId] = u.ToAuthor()
 	}
 
-	// レビュー情報に著者情報を埋め込む
 	for _, r := range rs {
+		// レビュー情報に著者情報を埋め込む
+
 		if author, ok := am[r.Author.ImmutableId]; ok {
 			r.Author = author
 		}
+
+		// いいね数を取得する
+		count, err := uc.lr.GetLikesCountByReviewId(ctx, uc.DB, r.ReviewId)
+		if err != nil {
+			return nil, err
+		}
+		r.LikesCount = count
 	}
 
 	// limit を超えた要素がある場合に、その要素のIdを次のページのカーソルとして返す
