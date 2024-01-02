@@ -12,7 +12,7 @@ export default async function LikesPage({ params }: LikesPageProps) {
     <>
       <section>
         <ReviewList
-          endpoint={`${env.NEXT_PUBLIC_API_ROOT}/${username}/liked_reviews`}
+          endpoint={`${env.NEXT_PUBLIC_API_ROOT}/users/${username}/liked_reviews`}
         />
       </section>
     </>
