@@ -29,6 +29,8 @@ type UserRepository interface {
 
 type FollowRepository interface {
 	IsFollowing(ctx context.Context, db repository.Executor, sourceId, targetId entity.ImmutableId) (bool, error)
+	GetFollowingCountByUserId(ctx context.Context, db repository.Executor, immutableId entity.ImmutableId) (int, error)
+	GetFollowerCountByUserId(ctx context.Context, db repository.Executor, immutableId entity.ImmutableId) (int, error)
 	ListFollowingsByUserId(ctx context.Context, db repository.Executor, immutableId, cursor entity.ImmutableId, limit int) ([]*entity.Follow, error)
 	ListFollowersByUserId(ctx context.Context, db repository.Executor, immutableId, cursor entity.ImmutableId, limit int) ([]*entity.Follow, error)
 	StoreFollow(ctx context.Context, db repository.Executor, follow *entity.Follow) (*entity.Follow, error)

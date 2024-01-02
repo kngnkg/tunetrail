@@ -168,7 +168,6 @@ func (uc *LikeUseCase) ListLikedReviews(ctx context.Context, username entity.Use
 
 	for _, r := range rs {
 		// レビュー情報に著者情報を埋め込む
-
 		if author, ok := am[r.Author.ImmutableId]; ok {
 			r.Author = author
 		}

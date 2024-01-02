@@ -83,6 +83,19 @@ func (uc *FollowUseCase) ListFollowees(ctx context.Context, username entity.User
 		return nil, err
 	}
 
+	// フォロー・フォロワー数を取得する
+	for _, u := range us {
+		u.FollowingCount, err = uc.fr.GetFollowingCountByUserId(ctx, uc.DB, u.ImmutableId)
+		if err != nil {
+			return nil, err
+		}
+
+		u.FollowersCount, err = uc.fr.GetFollowerCountByUserId(ctx, uc.DB, u.ImmutableId)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	return &UserListResponse{
 		Users:      us,
 		NextCursor: entity.ImmutableId(nextCursor),
@@ -118,6 +131,19 @@ func (uc *FollowUseCase) ListFollowers(ctx context.Context, username entity.User
 	us, err := uc.ur.ListUsersById(ctx, uc.DB, userIds)
 	if err != nil {
 		return nil, err
+	}
+
+	// フォロー・フォロワー数を取得する
+	for _, u := range us {
+		u.FollowingCount, err = uc.fr.GetFollowingCountByUserId(ctx, uc.DB, u.ImmutableId)
+		if err != nil {
+			return nil, err
+		}
+
+		u.FollowersCount, err = uc.fr.GetFollowerCountByUserId(ctx, uc.DB, u.ImmutableId)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return &UserListResponse{
