@@ -18,13 +18,15 @@ type ReviewUseCase struct {
 	DB         repository.DBAccesser
 	reviewRepo ReviewRepository
 	userRepo   UserRepository
+	likeRepo   LikeRepository
 }
 
-func NewReviewUseCase(db repository.DBAccesser, rr ReviewRepository, ur UserRepository) *ReviewUseCase {
+func NewReviewUseCase(db repository.DBAccesser, rr ReviewRepository, ur UserRepository, lr LikeRepository) *ReviewUseCase {
 	return &ReviewUseCase{
 		DB:         db,
 		reviewRepo: rr,
 		userRepo:   ur,
+		likeRepo:   lr,
 	}
 }
 
@@ -66,11 +68,18 @@ func (uc *ReviewUseCase) ListReviews(ctx context.Context, reviewId string, limit
 		am[u.ImmutableId] = u.ToAuthor()
 	}
 
-	// レビュー情報に著者情報を埋め込む
 	for _, r := range rs {
+		// レビュー情報に著者情報を埋め込む
 		if author, ok := am[r.Author.ImmutableId]; ok {
 			r.Author = author
 		}
+
+		// いいね数を取得する
+		count, err := uc.likeRepo.GetLikesCountByReviewId(ctx, uc.DB, r.ReviewId)
+		if err != nil {
+			return nil, err
+		}
+		r.LikesCount = count
 	}
 
 	// limit を超えた要素がある場合に、その要素のIdを次のページのカーソルとして返す
@@ -101,9 +110,16 @@ func (uc *ReviewUseCase) ListMyReviews(ctx context.Context, authorId entity.Immu
 		return nil, err
 	}
 
-	// レビュー情報に著者情報を埋め込む
 	for _, r := range rs {
+		// レビュー情報に著者情報を埋め込む
 		r.Author = user.ToAuthor()
+
+		// いいね数を取得する
+		count, err := uc.likeRepo.GetLikesCountByReviewId(ctx, uc.DB, r.ReviewId)
+		if err != nil {
+			return nil, err
+		}
+		r.LikesCount = count
 	}
 
 	// limit を超えた要素がある場合に、その要素のIdを次のページのカーソルとして返す
@@ -129,6 +145,13 @@ func (uc *ReviewUseCase) getReview(ctx context.Context, reviewId string) (*entit
 	}
 
 	r.Author = user.ToAuthor()
+
+	// いいね数を取得する
+	count, err := uc.likeRepo.GetLikesCountByReviewId(ctx, uc.DB, r.ReviewId)
+	if err != nil {
+		return nil, err
+	}
+	r.LikesCount = count
 
 	return r, nil
 }
@@ -231,6 +254,13 @@ func (uc *ReviewUseCase) UpdateReview(ctx context.Context, authorId entity.Immut
 	if err = tx.Commit(); err != nil {
 		return nil, err
 	}
+
+	// いいね数を取得する
+	count, err := uc.likeRepo.GetLikesCountByReviewId(ctx, uc.DB, r.ReviewId)
+	if err != nil {
+		return nil, err
+	}
+	r.LikesCount = count
 
 	return r, nil
 }

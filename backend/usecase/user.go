@@ -14,14 +14,16 @@ import (
 var ErrorUsernameAlreadyExists = errors.New("usecase: username already exists")
 
 type UserUseCase struct {
-	DB       repository.DBAccesser
-	userRepo UserRepository
+	DB         repository.DBAccesser
+	userRepo   UserRepository
+	followRepo FollowRepository
 }
 
-func NewUserUseCase(db repository.DBAccesser, userRepo UserRepository) *UserUseCase {
+func NewUserUseCase(db repository.DBAccesser, userRepo UserRepository, followRepo FollowRepository) *UserUseCase {
 	return &UserUseCase{
-		DB:       db,
-		userRepo: userRepo,
+		DB:         db,
+		userRepo:   userRepo,
+		followRepo: followRepo,
 	}
 }
 
@@ -45,6 +47,19 @@ func (uc *UserUseCase) ListUsers(ctx context.Context, immutableId entity.Immutab
 		users = users[:limit]
 	}
 
+	// フォロー・フォロワー数を取得する
+	for _, u := range users {
+		u.FollowingCount, err = uc.followRepo.GetFollowingCountByUserId(ctx, uc.DB, u.ImmutableId)
+		if err != nil {
+			return nil, err
+		}
+
+		u.FollowersCount, err = uc.followRepo.GetFollowerCountByUserId(ctx, uc.DB, u.ImmutableId)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	resp := &UserListResponse{
 		Users:      users,
 		NextCursor: entity.ImmutableId(nextCursor),
@@ -61,7 +76,17 @@ func (uc *UserUseCase) GetByUsername(ctx context.Context, username entity.Userna
 		return nil, nil
 	}
 
-	// TODO: フォロー数等の情報を取得する
+	// フォロー・フォロワー数を取得する
+	user.FollowingCount, err = uc.followRepo.GetFollowingCountByUserId(ctx, uc.DB, user.ImmutableId)
+	if err != nil {
+		return nil, err
+	}
+
+	user.FollowersCount, err = uc.followRepo.GetFollowerCountByUserId(ctx, uc.DB, user.ImmutableId)
+	if err != nil {
+		return nil, err
+	}
+
 	return user, nil
 }
 
@@ -74,7 +99,17 @@ func (uc *UserUseCase) GetMe(ctx context.Context, immutableId entity.ImmutableId
 		return nil, nil
 	}
 
-	// TODO: フォロー数等の情報を取得する
+	// フォロー・フォロワー数を取得する
+	user.FollowingCount, err = uc.followRepo.GetFollowingCountByUserId(ctx, uc.DB, user.ImmutableId)
+	if err != nil {
+		return nil, err
+	}
+
+	user.FollowersCount, err = uc.followRepo.GetFollowerCountByUserId(ctx, uc.DB, user.ImmutableId)
+	if err != nil {
+		return nil, err
+	}
+
 	return user, nil
 }
 
@@ -111,6 +146,17 @@ func (uc *UserUseCase) Store(ctx context.Context, immutableId entity.ImmutableId
 	}
 
 	if err = tx.Commit(); err != nil {
+		return nil, err
+	}
+
+	// フォロー・フォロワー数を取得する
+	user.FollowingCount, err = uc.followRepo.GetFollowingCountByUserId(ctx, uc.DB, user.ImmutableId)
+	if err != nil {
+		return nil, err
+	}
+
+	user.FollowersCount, err = uc.followRepo.GetFollowerCountByUserId(ctx, uc.DB, user.ImmutableId)
+	if err != nil {
 		return nil, err
 	}
 
@@ -156,6 +202,17 @@ func (uc *UserUseCase) UpdateUser(ctx context.Context, username entity.Username,
 	}
 
 	if err = tx.Commit(); err != nil {
+		return nil, err
+	}
+
+	// フォロー・フォロワー数を取得する
+	user.FollowingCount, err = uc.followRepo.GetFollowingCountByUserId(ctx, uc.DB, user.ImmutableId)
+	if err != nil {
+		return nil, err
+	}
+
+	user.FollowersCount, err = uc.followRepo.GetFollowerCountByUserId(ctx, uc.DB, user.ImmutableId)
+	if err != nil {
 		return nil, err
 	}
 

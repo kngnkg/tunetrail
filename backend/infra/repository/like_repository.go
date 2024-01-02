@@ -23,6 +23,20 @@ func (r *LikeRepository) IsLiked(ctx context.Context, db Executor, immutableId e
 	return exists, nil
 }
 
+func (r *LikeRepository) GetLikesCountByReviewId(ctx context.Context, db Executor, reviewId string) (int, error) {
+	query := `
+		SELECT COUNT(*) FROM likes
+		WHERE review_id = $1;`
+
+	var count int
+	err := db.GetContext(ctx, &count, query, reviewId)
+	if err != nil {
+		return 0, err
+	}
+
+	return count, nil
+}
+
 func (r *LikeRepository) StoreLike(ctx context.Context, db Executor, like *entity.Like) (*entity.Like, error) {
 	query := `
 		INSERT INTO likes (user_id, review_id, created_at, updated_at)

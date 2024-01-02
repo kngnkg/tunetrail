@@ -24,6 +24,34 @@ func (r *FollowRepository) IsFollowing(ctx context.Context, db Executor, sourceI
 	return exists, nil
 }
 
+func (r *FollowRepository) GetFollowingCountByUserId(ctx context.Context, db Executor, immutableId entity.ImmutableId) (int, error) {
+	query := `
+		SELECT COUNT(*) FROM follows
+		WHERE user_id = $1;`
+
+	var count int
+	err := db.GetContext(ctx, &count, query, immutableId)
+	if err != nil {
+		return 0, err
+	}
+
+	return count, nil
+}
+
+func (r *FollowRepository) GetFollowerCountByUserId(ctx context.Context, db Executor, immutableId entity.ImmutableId) (int, error) {
+	query := `
+		SELECT COUNT(*) FROM follows
+		WHERE follow_user_id = $1;`
+
+	var count int
+	err := db.GetContext(ctx, &count, query, immutableId)
+	if err != nil {
+		return 0, err
+	}
+
+	return count, nil
+}
+
 func (r *FollowRepository) ListFollowingsByUserId(ctx context.Context, db Executor, immutableId, cursor entity.ImmutableId, limit int) ([]*entity.Follow, error) {
 	query := `
 		SELECT user_id, follow_user_id, created_at, updated_at

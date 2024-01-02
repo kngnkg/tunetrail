@@ -29,6 +29,8 @@ type UserRepository interface {
 
 type FollowRepository interface {
 	IsFollowing(ctx context.Context, db repository.Executor, sourceId, targetId entity.ImmutableId) (bool, error)
+	GetFollowingCountByUserId(ctx context.Context, db repository.Executor, immutableId entity.ImmutableId) (int, error)
+	GetFollowerCountByUserId(ctx context.Context, db repository.Executor, immutableId entity.ImmutableId) (int, error)
 	ListFollowingsByUserId(ctx context.Context, db repository.Executor, immutableId, cursor entity.ImmutableId, limit int) ([]*entity.Follow, error)
 	ListFollowersByUserId(ctx context.Context, db repository.Executor, immutableId, cursor entity.ImmutableId, limit int) ([]*entity.Follow, error)
 	StoreFollow(ctx context.Context, db repository.Executor, follow *entity.Follow) (*entity.Follow, error)
@@ -37,6 +39,7 @@ type FollowRepository interface {
 
 type LikeRepository interface {
 	IsLiked(ctx context.Context, db repository.Executor, immutableId entity.ImmutableId, reviewId string) (bool, error)
+	GetLikesCountByReviewId(ctx context.Context, db repository.Executor, reviewId string) (int, error)
 	StoreLike(ctx context.Context, db repository.Executor, like *entity.Like) (*entity.Like, error)
 	DeleteLike(ctx context.Context, db repository.Executor, like *entity.Like) (*entity.Like, error)
 	ListLikedReviews(ctx context.Context, db repository.Executor, authorId entity.ImmutableId, reviewId string, limit int) ([]*entity.Review, error)
