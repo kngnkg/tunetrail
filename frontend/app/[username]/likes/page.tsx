@@ -11,9 +11,9 @@ export default async function LikesPage({ params }: LikesPageProps) {
   return (
     <>
       <section>
-        {/* TODO: いいねしたレビューを取得する */}
-        {/* `${env.NEXT_PUBLIC_API_ROOT}/${username}/likes` */}
-        <ReviewList endpoint={`${env.NEXT_PUBLIC_API_ROOT}/reviews`} />
+        <ReviewList
+          endpoint={`${env.NEXT_PUBLIC_API_ROOT}/users/${username}/liked_reviews`}
+        />
       </section>
     </>
   )
