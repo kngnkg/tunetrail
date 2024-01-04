@@ -1,8 +1,11 @@
+import Link from "next/link"
 import { notFound } from "next/navigation"
 import { toUser } from "@/service/transform"
 import getUserByUsername from "@/service/user/get-user"
 import { User } from "@/types"
 
+import { getCurrentUser } from "@/lib/session"
+import { Button } from "@/components/ui/button"
 import { FollowButton } from "@/components/follow-button"
 import { Header } from "@/components/header"
 import { MainNav } from "@/components/main-nav"
@@ -40,6 +43,8 @@ export default async function UserLayout({
     notFound()
   }
 
+  const loginUser = await getCurrentUser()
+
   const tabs: MenuTab[] = [
     { label: "レビュー", value: "reviews", href: `/${username}` },
     {
@@ -76,7 +81,13 @@ export default async function UserLayout({
                     {user.username}
                   </p>
                 </div>
-                <FollowButton user={user} />
+                {loginUser && loginUser.immutableId === user.immutableId ? (
+                  <Link href="/settings/profile">
+                    <Button className="w-24">編集</Button>
+                  </Link>
+                ) : (
+                  <FollowButton user={user} />
+                )}
               </div>
               {/* フォロー関連 */}
               <div className="flex gap-4 items-center">

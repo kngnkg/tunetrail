@@ -10,12 +10,20 @@ export type MenuTab = {
 
 interface MenuTabsProps {
   tabs: MenuTab[]
+  defaultValue?: string
   className?: string
 }
 
-export const MenuTabs: React.FC<MenuTabsProps> = ({ tabs, className }) => {
+export const MenuTabs: React.FC<MenuTabsProps> = ({
+  tabs,
+  defaultValue,
+  className,
+}) => {
   return (
-    <Tabs defaultValue={tabs[0].value} className="sm:w-4/6 mx-auto">
+    <Tabs
+      defaultValue={defaultValue ? defaultValue : tabs[0].value}
+      className="sm:w-4/6 mx-auto"
+    >
       <TabsList className="bg-transparent dark:bg-transparent">
         {tabs.map((tab, idx) => (
           <span key={idx}>
