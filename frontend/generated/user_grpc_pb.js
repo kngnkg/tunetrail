@@ -128,6 +128,17 @@ var UserServiceService = exports.UserServiceService = {
     responseSerialize: serialize_user_User,
     responseDeserialize: deserialize_user_User,
   },
+  deleteUser: {
+    path: '/user.UserService/DeleteUser',
+    requestStream: false,
+    responseStream: false,
+    requestType: google_protobuf_empty_pb.Empty,
+    responseType: google_protobuf_empty_pb.Empty,
+    requestSerialize: serialize_google_protobuf_Empty,
+    requestDeserialize: deserialize_google_protobuf_Empty,
+    responseSerialize: serialize_google_protobuf_Empty,
+    responseDeserialize: deserialize_google_protobuf_Empty,
+  },
 };
 
 exports.UserServiceClient = grpc.makeGenericClientConstructor(UserServiceService);
