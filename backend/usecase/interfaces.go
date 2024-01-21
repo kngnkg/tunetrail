@@ -25,6 +25,7 @@ type UserRepository interface {
 	GetUserByUsername(ctx context.Context, db repository.Executor, username entity.Username) (*entity.User, error)
 	StoreUser(ctx context.Context, db repository.Executor, user *entity.User) (*entity.User, error)
 	UpdateUser(ctx context.Context, db repository.Executor, user *entity.User) (*entity.User, error)
+	DeleteUser(ctx context.Context, db repository.Executor, immutableId entity.ImmutableId) error
 }
 
 type FollowRepository interface {

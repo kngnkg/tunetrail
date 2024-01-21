@@ -215,7 +215,28 @@ func (uc *UserUseCase) UpdateUser(ctx context.Context, username entity.Username,
 	if err != nil {
 		return nil, err
 	}
-
 	return user, nil
+}
 
+func (uc *UserUseCase) DeleteUser(ctx context.Context, username entity.Username, immutableId entity.ImmutableId) error {
+	tx, err := uc.DB.BeginTxx(ctx, nil)
+	if err != nil {
+		return err
+	}
+
+	if err := uc.userRepo.DeleteUser(ctx, tx, immutableId); err != nil {
+		defer func() {
+			if err := tx.Rollback(); err != nil {
+				logger.FromContext(ctx).Error("failed to rollback transaction: %v", err)
+			}
+		}()
+
+		return err
+	}
+
+	if err = tx.Commit(); err != nil {
+		return err
+	}
+
+	return nil
 }
