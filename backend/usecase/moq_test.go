@@ -20,6 +20,9 @@ var _ UserRepository = &UserRepositoryMock{}
 //
 //		// make and configure a mocked UserRepository
 //		mockedUserRepository := &UserRepositoryMock{
+//			DeleteUserFunc: func(ctx context.Context, db repository.Executor, immutableId entity.ImmutableId) error {
+//				panic("mock out the DeleteUser method")
+//			},
 //			GetUserByImmutableIdFunc: func(ctx context.Context, db repository.Executor, immutableId entity.ImmutableId) (*entity.User, error) {
 //				panic("mock out the GetUserByImmutableId method")
 //			},
@@ -48,6 +51,9 @@ var _ UserRepository = &UserRepositoryMock{}
 //
 //	}
 type UserRepositoryMock struct {
+	// DeleteUserFunc mocks the DeleteUser method.
+	DeleteUserFunc func(ctx context.Context, db repository.Executor, immutableId entity.ImmutableId) error
+
 	// GetUserByImmutableIdFunc mocks the GetUserByImmutableId method.
 	GetUserByImmutableIdFunc func(ctx context.Context, db repository.Executor, immutableId entity.ImmutableId) (*entity.User, error)
 
@@ -71,6 +77,15 @@ type UserRepositoryMock struct {
 
 	// calls tracks calls to the methods.
 	calls struct {
+		// DeleteUser holds details about calls to the DeleteUser method.
+		DeleteUser []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Db is the db argument value.
+			Db repository.Executor
+			// ImmutableId is the immutableId argument value.
+			ImmutableId entity.ImmutableId
+		}
 		// GetUserByImmutableId holds details about calls to the GetUserByImmutableId method.
 		GetUserByImmutableId []struct {
 			// Ctx is the ctx argument value.
@@ -137,6 +152,7 @@ type UserRepositoryMock struct {
 			User *entity.User
 		}
 	}
+	lockDeleteUser           sync.RWMutex
 	lockGetUserByImmutableId sync.RWMutex
 	lockGetUserByUsername    sync.RWMutex
 	lockListUsers            sync.RWMutex
@@ -144,6 +160,46 @@ type UserRepositoryMock struct {
 	lockListUsersByUsername  sync.RWMutex
 	lockStoreUser            sync.RWMutex
 	lockUpdateUser           sync.RWMutex
+}
+
+// DeleteUser calls DeleteUserFunc.
+func (mock *UserRepositoryMock) DeleteUser(ctx context.Context, db repository.Executor, immutableId entity.ImmutableId) error {
+	if mock.DeleteUserFunc == nil {
+		panic("UserRepositoryMock.DeleteUserFunc: method is nil but UserRepository.DeleteUser was just called")
+	}
+	callInfo := struct {
+		Ctx         context.Context
+		Db          repository.Executor
+		ImmutableId entity.ImmutableId
+	}{
+		Ctx:         ctx,
+		Db:          db,
+		ImmutableId: immutableId,
+	}
+	mock.lockDeleteUser.Lock()
+	mock.calls.DeleteUser = append(mock.calls.DeleteUser, callInfo)
+	mock.lockDeleteUser.Unlock()
+	return mock.DeleteUserFunc(ctx, db, immutableId)
+}
+
+// DeleteUserCalls gets all the calls that were made to DeleteUser.
+// Check the length with:
+//
+//	len(mockedUserRepository.DeleteUserCalls())
+func (mock *UserRepositoryMock) DeleteUserCalls() []struct {
+	Ctx         context.Context
+	Db          repository.Executor
+	ImmutableId entity.ImmutableId
+} {
+	var calls []struct {
+		Ctx         context.Context
+		Db          repository.Executor
+		ImmutableId entity.ImmutableId
+	}
+	mock.lockDeleteUser.RLock()
+	calls = mock.calls.DeleteUser
+	mock.lockDeleteUser.RUnlock()
+	return calls
 }
 
 // GetUserByImmutableId calls GetUserByImmutableIdFunc.
