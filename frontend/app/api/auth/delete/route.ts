@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import deleteUser from "@/service/user/delete-user"
 import {
   AdminDeleteUserCommand,
   CognitoIdentityProviderClient,
@@ -8,27 +9,35 @@ import { env } from "@/env.mjs"
 
 import { errInternal } from "../../response"
 
+const deleteCognitoUser = async (username: string, userPoolId: string) => {
+  const client = new CognitoIdentityProviderClient({
+    region: env.AWS_REGION,
+  })
+
+  const command = new AdminDeleteUserCommand({
+    UserPoolId: userPoolId,
+    Username: username,
+  })
+
+  try {
+    // コマンドの実行
+    const response = await client.send(command)
+  } catch (e) {
+    console.error(e)
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
-    const client = new CognitoIdentityProviderClient({
-      region: env.AWS_REGION,
-    })
+    // ユーザー名を取得
 
-    const deleteUser = async (username: string, userPoolId: string) => {
-      const command = new AdminDeleteUserCommand({
-        UserPoolId: userPoolId,
-        Username: username,
-      })
+    // ユーザープールIDを取得
 
-      try {
-        // コマンドの実行
-        const response = await client.send(command)
-      } catch (e) {
-        console.error(e)
-      }
-    }
+    // Cognitoからユーザー情報を削除
+    deleteCognitoUser("exampleUsername", "yourUserPoolId")
 
-    deleteUser("exampleUsername", "yourUserPoolId")
+    // DBからユーザー情報を削除
+    deleteUser("exampleUsername")
   } catch (e) {
     console.error(e)
     return errInternal("internal error")
