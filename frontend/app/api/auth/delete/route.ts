@@ -38,6 +38,10 @@ export async function POST(request: NextRequest) {
 
     // DBからユーザー情報を削除
     deleteUser("exampleUsername")
+
+    return NextResponse.json({
+      ok: true,
+    })
   } catch (e) {
     console.error(e)
     return errInternal("internal error")
