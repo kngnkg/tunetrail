@@ -29,7 +29,7 @@ export const MainNav: React.FC<MainNavProps> = ({ className }) => {
             <Icon type="search" />
           </Link>
           <Icon type="notify" />
-          <Link href="/userpage">
+          <Link href="/settings/account">
             <Icon type="user" className="w-8 h-8" />
           </Link>
           <Link href="/editor/new">

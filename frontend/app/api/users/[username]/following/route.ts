@@ -8,7 +8,7 @@ import {
   UserRouteContext,
   userRouteContextSchema,
 } from "@/lib/validations/user"
-import { errBadRequest, errInternal, errUnauthorized } from "@/app/api/response"
+import { errInternal, errUnauthorized } from "@/app/api/response"
 
 export async function GET(request: NextRequest, context: UserRouteContext) {
   try {

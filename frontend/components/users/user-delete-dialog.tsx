@@ -71,11 +71,11 @@ export const UserDeleteDialog: React.FC<UserDeleteDialogProps> = ({
       )
 
       if (!resp) {
-        throw new Error("ユーザー名の変更に失敗しました")
+        throw new Error("ユーザーの削除に失敗しました")
       }
     } catch (e) {
       console.error(e)
-      alert("ユーザー名の変更に失敗しました")
+      alert("ユーザーの削除に失敗しました")
     }
   }
 
