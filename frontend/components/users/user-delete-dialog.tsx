@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useSession } from "next-auth/react"
+import { signOut, useSession } from "next-auth/react"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
 
@@ -73,6 +73,11 @@ export const UserDeleteDialog: React.FC<UserDeleteDialogProps> = ({
       if (!resp) {
         throw new Error("ユーザーの削除に失敗しました")
       }
+
+      // ログアウトしてトップページに遷移
+      await signOut({
+        callbackUrl: "/",
+      })
     } catch (e) {
       console.error(e)
       alert("ユーザーの削除に失敗しました")

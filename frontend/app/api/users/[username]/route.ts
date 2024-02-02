@@ -66,7 +66,6 @@ export async function DELETE(request: Request, context: UserRouteContext) {
     }
 
     // Cognitoのユーザー情報を取得
-    console.log(`sub: ${session.user.immutableId}`)
     const username = await getUsernameBySub(session.user.immutableId)
 
     // Cognitoからユーザー情報を削除
