@@ -11,6 +11,7 @@ service UserService {
   rpc GetMe(google.protobuf.Empty) returns (User) {}
   rpc CreateUser(google.protobuf.Empty) returns (User) {}
   rpc UpdateUser(UpdateUserRequest) returns (User) {}
+  rpc DeleteUser(google.protobuf.Empty) returns (google.protobuf.Empty) {}
 }
 
 message ListUsersRequest {

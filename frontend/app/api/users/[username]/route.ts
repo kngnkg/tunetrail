@@ -1,4 +1,9 @@
 import { NextResponse } from "next/server"
+import {
+  deleteCognitoUser,
+  deleteUser,
+  getUsernameBySub,
+} from "@/service/user/delete-user"
 import getUserByUsername from "@/service/user/get-user"
 import updateUser from "@/service/user/update-user"
 import { getServerSession } from "next-auth"
@@ -10,6 +15,8 @@ import {
   userRouteContextSchema,
   userUpdateSchema,
 } from "@/lib/validations/user"
+
+import { errInternal } from "../../response"
 
 export async function PATCH(req: Request, context: UserRouteContext) {
   try {
@@ -48,5 +55,34 @@ export async function PATCH(req: Request, context: UserRouteContext) {
     }
 
     return NextResponse.json(null, { status: 500 })
+  }
+}
+
+export async function DELETE(request: Request, context: UserRouteContext) {
+  try {
+    const session = await getServerSession(authOptions)
+    if (!session || !session.idToken) {
+      return NextResponse.json(null, { status: 401 })
+    }
+
+    // Cognitoのユーザー情報を取得
+    const username = await getUsernameBySub(session.user.immutableId)
+
+    // Cognitoからユーザー情報を削除
+    if (!deleteCognitoUser(username)) {
+      return errInternal("internal error")
+    }
+
+    // DBからユーザー情報を削除
+    if (!deleteUser(session.idToken)) {
+      return errInternal("internal error")
+    }
+
+    return NextResponse.json({
+      ok: true,
+    })
+  } catch (e) {
+    console.error(e)
+    return errInternal("internal error")
   }
 }

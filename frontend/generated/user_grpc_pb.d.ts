@@ -13,6 +13,7 @@ interface IUserServiceService extends grpc.ServiceDefinition<grpc.UntypedService
   getMe: grpc.MethodDefinition<google_protobuf_empty_pb.Empty, user_pb.User>;
   createUser: grpc.MethodDefinition<google_protobuf_empty_pb.Empty, user_pb.User>;
   updateUser: grpc.MethodDefinition<user_pb.UpdateUserRequest, user_pb.User>;
+  deleteUser: grpc.MethodDefinition<google_protobuf_empty_pb.Empty, google_protobuf_empty_pb.Empty>;
 }
 
 export const UserServiceService: IUserServiceService;
@@ -23,6 +24,7 @@ export interface IUserServiceServer extends grpc.UntypedServiceImplementation {
   getMe: grpc.handleUnaryCall<google_protobuf_empty_pb.Empty, user_pb.User>;
   createUser: grpc.handleUnaryCall<google_protobuf_empty_pb.Empty, user_pb.User>;
   updateUser: grpc.handleUnaryCall<user_pb.UpdateUserRequest, user_pb.User>;
+  deleteUser: grpc.handleUnaryCall<google_protobuf_empty_pb.Empty, google_protobuf_empty_pb.Empty>;
 }
 
 export class UserServiceClient extends grpc.Client {
@@ -42,4 +44,7 @@ export class UserServiceClient extends grpc.Client {
   updateUser(argument: user_pb.UpdateUserRequest, callback: grpc.requestCallback<user_pb.User>): grpc.ClientUnaryCall;
   updateUser(argument: user_pb.UpdateUserRequest, metadataOrOptions: grpc.Metadata | grpc.CallOptions | null, callback: grpc.requestCallback<user_pb.User>): grpc.ClientUnaryCall;
   updateUser(argument: user_pb.UpdateUserRequest, metadata: grpc.Metadata | null, options: grpc.CallOptions | null, callback: grpc.requestCallback<user_pb.User>): grpc.ClientUnaryCall;
+  deleteUser(argument: google_protobuf_empty_pb.Empty, callback: grpc.requestCallback<google_protobuf_empty_pb.Empty>): grpc.ClientUnaryCall;
+  deleteUser(argument: google_protobuf_empty_pb.Empty, metadataOrOptions: grpc.Metadata | grpc.CallOptions | null, callback: grpc.requestCallback<google_protobuf_empty_pb.Empty>): grpc.ClientUnaryCall;
+  deleteUser(argument: google_protobuf_empty_pb.Empty, metadata: grpc.Metadata | null, options: grpc.CallOptions | null, callback: grpc.requestCallback<google_protobuf_empty_pb.Empty>): grpc.ClientUnaryCall;
 }

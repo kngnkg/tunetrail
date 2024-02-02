@@ -1,4 +1,5 @@
 import { refreshTokens } from "@/service/auth/refresh-tokens"
+import { toUser } from "@/service/transform"
 import createUser from "@/service/user/create-user"
 import getMe from "@/service/user/get-me"
 import { NextAuthOptions } from "next-auth"
@@ -34,7 +35,11 @@ export const authOptions: NextAuthOptions = {
         if (!me) {
           // ユーザーが存在しない場合は、新規ユーザーを作成する
           const created = await createUser(account.id_token!)
-          token.user = created
+          if (!created) {
+            throw new Error("ユーザーの作成に失敗しました")
+          }
+
+          token.user = toUser(created)
           // 新規ユーザーフラグを立てる
           // 認証フロー終了時にクライアント側でユーザー登録画面にリダイレクトする
           token.isNewUser = true
@@ -43,7 +48,7 @@ export const authOptions: NextAuthOptions = {
 
         // ユーザーが存在する場合
         token.isNewUser = false
-        token.user = me
+        token.user = toUser(me)
         return token
       }
 

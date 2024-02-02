@@ -19,6 +19,7 @@ type userUseCase interface {
 	GetMe(ctx context.Context, immutableId entity.ImmutableId) (*entity.User, error)
 	Store(ctx context.Context, immutableId entity.ImmutableId, email string) (*entity.User, error)
 	UpdateUser(ctx context.Context, username entity.Username, immutableId entity.ImmutableId, displayName, avatarUrl, bio string) (*entity.User, error)
+	DeleteUser(ctx context.Context, username entity.Username, immutableId entity.ImmutableId) error
 }
 
 type userServer struct {
@@ -43,6 +44,7 @@ var authRequiredMethodsUser = map[string]bool{
 	"/user.UserService/GetMe":             true,
 	"/user.UserService/CreateUser":        true,
 	"/user.UserService/UpdateUser":        true,
+	"/user.UserService/DeleteUser":        true,
 }
 
 var _ grpc_auth.ServiceAuthFuncOverride = (*userServer)(nil)
@@ -169,6 +171,16 @@ func (s *userServer) UpdateUser(ctx context.Context, in *user.UpdateUserRequest)
 	}
 
 	return toUser(res), nil
+}
+
+func (s *userServer) DeleteUser(ctx context.Context, in *emptypb.Empty) (*emptypb.Empty, error) {
+	token := GetToken(ctx)
+
+	if err := s.usecase.DeleteUser(ctx, entity.Username(token.Username), entity.ImmutableId(token.Sub)); err != nil {
+		return nil, internal(ctx, err)
+	}
+
+	return &emptypb.Empty{}, nil
 }
 
 func toUserList(users []*entity.User, nextCursor string) *user.UserList {

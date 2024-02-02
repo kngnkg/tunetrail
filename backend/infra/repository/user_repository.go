@@ -173,6 +173,19 @@ func (r *UserRepository) UpdateUser(ctx context.Context, db Executor, user *enti
 	return user, nil
 }
 
+func (r *UserRepository) DeleteUser(ctx context.Context, db Executor, immutableId entity.ImmutableId) error {
+	query := `
+		DELETE FROM users
+		WHERE user_id = $1`
+
+	_, err := db.ExecContext(ctx, query, immutableId)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func namedExecUser(ctx context.Context, db Executor, query string, user *entity.User) (*entity.User, error) {
 	_, err := db.NamedExecContext(ctx, query, user)
 	if err != nil {
