@@ -28,6 +28,34 @@ export namespace ListReviewsRequest {
   }
 }
 
+export class ListReviewsByUsernameRequest extends jspb.Message {
+  getUsername(): string;
+  setUsername(value: string): void;
+
+  getCursor(): string;
+  setCursor(value: string): void;
+
+  getLimit(): number;
+  setLimit(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ListReviewsByUsernameRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: ListReviewsByUsernameRequest): ListReviewsByUsernameRequest.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: ListReviewsByUsernameRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ListReviewsByUsernameRequest;
+  static deserializeBinaryFromReader(message: ListReviewsByUsernameRequest, reader: jspb.BinaryReader): ListReviewsByUsernameRequest;
+}
+
+export namespace ListReviewsByUsernameRequest {
+  export type AsObject = {
+    username: string,
+    cursor: string,
+    limit: number,
+  }
+}
+
 export class GetReviewByIdRequest extends jspb.Message {
   getReviewid(): string;
   setReviewid(value: string): void;

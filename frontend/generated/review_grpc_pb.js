@@ -49,6 +49,17 @@ function deserialize_review_GetReviewByIdRequest(buffer_arg) {
   return review_pb.GetReviewByIdRequest.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
+function serialize_review_ListReviewsByUsernameRequest(arg) {
+  if (!(arg instanceof review_pb.ListReviewsByUsernameRequest)) {
+    throw new Error('Expected argument of type review.ListReviewsByUsernameRequest');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_review_ListReviewsByUsernameRequest(buffer_arg) {
+  return review_pb.ListReviewsByUsernameRequest.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
 function serialize_review_ListReviewsRequest(arg) {
   if (!(arg instanceof review_pb.ListReviewsRequest)) {
     throw new Error('Expected argument of type review.ListReviewsRequest');
@@ -114,6 +125,17 @@ var ReviewServiceService = exports.ReviewServiceService = {
     responseType: review_pb.ReviewList,
     requestSerialize: serialize_review_ListReviewsRequest,
     requestDeserialize: deserialize_review_ListReviewsRequest,
+    responseSerialize: serialize_review_ReviewList,
+    responseDeserialize: deserialize_review_ReviewList,
+  },
+  listReviewsByUsername: {
+    path: '/review.ReviewService/ListReviewsByUsername',
+    requestStream: false,
+    responseStream: false,
+    requestType: review_pb.ListReviewsByUsernameRequest,
+    responseType: review_pb.ReviewList,
+    requestSerialize: serialize_review_ListReviewsByUsernameRequest,
+    requestDeserialize: deserialize_review_ListReviewsByUsernameRequest,
     responseSerialize: serialize_review_ReviewList,
     responseDeserialize: deserialize_review_ReviewList,
   },
