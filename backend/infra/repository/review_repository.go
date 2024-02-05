@@ -64,6 +64,26 @@ func (r *ReviewRepository) ListMyReviews(ctx context.Context, db Executor, autho
 	return reviews, nil
 }
 
+func (r *ReviewRepository) ListReviewsByUserId(ctx context.Context, db Executor, userId entity.ImmutableId, reviewId string, limit int) ([]*entity.Review, error) {
+	query := `
+	SELECT review_id, user_id AS "author.user_id", album_id, title, content, published_status, created_at, updated_at
+	FROM reviews
+	WHERE user_id = $1`
+
+	args := []interface{}{userId}
+
+	query, args = reviewPagenationQuery(query, reviewId, limit, args)
+
+	reviews := []*entity.Review{}
+	err := db.SelectContext(ctx, &reviews, query, args...)
+	if err != nil {
+		logger.FromContext(ctx).Error("failed to get reviews.", err)
+		return nil, err
+	}
+
+	return reviews, nil
+}
+
 func (r *ReviewRepository) GetReviewById(ctx context.Context, db Executor, reviewId string) (*entity.Review, error) {
 	query := `
 		SELECT review_id, user_id AS "author.user_id", album_id , title, content, published_status, created_at, updated_at

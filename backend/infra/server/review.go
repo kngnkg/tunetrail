@@ -43,11 +43,13 @@ const DefaultLimit = 20
 
 // 認証を必要とするメソッドを定義
 var authRequiredMethodsReview = map[string]bool{
-	"/review.ReviewService/ListReviews":   false,
-	"/review.ReviewService/GetReviewById": false,
-	"/review.ReviewService/CreateReview":  true,
-	"/review.ReviewService/UpdateReview":  true,
-	"/review.ReviewService/DeleteReview":  true,
+	"/review.ReviewService/ListReviews":           false,
+	"/review.ReviewService/ListMyReviews":         true,
+	"/review.ReviewService/ListReviewsByUsername": false,
+	"/review.ReviewService/GetReviewById":         false,
+	"/review.ReviewService/CreateReview":          true,
+	"/review.ReviewService/UpdateReview":          true,
+	"/review.ReviewService/DeleteReview":          true,
 }
 
 var _ grpc_auth.ServiceAuthFuncOverride = (*reviewServer)(nil)
@@ -89,6 +91,37 @@ func (s *reviewServer) ListMyReviews(ctx context.Context, in *review.ListReviews
 	authorId := GetImmutableId(ctx)
 
 	res, err := s.uc.ListMyReviews(ctx, authorId, reviewId, limit)
+	if err != nil {
+		return nil, internal(ctx, err)
+	}
+
+	nextCursor := ""
+	if res.NextCursor != "" {
+		nextCursor = helper.EncodeCursor(res.NextCursor)
+	}
+
+	return toReviewList(res.Reviews, nextCursor), nil
+}
+
+func (s *reviewServer) ListReviewsByUsername(ctx context.Context, in *review.ListReviewsByUsernameRequest) (*review.ReviewList, error) {
+	req := struct {
+		Username string `validate:"required,username"`
+		Limit    int    `validate:"omitempty,max=50"`
+	}{
+		Username: in.Username,
+		Limit:    int(in.Limit),
+	}
+
+	if err := s.validator.Validate(req); err != nil {
+		return nil, invalidArgument(ctx, err)
+	}
+
+	limit := DefaultLimit
+	if req.Limit > 0 {
+		limit = req.Limit
+	}
+
+	res, err := s.uc.ListReviews(ctx, "", limit)
 	if err != nil {
 		return nil, internal(ctx, err)
 	}

@@ -130,6 +130,49 @@ func (uc *ReviewUseCase) ListMyReviews(ctx context.Context, authorId entity.Immu
 	return resp, nil
 }
 
+func (uc *ReviewUseCase) ListReviewsByUsername(ctx context.Context, username entity.Username, reviewId string, limit int) (*ReviewListResponse, error) {
+	// ユーザー情報を取得する
+	u, err := uc.userRepo.GetUserByUsername(ctx, uc.DB, username)
+	if err != nil {
+		return nil, err
+	}
+
+	// 次のページがあるかどうかを判定するために、limit+1件取得する
+	rs, err := uc.reviewRepo.ListReviewsByUserId(ctx, uc.DB, u.ImmutableId, reviewId, limit+1)
+	if err != nil {
+		return nil, err
+	}
+
+	nextCursor := ""
+	if len(rs) > limit {
+		// limit を超えた最初の要素の id を取得
+		nextCursor = rs[limit].ReviewId
+		// limit までの要素を取得
+		rs = rs[:limit]
+	}
+
+	a := u.ToAuthor()
+
+	for _, r := range rs {
+		// レビュー情報に著者情報を埋め込む
+		r.Author = a
+
+		// いいね数を取得する
+		count, err := uc.likeRepo.GetLikesCountByReviewId(ctx, uc.DB, r.ReviewId)
+		if err != nil {
+			return nil, err
+		}
+		r.LikesCount = count
+	}
+
+	// limit を超えた要素がある場合に、その要素のIdを次のページのカーソルとして返す
+	resp := &ReviewListResponse{
+		Reviews:    rs,
+		NextCursor: nextCursor,
+	}
+	return resp, nil
+}
+
 func (uc *ReviewUseCase) getReview(ctx context.Context, reviewId string) (*entity.Review, error) {
 	r, err := uc.reviewRepo.GetReviewById(ctx, uc.DB, reviewId)
 	if err != nil {

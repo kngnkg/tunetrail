@@ -12,6 +12,7 @@ type ReviewRepository interface {
 	ListReviews(ctx context.Context, db repository.Executor, reviewId string, limit int) ([]*entity.Review, error)
 	GetReviewById(ctx context.Context, db repository.Executor, reviewId string) (*entity.Review, error)
 	ListMyReviews(ctx context.Context, db repository.Executor, authorId entity.ImmutableId, reviewId string, limit int) ([]*entity.Review, error)
+	ListReviewsByUserId(ctx context.Context, db repository.Executor, userId entity.ImmutableId, reviewId string, limit int) ([]*entity.Review, error)
 	StoreReview(ctx context.Context, db repository.Executor, review *entity.Review) (*entity.Review, error)
 	UpdateReview(ctx context.Context, db repository.Executor, review *entity.Review) (*entity.Review, error)
 	DeleteReview(ctx context.Context, db repository.Executor, reviewId string) error
