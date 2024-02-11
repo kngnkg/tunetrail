@@ -11,9 +11,9 @@ export default async function UserPage({ params }: UserPageProps) {
   return (
     <>
       <section>
-        {/* TODO: ユーザーのレビューを取得する */}
-        {/* `${env.NEXT_PUBLIC_API_ROOT}/${username}/reviews` */}
-        <ReviewList endpoint={`${env.NEXT_PUBLIC_API_ROOT}/reviews`} />
+        <ReviewList
+          endpoint={`${env.NEXT_PUBLIC_API_ROOT}/${username}/reviews`}
+        />
       </section>
     </>
   )

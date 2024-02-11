@@ -1,12 +1,17 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import getAlbum from "@/service/album/get-album"
+import listAlbums from "@/service/album/list-albums"
 import createReview from "@/service/review/create-review"
-import { toReview } from "@/service/transform"
+import listReviewsByUsername, {
+  ListReviewsByUsernameParams,
+} from "@/service/review/list-reviews-by-username"
+import { toReview, toReviewPreview } from "@/service/transform"
 import * as z from "zod"
 
 import { getCurrentUser, getServerSession } from "@/lib/session"
 import { reviewSchema } from "@/lib/validations/review"
 import { userNameSchema } from "@/lib/validations/user"
+import { errInternal, errNotFound } from "@/app/api/response"
 
 const routeContextSchema = z.object({
   params: z.object({
@@ -15,6 +20,60 @@ const routeContextSchema = z.object({
 })
 
 type UserReviewRouteContext = z.infer<typeof routeContextSchema>
+
+export async function GET(
+  request: NextRequest,
+  context: UserReviewRouteContext
+) {
+  const { params } = routeContextSchema.parse(context)
+
+  const searchParams = request.nextUrl.searchParams
+
+  const cursor = searchParams.get("cursor")
+  const limitStr = searchParams.get("limit")
+
+  // TODO: クエリパラメータのバリデーション
+
+  try {
+    const prms: ListReviewsByUsernameParams = {
+      username: params.username,
+      cursor: cursor,
+      limit: limitStr ? parseInt(limitStr) : null,
+    }
+
+    const resp = await listReviewsByUsername(prms)
+    if (!resp) {
+      return errNotFound("review not found")
+    }
+
+    const reviewsList = resp.getReviewsList()
+
+    // アルバム情報を取得する
+    const albumIds = reviewsList.map((review) => review.getAlbumid())
+
+    const albumsResp = await listAlbums(albumIds)
+    if (!albumsResp) {
+      return errNotFound("album not found")
+    }
+
+    const reviews = reviewsList.map((review) => {
+      const album = albumsResp.find((album) => album.id === review.getAlbumid())
+      if (!album) {
+        throw new Error("invalid album")
+      }
+      return toReviewPreview(review, album)
+    })
+
+    return NextResponse.json({
+      reviews: reviews,
+      nextCursor: resp.getNextcursor(),
+      total: resp.getTotal(),
+    })
+  } catch (e) {
+    console.error(e)
+    return errInternal("internal error")
+  }
+}
 
 export async function POST(req: Request, context: UserReviewRouteContext) {
   try {
