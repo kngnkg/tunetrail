@@ -17,6 +17,7 @@ import (
 type reviewUseCase interface {
 	ListReviews(ctx context.Context, reviewId string, limit int) (*usecase.ReviewListResponse, error)
 	ListMyReviews(ctx context.Context, authorId entity.ImmutableId, reviewId string, limit int) (*usecase.ReviewListResponse, error)
+	ListReviewsByUsername(ctx context.Context, username entity.Username, reviewId string, limit int) (*usecase.ReviewListResponse, error)
 	GetReviewById(ctx context.Context, reviewId string) (*entity.Review, error)
 	GetMyReviewById(ctx context.Context, reviewId string) (*entity.Review, error)
 	StoreReview(ctx context.Context, authorId entity.ImmutableId, albumId, title string, content json.RawMessage, publishedStatus entity.PublishedStatus) (*entity.Review, error)
@@ -64,7 +65,7 @@ func (s *reviewServer) AuthFuncOverride(ctx context.Context, fullMethodName stri
 }
 
 func (s *reviewServer) ListReviews(ctx context.Context, in *review.ListReviewsRequest) (*review.ReviewList, error) {
-	reviewId, limit, err := s.handleListRequestPagenation(ctx, in)
+	reviewId, limit, err := s.handleListRequestPagenation(ctx, in.Cursor, int(in.Limit))
 	if err != nil {
 		return nil, err
 	}
@@ -83,7 +84,7 @@ func (s *reviewServer) ListReviews(ctx context.Context, in *review.ListReviewsRe
 }
 
 func (s *reviewServer) ListMyReviews(ctx context.Context, in *review.ListReviewsRequest) (*review.ReviewList, error) {
-	reviewId, limit, err := s.handleListRequestPagenation(ctx, in)
+	reviewId, limit, err := s.handleListRequestPagenation(ctx, in.Cursor, int(in.Limit))
 	if err != nil {
 		return nil, err
 	}
@@ -104,24 +105,22 @@ func (s *reviewServer) ListMyReviews(ctx context.Context, in *review.ListReviews
 }
 
 func (s *reviewServer) ListReviewsByUsername(ctx context.Context, in *review.ListReviewsByUsernameRequest) (*review.ReviewList, error) {
+	reviewId, limit, err := s.handleListRequestPagenation(ctx, in.Cursor, int(in.Limit))
+	if err != nil {
+		return nil, err
+	}
+
 	req := struct {
 		Username string `validate:"required,username"`
-		Limit    int    `validate:"omitempty,max=50"`
 	}{
 		Username: in.Username,
-		Limit:    int(in.Limit),
 	}
 
 	if err := s.validator.Validate(req); err != nil {
 		return nil, invalidArgument(ctx, err)
 	}
 
-	limit := DefaultLimit
-	if req.Limit > 0 {
-		limit = req.Limit
-	}
-
-	res, err := s.uc.ListReviews(ctx, "", limit)
+	res, err := s.uc.ListReviewsByUsername(ctx, entity.Username(req.Username), reviewId, limit)
 	if err != nil {
 		return nil, internal(ctx, err)
 	}
@@ -134,8 +133,8 @@ func (s *reviewServer) ListReviewsByUsername(ctx context.Context, in *review.Lis
 	return toReviewList(res.Reviews, nextCursor), nil
 }
 
-func (s *reviewServer) handleListRequestPagenation(ctx context.Context, in *review.ListReviewsRequest) (string, int, error) {
-	decoded, err := helper.DecodeCursor(in.Cursor)
+func (s *reviewServer) handleListRequestPagenation(ctx context.Context, inputCursor string, inputLimit int) (string, int, error) {
+	decoded, err := helper.DecodeCursor(inputCursor)
 	if err != nil {
 		return "", 0, invalidArgument(ctx, err)
 	}
@@ -145,7 +144,7 @@ func (s *reviewServer) handleListRequestPagenation(ctx context.Context, in *revi
 		Limit    int    `validate:"omitempty,max=50"`
 	}{
 		ReviewId: decoded,
-		Limit:    int(in.Limit),
+		Limit:    int(inputLimit),
 	}
 
 	if err := s.validator.Validate(req); err != nil {

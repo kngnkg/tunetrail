@@ -12,7 +12,7 @@ export default async function UserPage({ params }: UserPageProps) {
     <>
       <section>
         <ReviewList
-          endpoint={`${env.NEXT_PUBLIC_API_ROOT}/${username}/reviews`}
+          endpoint={`${env.NEXT_PUBLIC_API_ROOT}/users/${username}/reviews`}
         />
       </section>
     </>
