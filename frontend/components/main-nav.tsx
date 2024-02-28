@@ -43,6 +43,7 @@ export const MainNav: React.FC<MainNavProps> = ({ className }) => {
       {!session && status === "unauthenticated" && (
         <Button
           className="bg-primary dark:bg-primary hover:bg-white dark:hover:bg-white"
+          size="sm"
           onClick={() => signIn()}
         >
           ログイン
