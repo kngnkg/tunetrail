@@ -52,11 +52,6 @@ export default async function UserLayout({
       value: "likes",
       href: `/${username}/likes`,
     },
-    {
-      label: "コメント",
-      value: "comments",
-      href: `/${username}/comments`,
-    },
   ]
 
   return (
